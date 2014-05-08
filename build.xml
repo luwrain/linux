@@ -8,12 +8,20 @@
   <target name="clean">
     <delete dir="build"/>
     <delete dir="jar"/>
+    <delete dir="api"/>
+    <delete file="jni/org_luwrain_os_Terminal.h"/>
   </target>
   <target name="compile" depends="clean">
     <mkdir dir="build"/>
     <javac srcdir="java" destdir="build" source="1.7" target="1.7">
       <classpath refid="classpath"/>
     </javac>
+    <javah destdir="jni" force="yes">
+      <classpath>
+	<pathelement path="./build"/>
+      </classpath>
+      <class name="org.luwrain.os.Terminal"/>
+    </javah>
   </target>
   <target name="jar" depends="compile">
     <mkdir dir="jar"/>
