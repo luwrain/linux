@@ -2,3 +2,6 @@ build
 jar
 lib
 api
+*.so
+*.o
+

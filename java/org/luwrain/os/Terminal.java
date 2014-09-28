@@ -1,6 +1,8 @@
 
 package org.luwrain.os;
 
+import java.util.*;
+
 public class Terminal
 {
     private static native int openPty();
@@ -11,12 +13,13 @@ public class Terminal
 
     private int fd = -1;
     private int pid = -1;
+    private Vector<String> lines = new Vector<String>();
 
     public Terminal()
     {
     }
 
-    public void open(String shellExp) throws TerminalException
+    public synchronized void open(String shellExp) throws TerminalException
     {
 	if (shellExp == null || shellExp.trim().isEmpty())
 	    return;
@@ -33,4 +36,33 @@ public class Terminal
 	    throw new TerminalException(message);
 	}
     }
+
+    public synchronized int getLineCount()
+    {
+	return lines.size();
+    }
+
+    public synchronized String getLine(int index)
+    {
+	return index < lines.size()?lines.get(index):"";
+    }
+
+    public synchronized void close()
+    {
+    }
+
+    public synchronized boolean isOpened()
+    {
+	return fd >= 0 && pid >= 0;
+    }
+
+
+    public synchronized boolean collectData()
+    {
+	String line = collect(fd);
+	if (line != null && !line.isEmpty())
+	    lines.add(line);
+	return true;//FIXME:
+    }
 }
+
