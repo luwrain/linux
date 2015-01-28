@@ -1,0 +1,3 @@
+#!/bin/sh
+
+java -cp ../jar/luwrain.jar:/home/luwrain/base.git/jar/luwrain-base.jar org.luwrain.speech.CommandBackEnd "$@"

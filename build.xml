@@ -9,18 +9,19 @@
     <delete dir="build"/>
     <delete dir="jar"/>
     <delete dir="api"/>
-    <delete file="jni/org_luwrain_os_Terminal.h"/>
+    <delete file="src/jni/org_luwrain_os_Terminal.h"/>
   </target>
   <target name="compile" depends="clean">
     <mkdir dir="build"/>
-    <javac srcdir="java" destdir="build" source="1.7" target="1.7">
+    <javac srcdir="src/main/java" destdir="build" source="1.7" target="1.7">
       <classpath refid="classpath"/>
     </javac>
-    <javah destdir="jni" force="yes">
+    <javah destdir="src/jni" force="yes">
       <classpath>
 	<pathelement path="./build"/>
       </classpath>
       <class name="org.luwrain.os.Terminal"/>
+      <class name="org.luwrain.linux.ProcessGroup"/>
     </javah>
   </target>
   <target name="jar" depends="compile">
