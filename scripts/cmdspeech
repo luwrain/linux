@@ -1,3 +1,11 @@
 #!/bin/sh
 
-java -cp ../jar/luwrain.jar:/home/luwrain/base.git/jar/luwrain-base.jar org.luwrain.speech.CommandBackEnd "$@"
+if [ -z "$1" ]; then
+java -cp ../jar/luwrain-linux.jar:/home/luwrain/base.git/jar/luwrain-base.jar \
+-Djava.library.path=../src/jni/ \
+org.luwrain.linux.CommandBackEnd 'RHVoice | aplay'
+fi
+
+java -cp ../jar/luwrain-linux.jar:/home/luwrain/base.git/jar/luwrain-base.jar \
+-Djava.library.path=../src/jni/ \
+org.luwrain.linux.CommandBackEnd "$@"
