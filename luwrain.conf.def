@@ -1,0 +1,5 @@
+
+LUWRAIN_DIR=~/luwrain
+LUWRAIN_SPEECH=org.luwrain.linux.speech.Command
+LUWRAIN_SPEECH_COMMAND='RHVoice -r 1.6 | aplay'
+LUWRAIN_LANG=ru
