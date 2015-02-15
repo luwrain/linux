@@ -1,15 +1,31 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
 
-package org.luwrain.linux;
+   This file is part of the Luwrain.
+
+   Luwrain is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   Luwrain is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
+
+package org.luwrain.linux.speech;
 
 import java.io.*;
 import java.util.concurrent.*;
 
 import org.luwrain.speech.BackEnd;
+import org.luwrain.linux.ProcessGroup;
 
-public class CommandBackEnd implements BackEnd
+public class Command implements BackEnd
 {
+    private static final String COMMAND_PREFIX = "--speech-command=";
     private static final int BACKGROUND_THREAD_DELAY = 100;
-
 
 class Chunk
 {
@@ -35,11 +51,11 @@ int rate)
     private int defaultPitch = 50;
     private int defaultRate = 50;
 
-    public CommandBackEnd()
+    public Command()
     {
     }
 
-    public CommandBackEnd(String cmd)
+    public Command(String cmd)
     {
 	this.cmd = cmd;
 	if (cmd == null)
@@ -50,8 +66,21 @@ int rate)
 
     @Override public String init(String[] cmdLine)
     {
-	//FIXME:
-	return null;
+	if (cmdLine == null)
+	    throw new NullPointerException("cmdLine may not be null");
+	for(String s: cmdLine)
+	{
+	    if (s == null)
+		throw new NullPointerException("cmdLine items may not be null");
+	    if (s.startsWith(COMMAND_PREFIX))
+	    {
+		cmd = s.substring(COMMAND_PREFIX.length());
+		if (cmd.isEmpty())
+		    return "\'" + COMMAND_PREFIX + "\' command line options has an empty argument";
+		return null;
+	    }
+	}
+	return "no mandatory command line option \'" + COMMAND_PREFIX + "\'";
     }
 
     @Override public void say(String text)
@@ -75,12 +104,34 @@ int rate)
 	}
     }
 
+    @Override public void say(String text, int pitch)
+    {
+	say(text);
+    }
+
+    @Override public void say(String text, int pitch, int rate)
+    {
+	say(text);
+    }
+
     @Override public void sayLetter(char letter)
     {
+	say("" + letter);
+    }
+
+    @Override public void sayLetter(char letter, int pitch)
+    {
+	//FIXME:
+    }
+
+    @Override public void sayLetter(char letter, int pitch, int rate)
+    {
+	//FIXME:
     }
 
     @Override public void silence()
     {
+	System.out.println("silence");
 	chunks.clear();
 	pg.stop();
     }
@@ -121,7 +172,12 @@ int rate)
 	new Thread(r).start();
     }
 
-    @Override public void setPitch(int value)
+    @Override public void setDefaultPitch(int value)
+    {
+	//FIXME:
+    }
+
+    @Override public void setDefaultRate(int value)
     {
 	//FIXME:
     }
@@ -139,7 +195,7 @@ int rate)
 	    System.exit(1);
 	}
 	System.loadLibrary("luwrainlinux");
-	CommandBackEnd backend = new CommandBackEnd(args[0]);
+	Command backend = new Command(args[0]);
 	backend.runBkgThread();
 	String line = "";
 	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));

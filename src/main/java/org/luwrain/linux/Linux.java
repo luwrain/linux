@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2014 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
 
    This file is part of the Luwrain.
 
@@ -14,23 +14,15 @@
    General Public License for more details.
 */
 
-package org.luwrain.os;
+package org.luwrain.linux;
 
-import org.luwrain.os.speech.*;
-
-public class SpeechBackEnds
+public class Linux implements org.luwrain.os.OperatingSystem
 {
-    static public SpeechBackEnd obtain(String type,
-					String host,
-					int port)
+    private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
+
+    public String init()
     {
-	if (type == null || type.trim().isEmpty())
-	    return null;
-	if (!type.equals("voiceman"))
-	    return null;
-	VoiceMan backend = new VoiceMan();
-	if (!backend.connect(!host.trim().isEmpty()?host.trim():"localhost", port))
-	    return null;
-	return backend;
+	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
+	return null;
     }
 }

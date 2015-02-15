@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2014 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
 
    This file is part of the Luwrain.
 
@@ -14,12 +14,12 @@
    General Public License for more details.
 */
 
-package org.luwrain.os;
+package org.luwrain.linux.term;
 
-public interface SpeechBackEnd
+public class TerminalException extends Exception
 {
-    void say(String text);
-    void sayLetter(char letter);
-    void silence();
-    void setPitch(int value);
+    public TerminalException(String message)
+    {
+	super(message);
+    }
 }
