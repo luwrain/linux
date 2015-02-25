@@ -9,7 +9,7 @@ if [ -z "$LUWRAIN_DIR" ]; then
 fi
 
 if [ -z "$LUWRAIN_APPS_DIR" ]; then
-    LUWRAIN_APPS_DIR=~/.luwrain/app
+    LUWRAIN_APPS_DIR=~/.luwrain/apps
 fi
 
 if [ -z "$LUWRAIN_REGISTRY_DIR" ]; then
