@@ -39,4 +39,9 @@ public class Linux implements org.luwrain.os.OperatingSystem
     {
 	return new File("/");
     }
+
+    @Override public org.luwrain.hardware.Hardware getHardware()
+    {
+	return new Hardware();
+    }
 }
