@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <msp@altlinux.org>
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the Luwrain.
 
@@ -30,18 +30,16 @@ public class Terminal
     private int pid = -1;
     private Vector<String> lines = new Vector<String>();
 
-    public Terminal()
-    {
-    }
-
     public synchronized void open(String shellExp) throws TerminalException
     {
-	if (shellExp == null || shellExp.trim().isEmpty())
-	    return;
+	if (shellExp == null)
+	    throw new NullPointerException("shellExp may not be null");
 	fd = openPty(); 
+	System.out.println("openPty() has returned " + fd);
 	if (fd < 0)
 	    throw new TerminalException("open:" + errnoString());
 	pid = exec(fd, shellExp);
+	System.out.println("exec() has returned " + pid);
 	if (pid < 0)
 	{
 	    final String message = errnoString();
@@ -64,20 +62,22 @@ public class Terminal
 
     public synchronized void close()
     {
+	//FIXME:
     }
 
     public synchronized boolean isOpened()
     {
-	return fd >= 0 && pid >= 0;
+	return fd >= 0 && pid > 0;
     }
-
 
     public synchronized boolean collectData()
     {
-	String line = collect(fd);
+	final String line = collect(fd);
 	if (line != null && !line.isEmpty())
+	{
+	    System.out.println("Catched line: " + line);
 	    lines.add(line);
+	}
 	return true;//FIXME:
     }
 }
-

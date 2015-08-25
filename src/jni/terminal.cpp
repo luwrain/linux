@@ -28,14 +28,16 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_Terminal_exec(JNIEnv *env, jc
   const char* ptyName = ptsname(pty);
   if (ptyName == NULL)
     return -1;
+  std::cout << "ptyName=" << ptyName << std::endl;
   const char* cmdTr = env->GetStringUTFChars(cmd, NULL);
+  std::cout << "cmdTr=" << cmdTr << std::endl;
   const pid_t pid = fork();
   if (pid < (pid_t)0)
     return -1;
   if (pid == (pid_t)0)
     {
       const int fd = open(ptyName, O_WRONLY);
-      if (fd == -1)
+      if (fd < 0)
 	exit(EXIT_FAILURE);
       setpgrp();
       dup2(fd, STDIN_FILENO);
@@ -59,6 +61,7 @@ JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_Terminal_errnoString(JNIEn
 
 JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_Terminal_collect(JNIEnv *env, jclass, jint pty)
 {
+  std::cout << "collect (" << pty << ")" << std::endl;
   if (pty < 0)
     return env->NewStringUTF("");;
   std::string output;
@@ -68,8 +71,10 @@ JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_Terminal_collect(JNIEnv *e
     {
       struct pollfd pollFd;
       pollFd.fd = pty;
-      pollFd.events = POLLOUT | POLLWRBAND;
+      std::cout << "pollFd.fd=" << pollFd.fd << std::endl;
+      pollFd.events = POLLIN /*| POLLWRBAND*/;
       const int res = poll(&pollFd, 1, 0);
+      std::cout << "res=" << res << std::endl;
       if (res < 0)
 	{
 	  perror("poll(pty)");
@@ -77,11 +82,18 @@ JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_Terminal_collect(JNIEnv *e
 	}
       if (res == 0)
 	break;
+
+      if (pollFd.revents & POLLHUP)
+	std::cout << "POLLHUP" << std::endl;
+      if (pollFd.revents & POLLIN )
+	{
+	  std::cout << "POLLIN" << std::endl;
       char buf[IO_BUF_SIZE];
       readCount = read(pty, buf, sizeof(buf));
+      std::cout << "readCount=" << readCount << std::endl;
       if (readCount < 0)
 	{
-	  perror("read(pty)");
+	  perror("read(pty):");
 	  return env->NewStringUTF("");
 	}
       if (readCount == 0)
@@ -91,6 +103,8 @@ JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_Terminal_collect(JNIEnv *e
 	}
     for(int i = 0;i < readCount;++i)
       output += buf[i];
+    std::cout << "output=" << output << std::endl;
+	}
     }
   return         env->NewStringUTF(output.c_str());
 }
