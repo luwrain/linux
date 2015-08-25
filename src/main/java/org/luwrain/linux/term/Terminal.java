@@ -20,63 +20,56 @@ import java.util.*;
 
 public class Terminal
 {
-    private static native int openPty();
-    private static native int exec(int pty, String cmd);
-    private static native void close(int fd);
-    private static native String errnoString();
-    private static native String collect(int pty);
+    private PT pt = new PT();
+    final private Vector<String> lines = new Vector<String>();
 
-    private int fd = -1;
-    private int pid = -1;
-    private Vector<String> lines = new Vector<String>();
-
-    public synchronized void open(String shellExp) throws TerminalException
+    public synchronized void open(String cmd) throws TerminalException
     {
-	if (shellExp == null)
-	    throw new NullPointerException("shellExp may not be null");
-	fd = openPty(); 
-	System.out.println("openPty() has returned " + fd);
-	if (fd < 0)
-	    throw new TerminalException("open:" + errnoString());
-	pid = exec(fd, shellExp);
-	System.out.println("exec() has returned " + pid);
-	if (pid < 0)
-	{
-	    final String message = errnoString();
-	    close(fd);
-	    fd = -1;
-	    pid = -1;
-	    throw new TerminalException(message);
-	}
+	if (cmd == null)
+	    throw new NullPointerException("cmd may not be null");
+	pt.create();
+	pt.launch(cmd);
     }
 
-    public synchronized int getLineCount()
+    synchronized public int getLineCount()
     {
 	return lines.size();
     }
 
-    public synchronized String getLine(int index)
+    synchronized public String getLine(int index)
     {
 	return index < lines.size()?lines.get(index):"";
     }
 
-    public synchronized void close()
+    synchronized public void close()
     {
 	//FIXME:
     }
 
-    public synchronized boolean isOpened()
+    synchronized public boolean isOpened()
     {
-	return fd >= 0 && pid > 0;
+	return true;
     }
 
-    public synchronized boolean collectData()
+    synchronized public boolean readData()
     {
-	final String line = collect(fd);
-	if (line != null && !line.isEmpty())
+	byte[] res = pt.read();
+	if (res == null)
+	    return false;
+	while (res.length > 0)
 	{
-	    System.out.println("Catched line: " + line);
-	    lines.add(line);
+	    System.out.println("got " + res.length + " bytes");
+	    try {
+	    final String str = new String(res, "utf-8");
+	    System.out.println(str);
+	    }
+	    catch (java.io.UnsupportedEncodingException e)
+	    {
+	    }
+
+	    res = pt.read();
+	    if (res == null)
+		return false;
 	}
 	return true;//FIXME:
     }

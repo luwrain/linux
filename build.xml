@@ -21,6 +21,7 @@
 	<pathelement path="./build"/>
       </classpath>
       <class name="org.luwrain.linux.term.Terminal"/>
+      <class name="org.luwrain.linux.term.PT"/>
       <class name="org.luwrain.linux.ProcessGroup"/>
     </javah>
   </target>

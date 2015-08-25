@@ -29,6 +29,7 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_Terminal_exec(JNIEnv *env, jc
   if (ptyName == NULL)
     return -1;
   std::cout << "ptyName=" << ptyName << std::endl;
+  open(ptyName, O_WRONLY);
   const char* cmdTr = env->GetStringUTFChars(cmd, NULL);
   std::cout << "cmdTr=" << cmdTr << std::endl;
   const pid_t pid = fork();
@@ -43,7 +44,8 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_Terminal_exec(JNIEnv *env, jc
       dup2(fd, STDIN_FILENO);
       dup2(fd, STDOUT_FILENO);
       dup2(fd, STDERR_FILENO);
-      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
+      //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
+      if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
 	exit(EXIT_FAILURE);
     }
   return pid;

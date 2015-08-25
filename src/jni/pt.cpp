@@ -1,0 +1,111 @@
+
+#include<stdlib.h>
+#include<string.h>
+#include<errno.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<fcntl.h>
+#include <poll.h>
+#include"org_luwrain_linux_term_PT.h"
+
+#include<iostream>
+
+#define IO_BUF_SIZE 2048
+#define SHELL "/bin/sh"
+
+JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_createImpl(JNIEnv*, jclass)
+{
+  const int res = posix_openpt(O_RDWR);
+  if (res < 0)
+    return res;
+  grantpt(res);
+  unlockpt(res);
+  return res;
+}
+
+JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jclass, jint pty, jstring cmd)
+{
+  const char* ptyName = ptsname(pty);
+  if (ptyName == NULL)
+    return -1;
+  //  open(ptyName, O_WRONLY);
+  const char* cmdTr = env->GetStringUTFChars(cmd, NULL);
+  const pid_t pid = fork();
+  if (pid < (pid_t)0)
+    return -1;
+  if (pid == (pid_t)0)
+    {
+      const int fd = open(ptyName, O_WRONLY);
+      if (fd < 0)
+	exit(EXIT_FAILURE);
+      setpgrp();
+      dup2(fd, STDIN_FILENO);
+      dup2(fd, STDOUT_FILENO);
+      dup2(fd, STDERR_FILENO);
+      //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
+      if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
+	exit(EXIT_FAILURE);
+    }
+  return pid;
+}
+
+/*
+Returns:
+null - descriptor is closed
+an empty array - no data, should wait more
+array with data - there is some data, maybe there is more, should try once again
+*/
+JNIEXPORT jbyteArray JNICALL Java_org_luwrain_linux_term_PT_readImpl(JNIEnv *env, jclass, jint fd)
+{
+  std::cout << "collect (" << fd << ")" << std::endl;
+  struct pollfd pollFd;
+  pollFd.fd = fd;
+  std::cout << "pollFd.fd=" << pollFd.fd << std::endl;
+  pollFd.events = POLLIN;
+  const int pollRes = poll(&pollFd, 1, 0);
+  std::cout << "pollRes=" << pollRes << std::endl;
+  if (pollRes < 0)
+    {
+      perror("poll(pt):");
+	return NULL;
+    }
+  if (pollRes == 0)
+    return env->NewByteArray(0);//No data, must wait more
+  if (pollFd.revents & POLLHUP)
+    return NULL;//Descriptor is closed, we should stop reading
+  if (pollFd.revents & POLLIN )
+    {
+      std::cout << "POLLIN" << std::endl;
+      char buf[IO_BUF_SIZE];
+      const int readCount = read(fd, buf, sizeof(buf));
+      std::cout << "readCount=" << readCount << std::endl;
+      if (readCount < 0)
+	{
+	  perror("read(pt):");
+	  return NULL;//Something wrong with the descriptor, it is better to interrupt
+	}
+      if (readCount == 0)
+	return NULL;//The descriptor is closed
+      const jbyteArray res = env->NewByteArray(readCount);
+      if (res == NULL)
+	return NULL;//No memory, we must stop
+      jbyte buf2[IO_BUF_SIZE];
+      for (int i = 0;i < readCount;++i)
+	buf2[i] = buf[i];
+      env->SetByteArrayRegion(res, 0, readCount, buf2);
+      return res;
+    }
+  //Actually should never be here;
+return env->NewByteArray(0);
+}
+
+JNIEXPORT void JNICALL Java_org_luwrain_linux_term_PT_closeImpl(JNIEnv *, jclass, jint fd)
+{
+  close(fd);
+}
+
+JNIEXPORT jstring JNICALL Java_org_luwrain_linux_term_PT_errnoString(JNIEnv *env, jclass)
+{
+  return         env->NewStringUTF(strerror(errno));
+}
+

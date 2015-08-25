@@ -14,8 +14,11 @@ clean:
 terminal.o: terminal.cpp org_luwrain_linux_term_Terminal.h
 	$(GPP) terminal.cpp
 
+pt.o: pt.cpp org_luwrain_linux_term_PT.h
+	$(GPP) pt.cpp
+
 prgroup.o: prgroup.cpp org_luwrain_linux_ProcessGroup.h
 	$(GPP) prgroup.cpp
 
-$(SONAME): terminal.o prgroup.o
-	$(LINK) terminal.o prgroup.o
+$(SONAME): prgroup.o pt.o
+	$(LINK) prgroup.o pt.o
