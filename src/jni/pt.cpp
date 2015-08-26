@@ -30,22 +30,31 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jc
     return -1;
   //  open(ptyName, O_WRONLY);
   const char* cmdTr = env->GetStringUTFChars(cmd, NULL);
+
+      const int slaveFd = open(ptyName, O_RDWR);
+      if (slaveFd < 0)
+	return slaveFd;
+
   const pid_t pid = fork();
   if (pid < (pid_t)0)
     return -1;
   if (pid == (pid_t)0)
     {
-      const int fd = open(ptyName, O_WRONLY);
-      if (fd < 0)
-	exit(EXIT_FAILURE);
+      close(pty);
+      close(0);
+      close(1);
+      close(2);
+
+      dup(slaveFd);
+      dup(slaveFd);
+      dup(slaveFd);
+
       setpgrp();
-      dup2(fd, STDIN_FILENO);
-      dup2(fd, STDOUT_FILENO);
-      dup2(fd, STDERR_FILENO);
       //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
       if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
 	exit(EXIT_FAILURE);
     }
+  close(slaveFd);
   return pid;
 }
 
@@ -57,13 +66,13 @@ array with data - there is some data, maybe there is more, should try once again
 */
 JNIEXPORT jbyteArray JNICALL Java_org_luwrain_linux_term_PT_readImpl(JNIEnv *env, jclass, jint fd)
 {
-  std::cout << "collect (" << fd << ")" << std::endl;
+  //  std::cout << "collect (" << fd << ")" << std::endl;
   struct pollfd pollFd;
   pollFd.fd = fd;
-  std::cout << "pollFd.fd=" << pollFd.fd << std::endl;
+  //  std::cout << "pollFd.fd=" << pollFd.fd << std::endl;
   pollFd.events = POLLIN;
   const int pollRes = poll(&pollFd, 1, 0);
-  std::cout << "pollRes=" << pollRes << std::endl;
+  //  std::cout << "pollRes=" << pollRes << std::endl;
   if (pollRes < 0)
     {
       perror("poll(pt):");
@@ -75,10 +84,10 @@ JNIEXPORT jbyteArray JNICALL Java_org_luwrain_linux_term_PT_readImpl(JNIEnv *env
     return NULL;//Descriptor is closed, we should stop reading
   if (pollFd.revents & POLLIN )
     {
-      std::cout << "POLLIN" << std::endl;
+      //      std::cout << "POLLIN" << std::endl;
       char buf[IO_BUF_SIZE];
       const int readCount = read(fd, buf, sizeof(buf));
-      std::cout << "readCount=" << readCount << std::endl;
+      //      std::cout << "readCount=" << readCount << std::endl;
       if (readCount < 0)
 	{
 	  perror("read(pt):");
@@ -97,6 +106,20 @@ JNIEXPORT jbyteArray JNICALL Java_org_luwrain_linux_term_PT_readImpl(JNIEnv *env
     }
   //Actually should never be here;
 return env->NewByteArray(0);
+}
+
+JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_writeImpl(JNIEnv* env, jclass,
+								 jint fd, jbyteArray data)
+{
+  const int size = env->GetArrayLength(data);
+  const int effectiveSize = size < IO_BUF_SIZE?size:IO_BUF_SIZE;
+  jbyte jbuf[IO_BUF_SIZE];
+  env->GetByteArrayRegion(data, 0, effectiveSize, jbuf);                                                         
+  char buf[IO_BUF_SIZE];
+  for(int i = 0;i < effectiveSize;++i)
+    buf[i] = jbuf[i];
+  //FIXME:Check for unblocking;
+  return write(fd, buf, effectiveSize); 
 }
 
 JNIEXPORT void JNICALL Java_org_luwrain_linux_term_PT_closeImpl(JNIEnv *, jclass, jint fd)

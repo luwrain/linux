@@ -21,14 +21,17 @@ import java.util.*;
 public class Terminal
 {
     private PT pt = new PT();
+    private byte[] toWrite = new byte[0];
     final private Vector<String> lines = new Vector<String>();
 
-    public synchronized void open(String cmd) throws TerminalException
+    synchronized public void open(String cmd) throws TerminalException
     {
 	if (cmd == null)
 	    throw new NullPointerException("cmd may not be null");
-	pt.create();
-	pt.launch(cmd);
+	if (!pt.create())
+	    throw new TerminalException("Cannot create pseudo terminal");
+	if (!pt.launch(cmd))
+	    throw new TerminalException("Cannot launch child process");
     }
 
     synchronized public int getLineCount()
@@ -46,31 +49,74 @@ public class Terminal
 	//FIXME:
     }
 
-    synchronized public boolean isOpened()
+    synchronized public boolean isActive()
     {
 	return true;
     }
 
-    synchronized public boolean readData()
+    synchronized public void write(byte[] data)
     {
-	byte[] res = pt.read();
-	if (res == null)
-	    return false;
-	while (res.length > 0)
+	if (data == null || data.length < 1)
+	    return;
+	final int oldLen = toWrite.length;
+	toWrite = Arrays.copyOf(toWrite, oldLen + data.length);
+	for(int i = 0;i < data.length;++i)
+	    toWrite[oldLen + i] = data[i];
+    }
+
+    public void write(char c)
+    {
+	write(new byte[]{(byte)c});
+    }
+
+    synchronized public void exchange()
+    {
+	if (toWrite.length > 0)
 	{
-	    System.out.println("got " + res.length + " bytes");
+	    final int res = pt.write(toWrite);
+	    if (res > 0)
+	    {
+		if (res < toWrite.length)
+		{
+		    for(int i = res;i < toWrite.length;++i)
+			toWrite[i - res] = toWrite[i];
+		    toWrite = Arrays.copyOf(toWrite, toWrite.length - res);
+		} else
+		    toWrite = new byte[0];
+	    }
+	} //writing;
+
+
+	byte[] res = pt.read();
+	while (res != null && res.length > 0)
+	{
 	    try {
-	    final String str = new String(res, "utf-8");
-	    System.out.println(str);
+		final String str = new String(res, "utf-8");
+addString(str);
+		//		System.out.println("adding \"" + str + "\" to lines");
 	    }
 	    catch (java.io.UnsupportedEncodingException e)
 	    {
+		lines.add("FIXME:encoding problem");
 	    }
-
 	    res = pt.read();
 	    if (res == null)
-		return false;
+		return;
 	}
-	return true;//FIXME:
+    }
+
+    private void addString(String str)
+    {
+	if (str == null || str.isEmpty())
+	    return;
+	final StringBuilder b = new StringBuilder();
+	for(int i = 0;i < str.length();++i)
+	{
+	    final char c = str.charAt(i);
+	    if (Character.isISOControl(c))
+		continue;
+	    b.append(c);
+	}
+	lines.add(b.toString());
     }
 }

@@ -16,34 +16,79 @@
 
 package org.luwrain.linux.term;
 
+import java.util.*;
+
 class PT
 {
     native static private int createImpl();
     native static private int launchImpl(int fd, String cmd);
     native static private void closeImpl(int fd);
     native static private byte[] readImpl(int fd);
+    native static private int writeImpl(int fd, byte[] data);
     native static private String errnoString();
 
     private int fd = -1;
     private int pid = -1;
 
-    synchronized public void create()
+    public boolean create()
     {
-	fd = createImpl(); 
+	final int res = createImpl(); 
+	if (res < 0)
+	    return false;
+	fd = res;
+	return true;
     }
 
-    synchronized public void launch(String cmd)
+    public boolean launch(String cmd)
     {
-	launchImpl(fd, cmd);
+	final int res = launchImpl(fd, cmd);
+	if (res < 0)
+	    return false;
+	pid = res;
+	return true;
     }
 
-    synchronized public byte[] read()
+    //returns the actual amount of written data or -1 if the terminal is closed
+    public int write(byte[] data)
     {
-	return readImpl(fd);
+	if (data == null || data.length <= 0)
+	    return 0;
+	System.out.println("Need to write " + Arrays.toString(data));
+	final int res = writeImpl(fd, data);
+	System.out.println("res=" + res);
+	if (res < 0)
+	{
+	    close();
+	    return -1;
+	}
+	return res;
     }
 
-    synchronized public void close()
+    public byte[] read()
+    {
+	if (pid < 0 || fd < 0)
+	{
+	    close();
+	    return null;
+	}
+	final byte[] res = readImpl(fd);
+	if (res == null)
+	{
+	    close();
+	    return null;
+	}
+	return res;
+    }
+
+    public void close()
     {
 	closeImpl(fd);
+	pid = -1;
+	fd = -1;
+    }
+
+    public boolean isOpened()
+    {
+	return pid > 0 && fd >= 0;
     }
 }
