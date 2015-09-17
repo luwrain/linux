@@ -1,14 +1,14 @@
 /*
    Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-   This file is part of the Luwrain.
+   This file is part of the LUWRAIN.
 
-   Luwrain is free software; you can redistribute it and/or
+   LUWRAIN is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public
    License as published by the Free Software Foundation; either
    version 3 of the License, or (at your option) any later version.
 
-   Luwrain is distributed in the hope that it will be useful,
+   LUWRAIN is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    General Public License for more details.
@@ -20,7 +20,16 @@ import java.util.*;
 
 public class Terminal
 {
-    private PT pt = new PT();
+    public boolean newHotPoint = false;
+    public boolean newText = false;
+    public boolean bell = false;
+    public int oldHotPointX = 0;
+    public int oldHotPointY = 0;
+    public int newHotPointX = 0;
+    public int newHotPointY = 0;
+
+
+    final private PT pt = new PT();
     private byte[] toWrite = new byte[0];
     final private Vector<String> lines = new Vector<String>();
 
@@ -69,8 +78,14 @@ public class Terminal
 	write(new byte[]{(byte)c});
     }
 
-    synchronized public void exchange()
+    synchronized public boolean exchange()
     {
+	newHotPoint = false;
+	newText = false;
+	bell = false;
+	oldHotPointX = newHotPointX;
+	oldHotPointY = newHotPointY;
+
 	if (toWrite.length > 0)
 	{
 	    final int res = pt.write(toWrite);
@@ -86,7 +101,6 @@ public class Terminal
 	    }
 	} //writing;
 
-
 	byte[] res = pt.read();
 	while (res != null && res.length > 0)
 	{
@@ -101,22 +115,39 @@ addString(str);
 	    }
 	    res = pt.read();
 	    if (res == null)
-		return;
+		break;
 	}
+	return newHotPoint || newText || bell;
     }
 
     private void addString(String str)
     {
 	if (str == null || str.isEmpty())
 	    return;
-	final StringBuilder b = new StringBuilder();
+	if (lines.isEmpty())
+	    lines.add("");
+	StringBuilder b = new StringBuilder();
 	for(int i = 0;i < str.length();++i)
 	{
 	    final char c = str.charAt(i);
 	    if (Character.isISOControl(c))
-		continue;
+	    {
+		if (c == 7)
+		{
+		    bell = true;
+		    continue;
+		}
+		if (c == '\n')
+		{
+		    lines.set(lines.size() - 1, lines.lastElement() + b.toString());
+		    lines.add("");
+		    b = new StringBuilder();
+		    continue;
+		}
+		//		continue;
+	    }
 	    b.append(c);
 	}
-	lines.add(b.toString());
+		    lines.set(lines.size() - 1, lines.lastElement() + b.toString());
     }
 }
