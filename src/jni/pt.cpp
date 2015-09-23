@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jc
       close(0);
       close(1);
       close(2);
-
+      setenv("TERM", "linux", 1);
       dup(slaveFd);
       dup(slaveFd);
       dup(slaveFd);

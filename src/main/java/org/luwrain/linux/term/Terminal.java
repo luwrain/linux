@@ -20,20 +20,24 @@ import java.util.*;
 
 public class Terminal
 {
-    public boolean newHotPoint = false;
-    public boolean newText = false;
+    public String newText = "";
     public boolean bell = false;
-    public int oldHotPointX = 0;
-    public int oldHotPointY = 0;
-    public int newHotPointX = 0;
-    public int newHotPointY = 0;
-
 
     final private PT pt = new PT();
     private byte[] toWrite = new byte[0];
     final private Vector<String> lines = new Vector<String>();
 
-    synchronized public void open(String cmd) throws TerminalException
+    public synchronized int getHotPointX()
+    {
+	return !lines.isEmpty()?lines.lastElement().length():0;
+    }
+
+    public synchronized int getHotPointY()
+    {
+	return !lines.isEmpty()?lines.size() - 1:0;
+    }
+
+    public synchronized void open(String cmd) throws TerminalException
     {
 	if (cmd == null)
 	    throw new NullPointerException("cmd may not be null");
@@ -43,27 +47,27 @@ public class Terminal
 	    throw new TerminalException("Cannot launch child process");
     }
 
-    synchronized public int getLineCount()
+    public synchronized int getLineCount()
     {
 	return lines.size();
     }
 
-    synchronized public String getLine(int index)
+    public synchronized String getLine(int index)
     {
 	return index < lines.size()?lines.get(index):"";
     }
 
-    synchronized public void close()
+    public synchronized void close()
     {
 	//FIXME:
     }
 
-    synchronized public boolean isActive()
+    public synchronized boolean isActive()
     {
 	return true;
     }
 
-    synchronized public void write(byte[] data)
+    public synchronized void write(byte[] data)
     {
 	if (data == null || data.length < 1)
 	    return;
@@ -78,13 +82,10 @@ public class Terminal
 	write(new byte[]{(byte)c});
     }
 
-    synchronized public boolean exchange()
+    public synchronized boolean sync()
     {
-	newHotPoint = false;
-	newText = false;
+	newText = "";
 	bell = false;
-	oldHotPointX = newHotPointX;
-	oldHotPointY = newHotPointY;
 
 	if (toWrite.length > 0)
 	{
@@ -104,50 +105,77 @@ public class Terminal
 	byte[] res = pt.read();
 	while (res != null && res.length > 0)
 	{
-	    try {
-		final String str = new String(res, "utf-8");
-addString(str);
-		//		System.out.println("adding \"" + str + "\" to lines");
-	    }
-	    catch (java.io.UnsupportedEncodingException e)
-	    {
-		lines.add("FIXME:encoding problem");
-	    }
+	    onData(res);
 	    res = pt.read();
-	    if (res == null)
-		break;
 	}
-	return newHotPoint || newText || bell;
+	return (newText != null && !newText.isEmpty()) || bell;
     }
 
-    private void addString(String str)
+    private void onData(byte[] data)
+    {
+	try {
+String str = new String(data, "utf-8");//FIXME:UTF-8
+for(int i = str.length() - 1;i >= 0;--i)
+    if (str.charAt(i) == '\b')
+    {
+	onString(str.substring(0, i + 1));
+	return;
+    }
+onString(str);
+	}
+	catch (java.io.UnsupportedEncodingException e)
+	{
+	    e.printStackTrace();
+	    onString("#Skipped data: decoding problems#");
+	}
+    }
+
+    private void onString(String str)
     {
 	if (str == null || str.isEmpty())
 	    return;
 	if (lines.isEmpty())
 	    lines.add("");
-	StringBuilder b = new StringBuilder();
+
+	final StringBuilder newTextBuilder = new StringBuilder();
+	StringBuilder lastLineBuilder = new StringBuilder();
+
 	for(int i = 0;i < str.length();++i)
 	{
 	    final char c = str.charAt(i);
+
 	    if (Character.isISOControl(c))
 	    {
-		if (c == 7)
+		switch(c)
 		{
+		case 7://bell
 		    bell = true;
 		    continue;
-		}
-		if (c == '\n')
-		{
-		    lines.set(lines.size() - 1, lines.lastElement() + b.toString());
+		case '\n':
+		    lines.set(lines.size() - 1, lines.lastElement() + lastLineBuilder.toString());
 		    lines.add("");
-		    b = new StringBuilder();
+		    lastLineBuilder = new StringBuilder();
+		    newTextBuilder.append(" ");
+		    continue;
+		case '\b':
+		    if (lastLineBuilder.toString().isEmpty())
+		    {
+			if (!lines.isEmpty() && !lines.lastElement().isEmpty())
+			{
+			    final String lastLine = lines.lastElement();
+			    lines.set(lines.size() - 1, lastLine.substring(0, lastLine.length() - 1));
+			}
+		    }
+		    continue;
+		default:
 		    continue;
 		}
-		//		continue;
 	    }
-	    b.append(c);
+
+	    lastLineBuilder.append(c);
+	    newTextBuilder.append(c);
 	}
-		    lines.set(lines.size() - 1, lines.lastElement() + b.toString());
+	lines.set(lines.size() - 1, lines.lastElement() + lastLineBuilder.toString());
+	newText = newText + newTextBuilder.toString();
     }
 }

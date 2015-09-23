@@ -30,7 +30,7 @@ class PT
     private int fd = -1;
     private int pid = -1;
 
-    public boolean create()
+    boolean create()
     {
 	final int res = createImpl(); 
 	if (res < 0)
@@ -39,7 +39,7 @@ class PT
 	return true;
     }
 
-    public boolean launch(String cmd)
+    boolean launch(String cmd)
     {
 	final int res = launchImpl(fd, cmd);
 	if (res < 0)
@@ -49,13 +49,11 @@ class PT
     }
 
     //returns the actual amount of written data or -1 if the terminal is closed
-    public int write(byte[] data)
+    int write(byte[] data)
     {
 	if (data == null || data.length <= 0)
 	    return 0;
-	System.out.println("Need to write " + Arrays.toString(data));
 	final int res = writeImpl(fd, data);
-	System.out.println("res=" + res);
 	if (res < 0)
 	{
 	    close();
@@ -80,14 +78,14 @@ class PT
 	return res;
     }
 
-    public void close()
+    void close()
     {
 	closeImpl(fd);
 	pid = -1;
 	fd = -1;
     }
 
-    public boolean isOpened()
+    boolean isOpened()
     {
 	return pid > 0 && fd >= 0;
     }

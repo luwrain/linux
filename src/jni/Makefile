@@ -11,9 +11,6 @@ all: $(SONAME)
 clean:
 	/bin/rm -f *.o *.so
 
-terminal.o: terminal.cpp org_luwrain_linux_term_Terminal.h
-	$(GPP) terminal.cpp
-
 pt.o: pt.cpp org_luwrain_linux_term_PT.h
 	$(GPP) pt.cpp
 
