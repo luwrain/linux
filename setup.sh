@@ -1,5 +1,5 @@
 #!/bin/sh
-# Performs initial Luwrain setup in users home (creates ~/.luwrain and ~/.luwrain.conf)
+# Creates ~/.luwrain and performs initial LUWRAIN setup there
 
 cd jni
 make
@@ -18,11 +18,13 @@ cat luwrain.conf.def > ~/.luwrain.conf
 
 HSQLDB=~/.luwrain/hsqldb
 
-cat <<EOF > ~/.luwrain/registry/org/luwrain/pim/news/storing/strings.txt
+for i in news mail contacts; do
+cat <<EOF > ~/.luwrain/registry/org/luwrain/pim/$i/storing/strings.txt
 "type" = "jdbc"
 "driver" = "org.hsqldb.jdbc.JDBCDriver"
-"url" = "jdbc:hsqldb:file:$HSQLDB/news"
+"url" = "jdbc:hsqldb:file:$HSQLDB/$i"
 "login" = "sa"
 "passwd" = ""
 
 EOF
+done
