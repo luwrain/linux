@@ -1,7 +1,7 @@
 
 CXXFLAGS=-O2
 SONAME=libluwrainlinux.so
-INCLUDES=-I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux
+INCLUDES=-I/usr/lib/jvm/java/include -I/usr/lib/jvm/java/include/linux -I/usr/lib/jvm/java-8-openjdk-amd64/include -I/usr/lib/jvm/java-8-openjdk-amd64/include/linux
 FLAGS=-Wall -pedantic -fno-rtti -fpic
 GPP=g++ -c $(FLAGS) $(CXXFLAGS) $(INCLUDES)
 LINK=g++ -shared $(FLAGS) $(CXXFLAGS) -o$(SONAME) $(INCLUDES)
