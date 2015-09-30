@@ -1,19 +1,26 @@
 #!/bin/sh -e
 
+ENV_LUWRAIN_HOME="$LUWRAIN_HOME"
+
 if [ -r ~/.luwrain.conf ]; then
     . ~/.luwrain.conf
 fi
 
-if [ -z "$LUWRAIN_DIR" ]; then
-    LUWRAIN_DIR=~/luwrain
+THIS="${0##*/}"
+
+if [ -n "$ENV_LUWRAIN_HOME" ]; then
+    LUWRAIN_HOME="$ENV_LUWRAIN_HOME"
 fi
 
-if [ -z "$LUWRAIN_APPS_DIR" ]; then
-    LUWRAIN_APPS_DIR=~/.luwrain/apps
-fi
-
-if [ -z "$LUWRAIN_REGISTRY_DIR" ]; then
-    LUWRAIN_REGISTRY_DIR=~/.luwrain/registry
+if [ -z "$LUWRAIN_HOME" ]; then
+    if [ -e ~/luwrain/luwrain.sh ]; then
+	LUWRAIN_HOME=~/luwrain
+    elif [ -e /opt/luwrain/luwrain.sh ]; then
+	LUWRAIN_HOME=/opt/luwrain
+    else
+	echo "$THIS:unable to find the directory with LUWRAIN files" >&2
+	exit 1
+    fi
 fi
 
 if [ -z "$LUWRAIN_LANG" ]; then
@@ -25,38 +32,47 @@ if [ -z "$LUWRAIN_SPEECH" ]; then
 fi
 
 if [ -z "$LUWRAIN_SPEECH_COMMAND" ]; then
-    LUWRAIN_SPEECH_COMMAND='RHVoice -r 1.6 | aplay'
+    LUWRAIN_SPEECH_COMMAND='espeak | aplay'
 fi
 
-LUWRAIN_DATA_DIR="$LUWRAIN_DIR/data"
-LUWRAIN_JAR_DIR="$LUWRAIN_DIR/jar"
-LUWRAIN_LIB_DIR="$LUWRAIN_DIR/lib"
-LUWRAIN_JNI_DIR="$LUWRAIN_DIR/jni"
+if [ -z "$LUWRAIN_INTERACTION" ]; then
+    LUWRAIN_INTERACTION=org.luwrain.interaction.javafx.JavaFxInteraction
+fi
 
-MAIN_CLASS=org.luwrain.core.Init
-USER_HOME_DIR=~
-LOG_FILE=~/.luwrain.log
+LUWRAIN_MAIN_CLASS=org.luwrain.core.Init
+LUWRAIN_USER_HOME_DIR=~
+LUWRAIN_APPS_DIR=~/.luwrain/app
+LUWRAIN_REGISTRY_DIR=~/.luwrain/registry
+LUWRAIN_DATA_DIR="$LUWRAIN_HOME/data"
+LUWRAIN_JAR_DIR="$LUWRAIN_HOME/jar"
+LUWRAIN_LIB_DIR="$LUWRAIN_HOME/lib"
+LUWRAIN_JNI_DIR="$LUWRAIN_HOME/jni"
 
-collect_jars()
+jars()
 {
     if [ -d "$1" ]; then
-	find "$1" -iname '*.jar' | xargs echo | sed s/' '/':'/g | sed s:/./:/:g
+	find "$1" -iname '*.jar' |
+	while read l; do
+	    echo -n "$l:"
+	done
+	echo
     fi
 }
 
-CLASS_PATH=":$(collect_jars "$LUWRAIN_LIB_DIR/.")"
-CLASS_PATH="$CLASS_PATH:$(collect_jars "$LUWRAIN_JAR_DIR/.")"
-CLASS_PATH="$CLASS_PATH:$(collect_jars "$LUWRAIN_APPS_DIR/.")"
+CLASS_PATH=":$(jars "$LUWRAIN_LIB_DIR/.")"
+CLASS_PATH="$CLASS_PATH:$(jars "$LUWRAIN_JAR_DIR/.")"
+CLASS_PATH="$CLASS_PATH:$(jars "$LUWRAIN_APPS_DIR/.")"
 
 exec java \
 -cp "$CLASS_PATH" \
 -Djava.library.path="$LUWRAIN_JNI_DIR" \
-"$MAIN_CLASS" \
+"$LUWRAIN_MAIN_CLASS" \
 --registry-dir="$LUWRAIN_REGISTRY_DIR" \
 --lang="$LUWRAIN_LANG" \
 --os=org.luwrain.linux.Linux \
 --speech="$LUWRAIN_SPEECH" \
 --speech-command="$LUWRAIN_SPEECH_COMMAND" \
 --data-dir="$LUWRAIN_DATA_DIR" \
---user-home-dir="$USER_HOME_DIR" \
-"$@" &> "$LOG_FILE"
+--user-home-dir="$LUWRAIN_USER_HOME_DIR" \
+--interaction="$LUWRAIN_INTERACTION" \
+"$@" &> ~/.luwrain.log

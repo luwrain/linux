@@ -1,5 +1,5 @@
 
-LUWRAIN_DIR=~/luwrain
+LUWRAIN_LANG=ru
 LUWRAIN_SPEECH=org.luwrain.linux.speech.Command
 LUWRAIN_SPEECH_COMMAND='RHVoice -r 1.6 | aplay'
 
@@ -8,5 +8,3 @@ LUWRAIN_SPEECH_COMMAND='RHVoice -r 1.6 | aplay'
 
 # For ru_tts:
 #LUWRAIN_SPEECH_COMMAND='tr -d \(\)\"* | iconv -c -f utf-8 -t koi8-r | ru_tts -s /usr/local/share/freespeech/rulex.db -r 0.5 -p 0.0 | sox -G -D -v 1.0 -t raw -r 10000 -e signed-integer -c 1 -b 8 - -t raw -e unsigned-integer - | paplay --latency-msec=50 --raw --format=u8 --rate=10000 --channels=1'
-
-LUWRAIN_LANG=ru
