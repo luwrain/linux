@@ -1,6 +1,7 @@
 
 LUWRAIN_LANG=ru
 LUWRAIN_SPEECH=org.luwrain.linux.speech.Command
+LUWRAIN_INTERACTION='org.luwrain.interaction.AwtInteraction'
 LUWRAIN_SPEECH_COMMAND='RHVoice -r 1.6 | aplay'
 
 # For RHVoice-0.5:
