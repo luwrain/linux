@@ -64,7 +64,7 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jc
       dup(slaveFd);
       dup(slaveFd);
 
-      setpgrp();
+      //      setpgrp();
       //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
       if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
 	exit(EXIT_FAILURE);

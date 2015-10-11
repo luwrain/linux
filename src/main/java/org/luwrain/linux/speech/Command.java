@@ -95,7 +95,6 @@ int rate)
 	    return;
 	}
 	try {
-	    //	    System.out.println("busy");
 	    chunks.put(new Chunk(text, defaultPitch, defaultRate));
 	}
 	catch(InterruptedException e)
@@ -131,7 +130,6 @@ int rate)
 
     @Override public void silence()
     {
-	System.out.println("silence");
 	chunks.clear();
 	pg.stop();
     }
