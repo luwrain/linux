@@ -21,7 +21,7 @@ public class SysInfoApp
     public static void main(String[] args)
     {
 	Hardware h = new Hardware();
-	for(org.luwrain.hardware.Device d:h.getDevices())
+	for(org.luwrain.hardware.SysDevice d:h.getSysDevices())
 	{
 	    System.out.println("# PCI device " + d.id);
 	    System.out.println("Class: " + d.cls);

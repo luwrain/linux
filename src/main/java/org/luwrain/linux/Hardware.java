@@ -20,25 +20,26 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
+import org.luwrain.core.Log;
 import org.luwrain.hardware.*;
 
-class Hardware implements org.luwrain.hardware.Hardware
+final class Hardware implements org.luwrain.hardware.Hardware
 {
-    private PciIds pciIds = new PciIds();
+    private final PciIds pciIds = new PciIds();
 
-    public Hardware()
+    Hardware()
     {
 	pciIds.load();
     }
 
-    @Override public Device[] getDevices()
+    @Override public SysDevice[] getSysDevices()
     {
-	LinkedList<Device> devices = new LinkedList<Device>();
+	final LinkedList<SysDevice> devices = new LinkedList<SysDevice>();
 	final File[] pciDirs = new File("/sys/bus/pci/devices").listFiles();
 	for(File d: pciDirs)
 	{
-	    final Device dev = new Device();
-	    dev.type = Device.PCI;
+	    final SysDevice dev = new SysDevice();
+	    dev.type = SysDevice.PCI;
 	    dev.id = d.getName();
 	    final String vendorStr = readTextFile(new File(d, "vendor").getAbsolutePath());
 	    dev.vendor = vendorStr;
@@ -61,23 +62,19 @@ class Hardware implements org.luwrain.hardware.Hardware
 	    if (dev.model == null || dev.model.isEmpty())
 		dev.model = modelStr;
 
-
-
-
-
 	    devices.add(dev);
-	    }
-	return devices.toArray(new Device[devices.size()]);
+	}
+	return devices.toArray(new SysDevice[devices.size()]);
     }
 
     @Override public StorageDevice[] getStorageDevices()
     {
-	LinkedList<StorageDevice> devices = new LinkedList<StorageDevice>();
+	final LinkedList<StorageDevice> devices = new LinkedList<StorageDevice>();
 	final File[] files = new File("/sys/block").listFiles();
 	for(File f: files)
 	{
 	    final File deviceDir = new File(f, "device");
-	    if (!deviceDir.exists())
+	    if (!deviceDir.exists() || !deviceDir.isDirectory())
 		continue;
 	    final StorageDevice dev = new StorageDevice();
 	    dev.devName = f.getName();
@@ -87,7 +84,7 @@ class Hardware implements org.luwrain.hardware.Hardware
 	    }
 	    catch(NumberFormatException e)
 	    {
-		e.printStackTrace();
+		//		e.printStackTrace();
 		dev.capacity = 0;
 	    }
 	    dev.capacity *= 512;
@@ -97,26 +94,109 @@ class Hardware implements org.luwrain.hardware.Hardware
 	return devices.toArray(new StorageDevice[devices.size()]);
     }
 
-    private static String     readTextFile(String fileName)
+    @Override public int mountAllPartitions(StorageDevice device)
     {
-	StringBuilder s = new StringBuilder();
+	if (device == null)
+	    return -1;
+	int count = 0;
+	if (mount(device.devName, new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
+	    ++count;
+	final File[] files = new File(new File(Constants.SYS_BLOCK_DIR), device.devName).listFiles();
+	for(File f: files)
+	{
+	    if (!f.isDirectory() || !f.getName().startsWith(device.devName))
+		continue;
+	    if (mount(f.getName(), new File(new File(Constants.MEDIA_DIR), f.getName()).getAbsolutePath()))
+	    ++count;
+	}
+	    return count;
+    }
+
+    @Override public int umountAllPartitions(StorageDevice device)
+    {
+	if (device == null)
+	    return -1;
+	int count = 0;
+	if (umount(new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
+	    ++count;
+	final File[] files = new File(new File(Constants.SYS_BLOCK_DIR), device.devName).listFiles();
+	for(File f: files)
+	{
+	    if (!f.isDirectory() || !f.getName().startsWith(device.devName))
+		continue;
+	    if (umount(new File(new File(Constants.MEDIA_DIR), f.getName()).getAbsolutePath()))
+	    ++count;
+	}
+	    return count;
+    }
+
+    private boolean mount(String devName, String mountPoint)
+    {
+	if (exec("sudo mkdir -p \'" + mountPoint + "\'") != 0)
+	    return false;
+	if (exec("sudo mount \'/dev/" + devName + "\' \'" + mountPoint + "\'") == 0)
+	    return true;
+	exec("sudo rmdir -p \'" + mountPoint + "\'");
+	return false;
+    }
+
+    private boolean umount(String mountPoint)
+    {
+	if (exec("sudo umount \'" + mountPoint + "\'") != 0)
+	    return false;
+	exec("sudo rmdir \'" + mountPoint + "\'");
+	return true;
+    }
+
+    @Override public Partition[] getMountedPartitions()
+    {
+	return MountedPartitions.getMountedPartitions();
+    }
+
+    @Override public File getRoot(File relativeTo)
+    {
+	return new File("/");
+    }
+
+    static private String     readTextFile(String fileName)
+    {
 	Path path = Paths.get(fileName);
 	try {
-	    try (Scanner scanner =  new Scanner(path, "UTF-8"))
-		{
-		    while (scanner.hasNextLine())
-		    {
-			if (!s.toString().isEmpty())
-			    s.append(" ");
-			s.append(scanner.nextLine());
-		    }
-		}
+	    final byte[] bytes = Files.readAllBytes(path);
+final String s = new String(bytes, "US-ASCII");
+final StringBuilder b = new StringBuilder();
+for(int i = 0;i < s.length();++i)
+    if (!Character.isISOControl(s.charAt(i)))
+	b.append(s.charAt(i));
+return b.toString();
 	}
 	catch(IOException e)
 	{
 	    e.printStackTrace();
 	    return "";
 	}
-	return s.toString();
+    }
+
+    static private int exec(String cmd)
+    {
+	Log.debug("linux", "executing:" + cmd);
+	try {
+	    final Process p = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", cmd});
+	    p.waitFor();
+	    final int res = p.exitValue();
+	    Log.debug("linux", "exit code:" + res);
+	    return res;
+	}
+	catch (InterruptedException e)
+	{
+	    e.printStackTrace();
+	    Thread.currentThread().interrupt();
+	    return -1;
+	}
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	    return -1;
+	}
     }
 }

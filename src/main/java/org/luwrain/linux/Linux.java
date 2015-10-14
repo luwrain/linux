@@ -18,8 +18,6 @@ package org.luwrain.linux;
 
 import java.io.File;
 
-import org.luwrain.os.Location;
-
 public class Linux implements org.luwrain.os.OperatingSystem
 {
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
@@ -28,16 +26,6 @@ public class Linux implements org.luwrain.os.OperatingSystem
     {
 	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
 	return null;
-    }
-
-    @Override public Location[] getImportantLocations()
-    {
-	return ImportantLocations.getImportantLocations();
-    }
-
-    @Override public File getRoot(File relativeTo)
-    {
-	return new File("/");
     }
 
     @Override public org.luwrain.hardware.Hardware getHardware()

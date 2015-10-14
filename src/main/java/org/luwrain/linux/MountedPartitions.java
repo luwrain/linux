@@ -18,17 +18,17 @@ package org.luwrain.linux;
 
 import java.nio.file.*;
 import java.io.File;
-import java.util.Vector;
+import java.util.LinkedList;
 
-import org.luwrain.os.Location;
+import org.luwrain.hardware.Partition;
 
-class ImportantLocations
+class MountedPartitions
 {
-    public static Location[] getImportantLocations()
+    static public Partition[] getMountedPartitions()
     {
-	Vector<Location> res = new Vector<Location>();
-	res.add(new Location(Location.ROOT, new File("/"), "/"));
-	FileSystem fs = FileSystems.getDefault();
+	final LinkedList<Partition> res = new LinkedList<Partition>();
+	res.add(new Partition(Partition.ROOT, new File("/"), "/", true));
+	final FileSystem fs = FileSystems.getDefault();
 	Iterable<FileStore> stores = fs.getFileStores();
 	for(FileStore store: stores)
 	{
@@ -42,7 +42,7 @@ class ImportantLocations
 	    if (nameParts == null || nameParts.length < 1 || nameParts[0] == null)
 		continue;
 	    final String path = nameParts[0];
-	    Location l = null;
+	    Partition l = null;
 	    if (store.type().equals("cifs"))
 		l = remote(store, path); else
 		if (path.startsWith("/media"))
@@ -51,26 +51,26 @@ class ImportantLocations
 	    if (l != null)
 		res.add(l);
 	}
-	return res.toArray(new Location[res.size()]);
+	return res.toArray(new Partition[res.size()]);
     }
 
-    public static Location removable(FileStore store, String path)
+    static public Partition removable(FileStore store, String path)
     {
 	String[] parts = store.name().split("/");
 	if (parts == null || parts.length < 1 || parts[0] == null)
 	    return null;
-	return new Location(Location.REMOVABLE, new File(path), parts[parts.length - 1]);
+	return new Partition(Partition.REMOVABLE, new File(path), parts[parts.length - 1], true);
     }
 
-    public static Location remote(FileStore store, String path)
+    static public Partition remote(FileStore store, String path)
     {
-	return new Location(Location.REMOTE, new File(path), store.name());
+	return new Partition(Partition.REMOTE, new File(path), store.name(), true);
     }
 
-    public static Location regular(FileStore store, String path)
+    static public Partition regular(FileStore store, String path)
     {
 	if (path.equals("/"))
 	    return null;
-	return new Location(Location.REGULAR, new File(path), path);
+	return new Partition(Partition.REGULAR, new File(path), path, true);
     }
 }
