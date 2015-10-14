@@ -26,8 +26,10 @@ class MountedPartitions
 {
     static public Partition[] getMountedPartitions()
     {
-	final LinkedList<Partition> res = new LinkedList<Partition>();
-	res.add(new Partition(Partition.ROOT, new File("/"), "/", true));
+	final LinkedList<Partition> remotes = new LinkedList<Partition>();
+	final LinkedList<Partition> removables = new LinkedList<Partition>();
+	final LinkedList<Partition> regulars = new LinkedList<Partition>();
+	final LinkedList<Partition> other = new LinkedList<Partition>();
 	final FileSystem fs = FileSystems.getDefault();
 	Iterable<FileStore> stores = fs.getFileStores();
 	for(FileStore store: stores)
@@ -45,18 +47,39 @@ class MountedPartitions
 	    Partition l = null;
 	    if (store.type().equals("cifs"))
 		l = remote(store, path); else
-		if (path.startsWith("/media"))
+		if (path.startsWith(Constants.MEDIA_DIR))
 		    l = removable(store, path); else 
 		    l = regular(store, path);
 	    if (l != null)
-		res.add(l);
+		switch(l.type())
+		{
+		case Partition.REMOVABLE:
+		    removables.add(l);
+		break;
+		case Partition.REMOTE:
+		    remotes.add(l);
+		    break;
+		case Partition.REGULAR:
+regulars.add(l);
+		break;
+		default:
+other.add(l);
+		}
 	}
+	final LinkedList<Partition> res = new LinkedList<Partition>();
+	for(Partition p: removables)
+	    res.add(p);
+	for(Partition p: remotes)
+	    res.add(p);
+	for(Partition p: regulars)
+	    res.add(p);
+	res.add(new Partition(Partition.ROOT, new File("/"), "/", true));
 	return res.toArray(new Partition[res.size()]);
     }
 
     static public Partition removable(FileStore store, String path)
     {
-	String[] parts = store.name().split("/");
+	final String[] parts = store.name().split("/");
 	if (parts == null || parts.length < 1 || parts[0] == null)
 	    return null;
 	return new Partition(Partition.REMOVABLE, new File(path), parts[parts.length - 1], true);
