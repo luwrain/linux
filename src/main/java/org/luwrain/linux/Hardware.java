@@ -134,6 +134,8 @@ final class Hardware implements org.luwrain.hardware.Hardware
     {
 	if (exec("sudo mkdir -p \'" + mountPoint + "\'") != 0)
 	    return false;
+	if (exec("sudo mount -o umask=000  \'/dev/" + devName + "\' \'" + mountPoint + "\'") == 0)
+	    return true;
 	if (exec("sudo mount \'/dev/" + devName + "\' \'" + mountPoint + "\'") == 0)
 	    return true;
 	exec("sudo rmdir -p \'" + mountPoint + "\'");
