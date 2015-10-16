@@ -19,6 +19,7 @@
 #include<errno.h>
 #include<sys/types.h>
 #include<unistd.h>
+#include<sys/ioctl.h>
 #include<fcntl.h>
 #include <poll.h>
 #include"org_luwrain_linux_term_PT.h"
@@ -63,8 +64,11 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jc
       dup(slaveFd);
       dup(slaveFd);
       dup(slaveFd);
-
-      setpgrp();
+      //close(slaveFd);
+      //      const std::string devName = ttyname(0);
+      //      setpgrp();
+      setsid();
+ioctl(0, TIOCSCTTY, 1);
       //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
       if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
 	exit(EXIT_FAILURE);

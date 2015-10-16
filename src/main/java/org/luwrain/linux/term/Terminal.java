@@ -59,7 +59,7 @@ public class Terminal
 
     public synchronized void close()
     {
-	//FIXME:
+	pt.close();
     }
 
     public synchronized boolean isActive()
