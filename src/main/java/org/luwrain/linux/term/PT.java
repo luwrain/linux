@@ -21,7 +21,7 @@ import java.util.*;
 class PT
 {
     native static private int createImpl();
-    native static private int launchImpl(int fd, String cmd);
+    native static private int launchImpl(int fd, String cmd, String dir);
     native static private void closeImpl(int fd);
     native static private byte[] readImpl(int fd);
     native static private int writeImpl(int fd, byte[] data);
@@ -32,6 +32,8 @@ class PT
 
     boolean create()
     {
+	if (fd >= 0)
+	    return false;
 	final int res = createImpl(); 
 	if (res < 0)
 	    return false;
@@ -39,9 +41,11 @@ class PT
 	return true;
     }
 
-    boolean launch(String cmd)
+    boolean launch(String cmd, String dir)
     {
-	final int res = launchImpl(fd, cmd);
+	if (fd < 0)
+	    return false;
+	final int res = launchImpl(fd, cmd, dir);
 	if (res < 0)
 	    return false;
 	pid = res;
@@ -62,7 +66,8 @@ class PT
 	return res;
     }
 
-    public byte[] read()
+    //returns null if the terminal is closed
+    byte[] read()
     {
 	if (pid < 0 || fd < 0)
 	{

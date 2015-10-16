@@ -39,18 +39,16 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_createImpl(JNIEnv*, jclass
   return res;
 }
 
-JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jclass, jint pty, jstring cmd)
+JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jclass, jint pty, jstring cmd, jstring dir)
 {
   const char* ptyName = ptsname(pty);
   if (ptyName == NULL)
     return -1;
-  //  open(ptyName, O_WRONLY);
   const char* cmdTr = env->GetStringUTFChars(cmd, NULL);
-
-      const int slaveFd = open(ptyName, O_RDWR);
-      if (slaveFd < 0)
-	return slaveFd;
-
+  const char* dirTr = env->GetStringUTFChars(dir, NULL);
+  const int slaveFd = open(ptyName, O_RDWR);
+  if (slaveFd < 0)
+    return slaveFd;
   const pid_t pid = fork();
   if (pid < (pid_t)0)
     return -1;
@@ -68,7 +66,8 @@ JNIEXPORT jint JNICALL Java_org_luwrain_linux_term_PT_launchImpl(JNIEnv *env, jc
       //      const std::string devName = ttyname(0);
       //      setpgrp();
       setsid();
-ioctl(0, TIOCSCTTY, 1);
+      ioctl(0, TIOCSCTTY, 1);
+      chdir(dirTr);
       //      if (execlp(SHELL, SHELL, "-c", cmdTr != NULL?cmdTr:"", NULL) == -1)
       if (execlp("/bin/bash", "/bin/bash", "-i", NULL) == -1)
 	exit(EXIT_FAILURE);

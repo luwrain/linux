@@ -17,6 +17,7 @@
 package org.luwrain.linux.term;
 
 import java.util.*;
+import org.luwrain.core.NullCheck;
 
 public class Terminal
 {
@@ -37,13 +38,13 @@ public class Terminal
 	return !lines.isEmpty()?lines.size() - 1:0;
     }
 
-    public synchronized void open(String cmd) throws TerminalException
+    public synchronized void open(String cmd, String dir) throws TerminalException
     {
-	if (cmd == null)
-	    throw new NullPointerException("cmd may not be null");
+	NullCheck.notNull(cmd, "cmd");
+	NullCheck.notNull(dir, "dir");
 	if (!pt.create())
 	    throw new TerminalException("Cannot create pseudo terminal");
-	if (!pt.launch(cmd))
+	if (!pt.launch(cmd, dir))
 	    throw new TerminalException("Cannot launch child process");
     }
 
