@@ -1,0 +1,47 @@
+#!/bin/sh -e
+
+chroot ./chroot apt-get -y remove pulseaudio
+mkdir -p ./chroot/opt/luwrain-live/
+cp proba.wav ./chroot/opt/luwrain-live/greeting.wav
+
+echo 'nameserver 192.168.1.1' > ./chroot/run/resolvconf/resolv.conf
+
+cat <<EOF > ./chroot/etc/apt/sources.list
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty main restricted
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates main restricted
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty universe
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates universe
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu trusty-security main restricted
+deb http://security.ubuntu.com/ubuntu trusty-security universe
+deb http://security.ubuntu.com/ubuntu trusty-security multiverse
+
+EOF
+
+chroot ./chroot apt-get update
+chroot ./chroot apt-get -y install yasr eflite
+
+chroot ./chroot systemctl set-default multi-user.target
+
+mkdir -p './chroot/etc/systemd/system/getty@tty1.service.d'
+
+cat <<EOF > './chroot/etc/systemd/system/getty@tty1.service.d/override.conf'
+[Service]
+ExecStart=
+ExecStart=-/bin/openvt -c 1 -w -s -f /bin/bash
+Type=idle
+
+EOF
+
+cd ./chroot/etc/systemd
+sed s/'^.*NAutoVTs.*$'/'NAutoVTs=0'/  logind.conf > logind.conf
+cd ../../..
+
+cd ./chroot/etc/yasr
+sed s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf > yasr.conf
+sed s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf > yasr.conf
+sed s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf > yasr.conf
+sed s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/eflite': yasr.conf > yasr.conf
+cd ../../..
