@@ -36,12 +36,14 @@ Type=idle
 EOF
 
 cd ./chroot/etc/systemd
-sed s/'^.*NAutoVTs.*$'/'NAutoVTs=0'/  logind.conf > logind.conf
+sed -i -e s/'^.*NAutoVTs.*$'/'NAutoVTs=0'/  logind.conf
 cd ../../..
 
+chroot ./chroot systemctl enable getty@tty1
+
 cd ./chroot/etc/yasr
-sed s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf > yasr.conf
-sed s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf > yasr.conf
-sed s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf > yasr.conf
-sed s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/eflite': yasr.conf > yasr.conf
+sed -i -e s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf
+sed -i -e s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf
+sed -i -e s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf
+sed -i -e s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/eflite': yasr.conf
 cd ../../..
