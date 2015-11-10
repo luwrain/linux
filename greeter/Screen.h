@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+   This file is part of the LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 #ifndef GREETER_SCREEN_H
 #define GREETER_SCREEN_H
@@ -8,7 +23,6 @@ public:
   virtual ~Screen() {close();}
 
 public:
-
   void init()
   {
     initscr();
@@ -17,7 +31,7 @@ public:
     curs_set(FALSE);
     noecho();
     cbreak();
-    //    keypad(stdscr, TRUE);
+    keypad(stdscr, TRUE);
     ::clear();
   }
 
@@ -45,17 +59,15 @@ public:
   {
     int x, y;
     getmaxyx(stdscr, y, x);
-    return x;
+    return x + 1;
   }
 
   int getHeight()
   {
     int x, y;
     getmaxyx(stdscr, y, x);
-    return y;
+    return y + 1;
   }
-
-
 };
 
 #endif //GREETER_SCREEN_H

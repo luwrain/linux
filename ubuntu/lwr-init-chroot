@@ -1,0 +1,9 @@
+#!/bin/sh -e
+
+mkdir tmp
+cd tmp
+sudo unsquashfs /mnt/disk/casper/filesystem.squashfs
+cd ..
+sudo mv ./tmp/squashfs-root ./chroot
+rmdir tmp
+
