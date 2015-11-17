@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ -r /etc/greeter.conf ]; then
+    . /etc/greeter.conf
+fi
+
+RECORDING_COMMAND="/usr/bin/ogg123 $GREETER_DIR/recordings/ru.ogg"
+FRAMES_DIR="$GREETER_DIR/frames/ru"
+
+/usr/bin/greeter \
+"$RECORDING_COMMAND" \
+"$GREETER_SPEECH_COMMAND" \
+"$GREETER_SHELL_COMMAND" \
+$(find "$FRAMES_DIR" -type f | sort)

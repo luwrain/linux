@@ -1,7 +1,0 @@
-#!/bin/sh
-
-./greeter \
-'/usr/bin/ogg123 /tmp/greeting.ogg' \
-'' \
-'/usr/bin/emacs' \
-frame01.txt
