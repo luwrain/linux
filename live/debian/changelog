@@ -1,0 +1,5 @@
+luwrain-live (0.5.0-lwr1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Michael Pozhidaev <michael.pozhidaev@gmail.com>  Wed, 18 Nov 2015 08:31:09 +0000

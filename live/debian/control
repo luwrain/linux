@@ -1,0 +1,15 @@
+Source: luwrain-live
+Section: unknown
+Priority: optional
+Maintainer: Michael Pozhidaev <michael.pozhidaev@gmail.com>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.4
+Homepage: http://luwrain.org
+
+Package: luwrain-live
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, vorbis-tools
+Description: A set of tools, scripts and media files required by LUWRAIN live CD images
+  This package contains all tools and materials which are needed for
+  proper work of LUWRAIN live CD. First of all, it has the greeter
+  utility used to show first several slides with ncurses functions.
