@@ -1,8 +1,8 @@
 #!/bin/sh -e
 
 chroot ./chroot apt-get -y remove pulseaudio
-mkdir -p ./chroot/opt/luwrain-live/
-cp proba.wav ./chroot/opt/luwrain-live/greeting.wav
+#mkdir -p ./chroot/opt/luwrain-live/
+#cp proba.wav ./chroot/opt/luwrain-live/greeting.wav
 
 echo 'nameserver 192.168.1.1' > ./chroot/run/resolvconf/resolv.conf
 
@@ -23,7 +23,8 @@ EOF
 
 chroot ./chroot apt-get update
 chroot ./chroot apt-get -y --force-yes install libncursesw5 vorbis-tools
-chroot ./chroot apt-get -y --force-yes install voiceman rhvoice espeak mbrola yasr eflite freespeech
+chroot ./chroot apt-get -y --force-yes install voiceman rhvoice espeak mbrola mbrola-en1 yasr eflite freespeech
+chroot ./chroot apt-get -y --force-yes install luwrain-live
 
 chroot ./chroot systemctl set-default multi-user.target
 
@@ -52,14 +53,15 @@ cd ../../..
 cat <<EOF > ./chroot/etc/rc.livecd
 #!/bin/bash
 
-for i in Master PCM Speaker; do
-    /usr/bin/amixer set \$i 100% &> /dev/null
-    /usr/bin/amixer set \$i unmute &> /dev/null
+for i in PCM Speaker; do
+    /usr/bin/amixer set $i 100% &> /dev/null
+    /usr/bin/amixer set $i unmute &> /dev/null
 done
+/usr/bin/amixer set Master 80% &> /dev/null
+/usr/bin/amixer set Master unmute &> /dev/null
 
 /usr/bin/voicemand -d
-/usr/bin/aplay ./chroot/opt/luwrain-live/greeting.wav
-/usr/bin/yasr
+/usr/bin/greeter-ru
 EOF
 
 chmod 755 ./chroot/etc/rc.livecd
