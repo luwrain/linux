@@ -1,30 +1,26 @@
 #!/bin/sh -e
 
-chroot ./chroot apt-get -y remove pulseaudio
-#mkdir -p ./chroot/opt/luwrain-live/
-#cp proba.wav ./chroot/opt/luwrain-live/greeting.wav
+chroot ./chroot apt-get -y remove pulseaudio pulseaudio-utils \
+ubiquity \
+libreoffice-core firefox thunderbird libunity9
+
+chroot ./chroot apt-get -y autoremove
 
 echo 'nameserver 192.168.1.1' > ./chroot/run/resolvconf/resolv.conf
 
 cat <<EOF > ./chroot/etc/apt/sources.list
 deb http://download.luwrain.org/ubuntu/ trusty main
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty main restricted
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates main restricted
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty universe
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates universe
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty multiverse
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty-updates multiverse
-deb http://ru.archive.ubuntu.com/ubuntu/ trusty-backports main restricted universe multiverse
-deb http://security.ubuntu.com/ubuntu trusty-security main restricted
-deb http://security.ubuntu.com/ubuntu trusty-security universe
-deb http://security.ubuntu.com/ubuntu trusty-security multiverse
 
+deb http://ru.archive.ubuntu.com/ubuntu/ wily main
+deb http://ru.archive.ubuntu.com/ubuntu/ wily universe
+deb http://ru.archive.ubuntu.com/ubuntu/ wily multiverse
 EOF
 
 chroot ./chroot apt-get update
-chroot ./chroot apt-get -y --force-yes install libncursesw5 vorbis-tools
+chroot ./chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic
+chroot ./chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
 chroot ./chroot apt-get -y --force-yes install voiceman rhvoice espeak mbrola mbrola-en1 yasr eflite freespeech
-chroot ./chroot apt-get -y --force-yes install luwrain-live
+chroot ./chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre
 
 chroot ./chroot systemctl set-default multi-user.target
 
@@ -43,6 +39,8 @@ cd ../../..
 
 chroot ./chroot systemctl enable getty@tty1
 
+sed -i -e s/'^allowed_users=.*$'/'allowed_users=anybody'/ ./chroot/etc/X11/Xwrapper.config
+
 cd ./chroot/etc/yasr
 sed -i -e s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf
 sed -i -e s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf
@@ -52,16 +50,22 @@ cd ../../..
 
 cat <<EOF > ./chroot/etc/rc.livecd
 #!/bin/bash
+# LLUWRAIN live CD autolaunch script (executed in loop from /etc/systemd/system/getty@tty1.service.d/override.conf)
+# Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
 for i in PCM Speaker; do
-    /usr/bin/amixer set $i 100% &> /dev/null
-    /usr/bin/amixer set $i unmute &> /dev/null
+    /usr/bin/amixer set  100% &> /dev/null
+    /usr/bin/amixer set  unmute &> /dev/null
 done
 /usr/bin/amixer set Master 80% &> /dev/null
 /usr/bin/amixer set Master unmute &> /dev/null
 
-/usr/bin/voicemand -d
+if ! [ -e /tmp/voiceman.socket ]; then
+    /usr/bin/voicemand -d
+fi
+
 /usr/bin/greeter-ru
+/bin/su - luwrain -c /usr/bin/startx
 EOF
 
 chmod 755 ./chroot/etc/rc.livecd
@@ -118,3 +122,7 @@ volume min = 0
 volume aver = 2.5
 volume max = 10
 EOF
+
+chroot ./chroot useradd -G cdrom,audio,video,users luwrain
+chroot ./chroot cp -r /etc/skel /home/luwrain
+chroot ./chroot chown -R luwrain:luwrain /home/luwrain

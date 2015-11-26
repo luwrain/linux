@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
 rm -f ./luwrain.iso disk/casper/filesystem.squashfs 
-mksquashfs chroot disk/casper/filesystem.squashfs
+mksquashfs chroot disk/casper/filesystem.squashfs -comp xz
 mkisofs -r -V "LUWRAIN" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o luwrain.iso disk/ 2> /dev/null 
 isohybrid luwrain.iso
