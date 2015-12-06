@@ -16,7 +16,10 @@
 
 package org.luwrain.linux;
 
+import java.awt.Desktop;
 import java.io.File;
+
+import org.luwrain.core.Log;
 
 public class Linux implements org.luwrain.os.OperatingSystem
 {
@@ -32,4 +35,27 @@ public class Linux implements org.luwrain.os.OperatingSystem
     {
 	return new Hardware();
     }
+	
+    @Override public void fileOpendDesktopDefault(File file)
+	{
+    	// FIXME: this code identical to Windows implementation, move code to other place
+		if(!Desktop.isDesktopSupported())
+		{
+			throw new UnsupportedOperationException("This OS does not support for Desktop");
+		}
+		Desktop desktop = Desktop.getDesktop();
+		if(!desktop.isSupported(Desktop.Action.OPEN))
+		{
+			throw new UnsupportedOperationException("This OS does not support for Desktop action OPEN");
+		}
+		try
+		{
+			desktop.open(file);
+		}
+		catch(Exception e)
+		{
+			// FEXME: make better error handling
+			Log.debug("windows",e.getMessage());
+		}
+	}
 }
