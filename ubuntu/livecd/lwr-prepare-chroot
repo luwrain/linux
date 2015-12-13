@@ -28,6 +28,7 @@ mkdir -p './chroot/etc/systemd/system/getty@tty1.service.d'
 
 cat <<EOF > './chroot/etc/systemd/system/getty@tty1.service.d/override.conf'
 [Service]
+Environment="LANG=en_US.UTF-8"
 ExecStart=
 ExecStart=-/bin/openvt -c 1 -w -s -f /etc/rc.livecd
 Type=idle
@@ -38,6 +39,9 @@ sed -i -e s/'^.*NAutoVTs.*$'/'NAutoVTs=0'/  logind.conf
 cd ../../..
 
 chroot ./chroot systemctl enable getty@tty1
+
+# For proper Russian characters in console
+sed s/'^ExecStart=.*$'/'ExecStart=/bin/setupcon'/ ./chroot/lib/systemd/system/systemd-vconsole-setup.service
 
 sed -i -e s/'^allowed_users=.*$'/'allowed_users=anybody'/ ./chroot/etc/X11/Xwrapper.config
 
@@ -126,3 +130,11 @@ EOF
 chroot ./chroot useradd -G cdrom,audio,video,users luwrain
 chroot ./chroot cp -r /etc/skel /home/luwrain
 chroot ./chroot chown -R luwrain:luwrain /home/luwrain
+
+cat <<EOF > ./chroot/home/luwrain/.xinitrc
+exec &> /tmp/xinitrc.log
+exec ~/luwrain/luwrain.sh
+EOF
+
+echo 'luwrain ALL=NOPASSWD:ALL' > ./chroot/etc/sudoers.d/luwrain
+chmod 400 ./chroot/etc/sudoers.d/luwrain

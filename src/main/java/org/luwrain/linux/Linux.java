@@ -20,10 +20,18 @@ import java.io.File;
 
 import org.luwrain.core.*;
 import org.luwrain.os.*;
+import org.luwrain.speech.*;
+import org.luwrain.linux.speech.*;
 
 public class Linux implements org.luwrain.os.OperatingSystem
 {
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
+
+    interface ChannelBasicData
+    {
+	String getType();
+    };
+
 
     public String init()
     {
@@ -49,6 +57,26 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	case "javafx":
 	    return new KeyboardJavafxHandler();
 	default:
+	    return null;
+	}
+    }
+
+    @Override public Channel loadSpeechChannel(String[] cmdLine, Registry registry, String regPath)
+    {
+	try {
+	    final ChannelBasicData data = RegistryProxy.create(registry, regPath, ChannelBasicData.class);
+	    switch(data.getType())
+	    {
+	    case "command":
+		return new Command2();
+	    default:
+		return null;
+	    }
+	}
+	catch (Exception e)
+	{
+	    Log.error("linux", "unexpected exception while loading speech channel from " + regPath);
+	    e.printStackTrace();
 	    return null;
 	}
     }

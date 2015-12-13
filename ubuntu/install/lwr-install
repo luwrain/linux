@@ -1,0 +1,40 @@
+#!/bin/bash -e
+
+. /etc/lwr-install.conf
+
+alias msg=echo
+
+msg 'Mounting the root partition of the future system'
+mkdir $TARGET_MOUNT &>> $LOG
+mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
+msg 'Mounting squashfs image'
+mkdir $SQUASH_MOUNT &>> $LOG
+mount $SQUASH_SRC $SQUASH_MOUNT &>> $LOG
+msg 'Mount points prepared'
+
+msg "Extracting the root filesystem archive to $TARGET_MOUNT"
+cp -afd $SQUASH_MOUNT/. $TARGET_MOUNT/ &>> $LOG
+msg 'Basic  content copied'
+
+msg 'Installing grub'
+for a in dev sys proc; do
+    mount --bind /$a $TARGET_MOUNT/$a &>> $LOG
+done
+grub-install --root-directory=$TARGET_MOUNT $TARGET_GRUB_DEVICE &>> $LOG
+chroot $TARGET_MOUNT grub-mkconfig -o /boot/grub/grub.cfg &>> $LOG
+for a in dev sys proc; do
+    umount $TARGET_MOUNT/$a &>> $LOG
+done
+msg 'grub installed'
+
+msg "Finalizing"
+echo $TARGET_ROOT_DEV / ext4 noatime,errors=remount-ro 0 1 >> $TARGET_MOUNT/etc/fstab
+
+#if [[ ! -z $TARGET_SWAP_DEV ]]; then
+#	echo $TARGET_SWAP_DEV none swap defaults 0 0 >> $TARGET_MOUNT/etc/fstab
+#fi
+
+umount $TARGET_MOUNT $SQUASH_MOUNT &>> $LOG
+sync
+
+msg 'LUWRAIN installed successfully'
