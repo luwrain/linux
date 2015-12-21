@@ -1,11 +1,14 @@
 #!/bin/bash -e
+# Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
+# Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
 . /etc/lwr-install.conf
+. /sbin/lwr-install-utils.sh
 
-alias msg=echo
+rm -f $LOG
 
 msg 'Mounting the root partition of the future system'
-mkdir $TARGET_MOUNT &>> $LOG
+mkdir -p $TARGET_MOUNT &>> $LOG
 mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
 msg 'Mounting squashfs image'
 mkdir $SQUASH_MOUNT &>> $LOG
@@ -37,4 +40,4 @@ echo $TARGET_ROOT_DEV / ext4 noatime,errors=remount-ro 0 1 >> $TARGET_MOUNT/etc/
 umount $TARGET_MOUNT $SQUASH_MOUNT &>> $LOG
 sync
 
-msg 'LUWRAIN installed successfully'
+msg 'LUWRAIN is successfully installed on your computer!'

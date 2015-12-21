@@ -161,7 +161,7 @@ public class VoiceMan implements BackEnd
     {
 	try {
 	    sock = new Socket(host, port);
-	    output = new PrintStream(sock.getOutputStream());
+	    output = new PrintStream(sock.getOutputStream(), true, "UTF-8");
 	}
 	catch(IOException e)
 	{

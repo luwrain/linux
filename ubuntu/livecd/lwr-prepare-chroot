@@ -2,7 +2,8 @@
 
 chroot ./chroot apt-get -y remove pulseaudio pulseaudio-utils \
 ubiquity \
-libreoffice-core firefox thunderbird libunity9
+libreoffice-core firefox thunderbird libunity9 \
+network-manager
 
 chroot ./chroot apt-get -y autoremove
 
@@ -20,7 +21,7 @@ chroot ./chroot apt-get update
 chroot ./chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic
 chroot ./chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
 chroot ./chroot apt-get -y --force-yes install voiceman rhvoice espeak mbrola mbrola-en1 yasr eflite freespeech
-chroot ./chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre
+chroot ./chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
 
 chroot ./chroot systemctl set-default multi-user.target
 
