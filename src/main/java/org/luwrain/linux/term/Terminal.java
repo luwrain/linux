@@ -17,25 +17,168 @@
 package org.luwrain.linux.term;
 
 import java.util.*;
+import java.io.*;
+import java.nio.charset.*;
+
 import org.luwrain.core.NullCheck;
 
 public class Terminal
 {
-    public String newText = "";
+    public enum Codes {
+	ARROW_LEFT,
+	ARROW_RIGHT,
+	ARROW_UP,
+	ARROW_DOWN,
+    };
+
+private StringBuilder newText = null;
     public boolean bell = false;
+    private int hotPointX = 0;
+    private int hotPointY = 0;
 
     final private PT pt = new PT();
     private byte[] toWrite = new byte[0];
     final private Vector<String> lines = new Vector<String>();
 
+    public Terminal()
+    {
+	lines.add("");
+    }
+
+    public synchronized boolean sync()
+    {
+	newText = new StringBuilder();
+	bell = false;
+	//Trying to write pending data if needed
+	if (toWrite.length > 0)
+	{
+	    final int res = pt.write(toWrite);
+	    if (res > 0)
+	    {
+		if (res < toWrite.length)
+		{
+		    for(int i = res;i < toWrite.length;++i)
+			toWrite[i - res] = toWrite[i];
+		    toWrite = Arrays.copyOf(toWrite, toWrite.length - res);
+		} else
+		    toWrite = new byte[0];
+	    }
+	} //writing;
+	//Reading data
+	boolean haveNewData = false;
+	byte[] res = pt.read();
+	while (res != null && res.length > 0)
+	{
+	    haveNewData = true;
+	    try {
+	    onData(res);
+	    }
+	    catch(IOException e)
+	    {
+		e.printStackTrace();
+	    }
+	    res = pt.read();
+	}
+	return haveNewData;
+    }
+
+    private void onData(byte[] data) throws IOException
+    {
+	for(int i = 0;i < data.length;++i)
+	    System.out.println("char " + data[i] + " " + (char)data[i]);
+	final ByteArrayInputStream s = new ByteArrayInputStream(data);
+	final BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+	int c = 0;
+	      while ( (c = r.read()) >= 0)
+	      {
+		  while (lines.size() <= hotPointY)
+		      lines.add("");
+		  if (hotPointX > lines.get(hotPointY).length())
+		      hotPointX = lines.get(hotPointY).length();
+		  if (c == 27)//special escape sequence
+		  {
+		      onEscapeSeq(r);
+		      continue;
+		  }
+		  if (Character.isISOControl(c))
+		      onIsoControl(c); else
+		  onRegularChar((char)c);
+	      }
+    }
+
+    private void onRegularChar(char c)
+    {
+		  newText.append(c);
+		  final String line = lines.get(hotPointY);
+		  if (hotPointX < line.length())
+		      lines.set(hotPointY, line.substring(0, hotPointX) + c + line.substring(hotPointX + 1)); else
+		      lines.set(hotPointY, line + c);
+		  ++hotPointX;
+    }
+
+    private void onIsoControl(int c)
+    {
+	//	System.out.println("iso " + c);
+		switch(c)
+		{
+		case 7://bell
+		    bell = true;
+		    return;
+		case 10://new line
+		    System.out.println("here");
+		    {
+			final String line = lines.get(hotPointY);
+			System.out.println("new line " + line);
+			if (hotPointX < line.length())
+			{
+			    lines.set(hotPointY, line.substring(0, hotPointX));
+			    lines.add(hotPointY + 1, line.substring(hotPointX));
+			} else
+			    lines.add(hotPointY + 1, "");
+			++hotPointY;
+			hotPointX = 0;
+			}
+		    newText.append(" ");
+		    return;
+		case '\b':
+		    if (hotPointX > 0)
+			--hotPointX;
+		    return;
+		}
+    }
+
+    private void onEscapeSeq(Reader r) throws IOException
+    {
+	int c = r.read();
+	if (c < 0)
+	    return;
+	if (c == '[')
+	{
+	    c = r.read();
+	    if (c < 0)
+		return;
+	    if (c == 'C')
+	    {
+		if (hotPointX < lines.get(hotPointY).length())
+		    ++hotPointX;
+		return;
+	    } //arrow right
+	}
+    }
+
+    public String newText()
+    {
+	return newText != null?new String(newText):"";
+    }
+
     public synchronized int getHotPointX()
     {
-	return !lines.isEmpty()?lines.lastElement().length():0;
+	return hotPointX;
     }
 
     public synchronized int getHotPointY()
     {
-	return !lines.isEmpty()?lines.size() - 1:0;
+	return hotPointY;
     }
 
     public synchronized void open(String cmd, String dir) throws TerminalException
@@ -65,7 +208,7 @@ public class Terminal
 
     public synchronized boolean isActive()
     {
-	return true;
+	return pt.isOpened();
     }
 
     public synchronized void write(byte[] data)
@@ -78,105 +221,57 @@ public class Terminal
 	    toWrite[oldLen + i] = data[i];
     }
 
-    public void write(char c)
+    public boolean write(char c)
     {
-	write(new byte[]{(byte)c});
-    }
-
-    public synchronized boolean sync()
-    {
-	newText = "";
-	bell = false;
-
-	if (toWrite.length > 0)
-	{
-	    final int res = pt.write(toWrite);
-	    if (res > 0)
-	    {
-		if (res < toWrite.length)
-		{
-		    for(int i = res;i < toWrite.length;++i)
-			toWrite[i - res] = toWrite[i];
-		    toWrite = Arrays.copyOf(toWrite, toWrite.length - res);
-		} else
-		    toWrite = new byte[0];
-	    }
-	} //writing;
-
-	byte[] res = pt.read();
-	while (res != null && res.length > 0)
-	{
-	    onData(res);
-	    res = pt.read();
-	}
-	return (newText != null && !newText.isEmpty()) || bell;
-    }
-
-    private void onData(byte[] data)
-    {
+	final ByteArrayOutputStream s = new ByteArrayOutputStream();
+	final OutputStreamWriter w = new OutputStreamWriter(s, StandardCharsets.UTF_8);
 	try {
-String str = new String(data, "utf-8");//FIXME:UTF-8
-for(int i = str.length() - 1;i >= 0;--i)
-    if (str.charAt(i) == '\b')
-    {
-	onString(str.substring(0, i + 1));
-	return;
-    }
-onString(str);
+	    w.write(c);
+	    w.flush();
 	}
-	catch (java.io.UnsupportedEncodingException e)
+	catch(IOException e)
 	{
 	    e.printStackTrace();
-	    onString("#Skipped data: decoding problems#");
+	    return false;
 	}
+	write(s.toByteArray());
+	return true;
     }
 
-    private void onString(String str)
+    public boolean write(String str)
     {
-	if (str == null || str.isEmpty())
-	    return;
-	if (lines.isEmpty())
-	    lines.add("");
-
-	final StringBuilder newTextBuilder = new StringBuilder();
-	StringBuilder lastLineBuilder = new StringBuilder();
-
-	for(int i = 0;i < str.length();++i)
-	{
-	    final char c = str.charAt(i);
-
-	    if (Character.isISOControl(c))
-	    {
-		switch(c)
-		{
-		case 7://bell
-		    bell = true;
-		    continue;
-		case '\n':
-		    lines.set(lines.size() - 1, lines.lastElement() + lastLineBuilder.toString());
-		    lines.add("");
-		    lastLineBuilder = new StringBuilder();
-		    newTextBuilder.append(" ");
-		    continue;
-		case '\b':
-		    if (lastLineBuilder.toString().isEmpty())
-		    {
-			if (!lines.isEmpty() && !lines.lastElement().isEmpty())
-			{
-			    final String lastLine = lines.lastElement();
-			    lines.set(lines.size() - 1, lastLine.substring(0, lastLine.length() - 1));
-			}
-		    }
-		    continue;
-		default:
-		    continue;
-		}
-	    }
-
-	    lastLineBuilder.append(c);
-	    newTextBuilder.append(c);
+	final ByteArrayOutputStream s = new ByteArrayOutputStream();
+	final OutputStreamWriter w = new OutputStreamWriter(s, StandardCharsets.UTF_8);
+	try {
+	    w.write(str);
+	    w.flush();
 	}
-	lines.set(lines.size() - 1, lines.lastElement() + lastLineBuilder.toString());
-	newText = newText + newTextBuilder.toString();
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	    return false;
+	}
+	write(s.toByteArray());
+	return true;
     }
+
+    public void writeCode(Codes code)
+    {
+	switch(code)
+	{
+	case ARROW_LEFT:
+write(new byte[]{27,'[','D'});
+return;
+	case ARROW_RIGHT:
+write(new byte[]{27,'[','C'});
+return;
+	case ARROW_UP:
+write(new byte[]{27,'[','5','~'});
+return;
+	case ARROW_DOWN:
+write(new byte[]{27,'[','6','~'});
+return;
+	}
+    }
+
 }
