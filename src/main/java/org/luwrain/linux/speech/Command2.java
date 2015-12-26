@@ -35,6 +35,24 @@ public class Command2 implements Channel
 	}
     }
 
+    @Override public PuncMode getCurrentPuncMode()
+    {
+	return PuncMode.ALL;
+    }
+
+    @Override public void setCurrentPuncMode(PuncMode mode)
+    {
+    }
+
+    @Override public String getCurrentVoiceName()
+    {
+	return "";
+    }
+
+    @Override public void setCurrentVoice(String name)
+    {
+    }
+
     @Override public Voice[] getVoices()
     {
 	return new Voice[0];
@@ -47,10 +65,7 @@ public class Command2 implements Channel
 
     @Override public Set<Features>  getFeatures()
     {
-	return null;
-	//	final EnumSet<Features> res = EnumSet<Features>.noneOf(Features.class);
-	//	res.add(Features.CAN_SYNTH_TO_STREAM);
-	//	return res;
+	return EnumSet.of(Features.CAN_SYNTH_TO_STREAM);
     }
 
 @Override public boolean isDefault()
@@ -58,27 +73,29 @@ public class Command2 implements Channel
 	return false;
     }
 
-    @Override public void setDefaultVoice(String name)
+    @Override public int getDefaultPitch()
     {
+	return 50;
     }
 
     @Override public void setDefaultPitch(int value)
     {
     }
 
+    @Override public int getDefaultRate()
+    {
+	return 50;
+    }
+
     @Override public void setDefaultRate(int value)
     {
     }
 
-    @Override public void speak(String text)
-    {
-    }
-
-    @Override public void speak(String text, int relPitch, int relRate)
-    {
-    }
-
     @Override public void speak(String text, Listener listener, int relPitch, int relRate)
+    {
+    }
+
+    @Override public void speakLetter(char letter, Listener listener, int relPitch, int relRate)
     {
     }
 
@@ -127,6 +144,10 @@ public class Command2 implements Channel
     }
 
     @Override public void silence()
+    {
+    }
+
+    @Override public void close()
     {
     }
 }

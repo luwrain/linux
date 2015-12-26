@@ -63,12 +63,19 @@ public class Linux implements org.luwrain.os.OperatingSystem
 
     @Override public Channel loadSpeechChannel(String[] cmdLine, Registry registry, String regPath)
     {
+	NullCheck.notNull(registry, "registry");
+	NullCheck.notNull(regPath, "regPath");
 	try {
 	    final ChannelBasicData data = RegistryProxy.create(registry, regPath, ChannelBasicData.class);
 	    switch(data.getType())
 	    {
 	    case "command":
 		return new Command2();
+
+	    case "voiceman":
+		return new VoiceMan();
+
+
 	    default:
 		return null;
 	    }
