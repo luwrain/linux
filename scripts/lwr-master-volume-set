@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+THIS="${0##*/}"
+
+VALUE="$1"
+
+[ -z "$VALUE" ] && echo "$THIS:value to set not given" >&2 && exit 1
+
+amixer set Master "$VALUE"%

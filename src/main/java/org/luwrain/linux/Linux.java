@@ -17,6 +17,7 @@
 package org.luwrain.linux;
 
 import java.io.File;
+import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.os.*;
@@ -27,21 +28,26 @@ public class Linux implements org.luwrain.os.OperatingSystem
 {
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
+    private Path scriptsDir;
+    private Hardware hardware;
+
     interface ChannelBasicData
     {
 	String getType();
     };
 
-
-    public String init()
+    @Override public String init(String dataDir)
     {
 	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
+	scriptsDir = Paths.get(dataDir).resolve("scripts");
 	return null;
     }
 
     @Override public org.luwrain.hardware.Hardware getHardware()
     {
-	return new Hardware();
+	if (hardware == null)
+	    hardware = new Hardware(scriptsDir);
+	return hardware;
     }
 
     @Override public void openFileInDesktop(File file)

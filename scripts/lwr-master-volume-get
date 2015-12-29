@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+amixer get Master |
+egrep -i 'mono:.*playback' |
+sed s/'^.*\[\([0-9]\+\)%\].*$'/'\1'/

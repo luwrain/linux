@@ -26,10 +26,13 @@ import org.luwrain.hardware.*;
 final class Hardware implements org.luwrain.hardware.Hardware
 {
     private final PciIds pciIds = new PciIds();
+    private AudioMixer mixer;
+    private Path scriptsDir;
 
-    Hardware()
+    Hardware(Path scriptsDir)
     {
 	pciIds.load();
+	this.scriptsDir = scriptsDir;
     }
 
     @Override public SysDevice[] getSysDevices()
@@ -158,6 +161,13 @@ final class Hardware implements org.luwrain.hardware.Hardware
     @Override public File getRoot(File relativeTo)
     {
 	return new File("/");
+    }
+
+    @Override public org.luwrain.hardware.AudioMixer getAudioMixer()
+    {
+	if (mixer == null)
+	    mixer = new AudioMixer(scriptsDir);
+	return mixer;
     }
 
     static private String     readTextFile(String fileName)
