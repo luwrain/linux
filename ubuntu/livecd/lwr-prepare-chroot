@@ -1,32 +1,34 @@
-#!/bin/sh -e
+#!/bin/bash -evx
 
-chroot ./chroot apt-get -y remove pulseaudio pulseaudio-utils \
+. config.sh
+
+in-chroot apt-get -y remove pulseaudio pulseaudio-utils \
 ubiquity \
 libreoffice-core firefox thunderbird libunity9 \
-network-manager
+network-manager \
+linux-image-4.2.0-16
 
-chroot ./chroot apt-get -y autoremove
+in-chroot apt-get -y autoremove
 
 echo 'nameserver 192.168.1.1' > ./chroot/run/resolvconf/resolv.conf
 
 cat <<EOF > ./chroot/etc/apt/sources.list
 deb http://download.luwrain.org/ubuntu/ trusty main
-
 deb http://ru.archive.ubuntu.com/ubuntu/ wily main
 deb http://ru.archive.ubuntu.com/ubuntu/ wily universe
 deb http://ru.archive.ubuntu.com/ubuntu/ wily multiverse
 EOF
 
-chroot ./chroot apt-get update
-chroot ./chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic
-chroot ./chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
-chroot ./chroot apt-get -y --force-yes install voiceman rhvoice espeak mbrola mbrola-en1 yasr eflite freespeech
-chroot ./chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
+in-chroot apt-get update
+in-chroot apt-get -y --force-yes install linux-image-generic
+in-chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic
+in-chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
+in-chroot apt-get -y --force-yes install voiceman rhvoice espeak yasr eflite freespeech
+in-chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
 
-chroot ./chroot systemctl set-default multi-user.target
-
+# Activating startup on tty1
+in-chroot systemctl set-default multi-user.target
 mkdir -p './chroot/etc/systemd/system/getty@tty1.service.d'
-
 cat <<EOF > './chroot/etc/systemd/system/getty@tty1.service.d/override.conf'
 [Service]
 Environment="LANG=en_US.UTF-8"
@@ -34,25 +36,16 @@ ExecStart=
 ExecStart=-/bin/openvt -c 1 -w -s -f /etc/rc.livecd
 Type=idle
 EOF
-
 cd ./chroot/etc/systemd
 sed -i -e s/'^.*NAutoVTs.*$'/'NAutoVTs=0'/  logind.conf
 cd ../../..
-
-chroot ./chroot systemctl enable getty@tty1
+in-chroot systemctl enable getty@tty1
 
 # For proper Russian characters in console
-sed s/'^ExecStart=.*$'/'ExecStart=/bin/setupcon'/ ./chroot/lib/systemd/system/systemd-vconsole-setup.service
+sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/system/systemd-vconsole-setup.service
 
+# Autostart actions
 sed -i -e s/'^allowed_users=.*$'/'allowed_users=anybody'/ ./chroot/etc/X11/Xwrapper.config
-
-cd ./chroot/etc/yasr
-sed -i -e s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf
-sed -i -e s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf
-sed -i -e s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf
-sed -i -e s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/voiceman-emacspeak': yasr.conf
-cd ../../..
-
 cat <<EOF > ./chroot/etc/rc.livecd
 #!/bin/bash
 # LLUWRAIN live CD autolaunch script (executed in loop from /etc/systemd/system/getty@tty1.service.d/override.conf)
@@ -72,9 +65,15 @@ fi
 /usr/bin/greeter-ru
 /bin/su - luwrain -c /usr/bin/startx
 EOF
-
 chmod 755 ./chroot/etc/rc.livecd
 
+# Preparing speech utils
+cd ./chroot/etc/yasr
+sed -i -e s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf
+sed -i -e s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf
+sed -i -e s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf
+sed -i -e s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/voiceman-emacspeak': yasr.conf
+cd ../../..
 cat <<EOF > ./chroot/etc/voiceman.conf
 # VoiceMan configuration for LUWRAIN distribution
 # Michael Pozhidaev <michael.pozhidaev@gmail.com>
@@ -88,10 +87,9 @@ default language = rus
 [characters]
 default = "0123456789.,;:_-+=[]&<>""'/\\|?~\`!@#\$%^*(){}"
 EOF
-
 cat <<EOF > ./chroot/etc/voiceman.d/rhvoice-rus.output
 [output]
-name = RHVoice
+name = RHVoice-rus
 type = command
 lang = rus
 synth command = "RHVoice -r %r -p %p | voiceman-trim --words"
@@ -105,37 +103,40 @@ rate max = "0.5"
 rate aver = 1.6
 rate min = 2
 EOF
-
-cat <<EOF > ./chroot/etc/voiceman.d/mbrola-eng.output
+cat <<EOF > ./chroot/etc/voiceman.d/rhvoice-eng.output
 [output]
-name = mbrola
+name = RHVoice-eng
 type = command
 lang = eng
-synth command = "freephone -h /usr/share/freespeech/lexicon -m | mbrola -f %p -v %v -t %r /usr/share/mbrola/en1/en1 - - | /usr/bin/voiceman-trim --words "
-alsa player command = "exec aplay -t raw -f s16 -c 1 -r 16000"
-replacements = "/usr/share/voiceman/replacements.mbrola"
+synth command = "RHVoice -r %r -p %p | voiceman-trim --words"
+alsa player command = "exec aplay -"
 pitch num digits after dot = 2
-pitch min = 0.3
+pitch min = "0.1"
 pitch aver = 1
-pitch max = 2.5
+pitch max = "1.9"
 rate num digits after dot = 2
-rate min = 0.5
-rate aver = 1
-rate max = 3
-volume num digits after dot = 2
-volume min = 0
-volume aver = 2.5
-volume max = 10
+rate max = "0.5"
+rate aver = 1.6
+rate min = 2
 EOF
 
-chroot ./chroot useradd -G cdrom,audio,video,users luwrain
-chroot ./chroot cp -r /etc/skel /home/luwrain
-chroot ./chroot chown -R luwrain:luwrain /home/luwrain
 
+# General environment patches
+in-chroot useradd -G cdrom,audio,video,users luwrain
+in-chroot cp -r /etc/skel /home/luwrain
+in-chroot chown -R luwrain:luwrain /home/luwrain
+echo 'luwrain ALL=NOPASSWD:ALL' > ./chroot/etc/sudoers.d/luwrain
+chmod 400 ./chroot/etc/sudoers.d/luwrain
+in-chroot update-ca-certificates -f
+
+# luwrain user settings
 cat <<EOF > ./chroot/home/luwrain/.xinitrc
 exec &> /tmp/xinitrc.log
+export LANG=en_US.UTF-8
+setxkbmap -layout "us,ru"
+setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
 
-echo 'luwrain ALL=NOPASSWD:ALL' > ./chroot/etc/sudoers.d/luwrain
-chmod 400 ./chroot/etc/sudoers.d/luwrain
+# Temporary patches
+sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru

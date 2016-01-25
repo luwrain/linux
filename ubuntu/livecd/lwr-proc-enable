@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+. config.sh
+
+mount  --bind /proc $CHROOT_DIR/proc/
