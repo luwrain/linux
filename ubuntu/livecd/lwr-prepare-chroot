@@ -59,8 +59,8 @@ cat <<EOF > ./chroot/etc/rc.livecd
 # Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
 for i in PCM Speaker; do
-    /usr/bin/amixer set  100% &> /dev/null
-    /usr/bin/amixer set  unmute &> /dev/null
+    /usr/bin/amixer set  \$i 100% &> /dev/null
+    /usr/bin/amixer set  \$i unmute &> /dev/null
 done
 /usr/bin/amixer set Master 80% &> /dev/null
 /usr/bin/amixer set Master unmute &> /dev/null
