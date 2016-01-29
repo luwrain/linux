@@ -4,7 +4,7 @@
 
 echo Compiling JNI part
 cd jni
-make &>> /tmp/.luwrain.make.log
+make &> /tmp/.luwrain.make.log
 cd ..
 
 echo Creating '~'/.luwrain
