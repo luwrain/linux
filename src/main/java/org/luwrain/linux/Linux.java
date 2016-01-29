@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of the LUWRAIN.
 
@@ -76,7 +76,7 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	    switch(data.getType())
 	    {
 	    case "command":
-		return new Command2();
+		return new Command();
 
 	    case "voiceman":
 		return new VoiceMan();
