@@ -22,6 +22,7 @@ EOF
 in-chroot apt-get update
 in-chroot apt-get -y --force-yes install linux-image-generic
 in-chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic
+in-chroot apt-get -y --force-yes install wpasupplicant
 in-chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
 in-chroot apt-get -y --force-yes install voiceman rhvoice espeak yasr eflite freespeech
 in-chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
@@ -85,7 +86,7 @@ log level = info
 default language = rus
 
 [characters]
-default = "0123456789.,;:_-+=[]&<>""'/\\|?~\`!@#\$%^*(){}"
+rus = "0123456789.,;:_-+=[]&<>""'/\\|?~\`!@#\$%^*(){}"
 EOF
 cat <<EOF > ./chroot/etc/voiceman.d/rhvoice-rus.output
 [output]
@@ -128,6 +129,9 @@ in-chroot chown -R luwrain:luwrain /home/luwrain
 echo 'luwrain ALL=NOPASSWD:ALL' > ./chroot/etc/sudoers.d/luwrain
 chmod 400 ./chroot/etc/sudoers.d/luwrain
 in-chroot update-ca-certificates -f
+#Disabling pulseaudio for Java
+sed -i -e s/'^\(java.*\)$'/'#\1'/ ./chroot/etc/java-8-openjdk/sound.properties
+sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ ./chroot/etc/java-8-openjdk/sound.properties
 
 # luwrain user settings
 cat <<EOF > ./chroot/home/luwrain/.xinitrc
@@ -138,5 +142,11 @@ setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
 
+cp -r ./dist/. ./chroot/home/luwrain/
+chown -R 1000:1000 ./chroot/home/luwrain/
+
 # Temporary patches
 sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru
+sed -i -e s/ДLUWRAIN/LUWRAIN/ ./chroot/usr/share/luwrain-live/frames/ru/00.txt
+
+# OK!

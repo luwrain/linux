@@ -1,8 +1,2 @@
 - Reduce delay on DHCP scanning
 - UUID using in fstab
-- Disable PulseAudio settings for Java
-- -d option for ogg123 in greeter
-- Russian keyboard layout switching
-- kernel reinstall (absent in original live CD)
-- update-ca-certificates -f
-
