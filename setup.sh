@@ -9,7 +9,7 @@ cd ..
 
 echo Creating '~'/.luwrain
 mkdir -p ~/.luwrain
-for i in app extensions registry; do
+for i in extensions registry; do
     mkdir -p ~/.luwrain/$i
 done 
 
