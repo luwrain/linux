@@ -229,6 +229,7 @@ static private class Current
 				   AudioFormat format, OutputStream stream)
     {
 	try {
+	    Log.debug("linux", "calling " + toStreamCommand);
 	    final Process p = new ProcessBuilder("/bin/bash", "-c", toStreamCommand).start();
 	    final Writer w = new BufferedWriter(new OutputStreamWriter(p.getOutputStream()));
 	    w.write(text);
@@ -238,6 +239,7 @@ static private class Current
 	    int length;
 	    while ( (length = in.read(buf)) >= 0 )
 		stream.write(buf, 0, length);
+	    stream.flush();
 	    p.waitFor();
 	}
 	catch(InterruptedException e)
