@@ -8,12 +8,41 @@ export DTK_PORT=none
 export DTK_DEVICE="espeak"
 EOF
 
+cat <<EOF > ./chroot/home/luwrain/.emacs
+
+(global-set-key [f2] 'save-buffer)
+(global-set-key [f3] 'find-file)
+(global-set-key [f4] 'kill-buffer)
+(global-set-key [f5] 'other-window)
+(global-set-key [f6] 'calendar)
+(global-set-key [f7] 'gnus)
+(global-set-key [f8] 'w3m-browse-url)
+(global-set-key [f9] 'compile)
+(global-set-key [f10] 'switch-to-buffer)
+
+(setq inhibit-startup-screen t)
+EOF
+
+chown 1000:1000 ./chroot/home/luwrain/.emacs
+
 pushd ./chroot/usr/share/emacs/site-lisp/emacspeak/lisp
 cat <<EOF | patch -p1
-diff -ur 1/dtk-speak.el 2/dtk-speak.el
---- 1/dtk-speak.el	2016-02-13 18:07:21.679336581 +0600
-+++ 2/dtk-speak.el	2016-02-13 18:06:33.435337394 +0600
-@@ -1884,7 +1884,7 @@
+diff -ur orig/dtk-speak.el new/dtk-speak.el
+--- orig/dtk-speak.el	2016-02-14 11:55:46.207710990 +0600
++++ new/dtk-speak.el	2016-02-14 11:58:54.027707827 +0600
+@@ -1517,8 +1517,9 @@
+   (declare (special dtk-character-to-speech-table))
+   (if  (eq (char-charset char) 'ascii)
+       (aref dtk-character-to-speech-table char )
+-    (or (dtk-unicode-short-name-for-char char)
+-        (format "octal %o"  char ))))
++      (format "%c" char)))
++;;    (or (dtk-unicode-short-name-for-char char)
++;;        (format "octal %o"  char ))))
+ 
+ ;;}}}
+ ;;{{{  interactively selecting the server:
+@@ -1884,7 +1885,7 @@
            (when pronunciation-table
              (tts-apply-pronunciations
               pronunciation-table))
@@ -22,9 +51,9 @@ diff -ur 1/dtk-speak.el 2/dtk-speak.el
            (dtk-handle-repeating-patterns mode)
            (dtk-quote mode))
          (goto-char (point-min))
-diff -ur 1/emacspeak-speak.el 2/emacspeak-speak.el
---- 1/emacspeak-speak.el	2016-02-13 18:07:21.679336581 +0600
-+++ 2/emacspeak-speak.el	2016-02-13 18:04:17.563339682 +0600
+diff -ur orig/emacspeak-speak.el new/emacspeak-speak.el
+--- orig/emacspeak-speak.el	2016-02-14 11:55:46.207710990 +0600
++++ new/emacspeak-speak.el	2016-02-14 11:56:27.627710293 +0600
 @@ -1055,7 +1055,7 @@
      (cond
       ((emacspeak-is-alpha-p char) (dtk-letter (char-to-string
