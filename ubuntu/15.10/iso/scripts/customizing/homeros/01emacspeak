@@ -1,0 +1,65 @@
+
+cat <<EOF > ./chroot/etc/emacspeak.conf
+# emacspeak configuration file
+
+export DTK_PROGRAM=/usr/bin/voiceman-emacspeak
+export DTK_TCL=tcl
+export DTK_PORT=none
+export DTK_DEVICE="espeak"
+EOF
+
+pushd ./chroot/usr/share/emacs/site-lisp/emacspeak/lisp
+cat <<EOF | patch -p1
+diff -ur 1/dtk-speak.el 2/dtk-speak.el
+--- 1/dtk-speak.el	2016-02-13 18:07:21.679336581 +0600
++++ 2/dtk-speak.el	2016-02-13 18:06:33.435337394 +0600
+@@ -1884,7 +1884,7 @@
+           (when pronunciation-table
+             (tts-apply-pronunciations
+              pronunciation-table))
+-          (dtk-unicode-replace-chars mode)
++;;          (dtk-unicode-replace-chars mode)
+           (dtk-handle-repeating-patterns mode)
+           (dtk-quote mode))
+         (goto-char (point-min))
+diff -ur 1/emacspeak-speak.el 2/emacspeak-speak.el
+--- 1/emacspeak-speak.el	2016-02-13 18:07:21.679336581 +0600
++++ 2/emacspeak-speak.el	2016-02-13 18:04:17.563339682 +0600
+@@ -1055,7 +1055,7 @@
+     (cond
+      ((emacspeak-is-alpha-p char) (dtk-letter (char-to-string
+                                                char )))
+-     ((> char 128) (emacspeak-speak-char-name char))
++;;     ((> char 128) (emacspeak-speak-char-name char))
+      (t (dtk-dispatch (dtk-char-to-speech char ))))))
+ ;;;###autoload
+ (defun emacspeak-speak-char (&optional prefix)
+@@ -1067,7 +1067,7 @@
+     (when char
+       (cond
+        ((stringp display) (dtk-speak display))
+-       ((> char 128) (emacspeak-speak-char-name char))
++;;       ((> char 128) (emacspeak-speak-char-name char))
+        ((and (not prefix)
+              (emacspeak-is-alpha-p char))
+         (dtk-speak (emacspeak-get-phonetic-string char )))
+@@ -1082,7 +1082,7 @@
+     (when char
+       (cond
+        ((stringp display) (dtk-speak display))
+-       ((> char 128) (emacspeak-speak-char-name char))
++;;       ((> char 128) (emacspeak-speak-char-name char))
+        (t (emacspeak-speak-this-char char))))))
+ 
+ ;;;###autoload
+EOF
+popd
+
+pushd ./chroot/usr/share/
+for i in dtk-speak emacspeak-speak; do
+rm -f ./emacs24/site-lisp/emacspeak/lisp/$i.elc
+cp ./emacs/site-lisp/emacspeak/lisp/$i.el ./emacs24/site-lisp/emacspeak/lisp/
+done
+popd
+
+

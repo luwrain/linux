@@ -1,6 +1,6 @@
 
-#CHROOT_DIR=/mnt/chroot/iso/chroot
 NAMESERVER=192.168.1.1
+export LWRISO_CUSTOMIZING=
 
 in-chroot()
 {

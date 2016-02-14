@@ -11,7 +11,7 @@ linux-image-4.2.0-16
 
 in-chroot apt-get -y autoremove
 
-echo 'nameserver 192.168.1.1' > ./chroot/run/resolvconf/resolv.conf
+echo "nameserver $NAMESERVER" > ./chroot/run/resolvconf/resolv.conf
 
 cat <<EOF > ./chroot/etc/apt/sources.list
 deb http://download.luwrain.org/ubuntu/ trusty main
@@ -204,5 +204,11 @@ cp -r ./dist/lwr-install.conf ./chroot/etc/
 # Temporary patches
 sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru
 sed -i -e s/ДLUWRAIN/LUWRAIN/ ./chroot/usr/share/luwrain-live/frames/ru/00.txt
+
+if [ -n "$LWRISO_CUSTOMIZING" ]; then
+    find "./customizing/$LWRISO_CUSTOMIZING" -type f | sort | while read l ; do
+	source "$l"
+    done
+fi
 
 # ISO chroot prepared!
