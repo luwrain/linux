@@ -1,3 +1,4 @@
 
-in-chroot apt-get -y --force-yes install emacspeak dwm
+in-chroot apt-get -y --force-yes install emacspeak w3m w3m-el
 in-chroot apt-get -y --force-yes install mbrola mbrola-en1 freespeech
+in-chroot apt-get -y --force-yes install pmount fetchmail dwm

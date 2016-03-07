@@ -19,8 +19,31 @@ cat <<EOF > ./chroot/home/luwrain/.emacs
 (global-set-key [f8] 'w3m-browse-url)
 (global-set-key [f9] 'compile)
 (global-set-key [f10] 'switch-to-buffer)
+(global-set-key [S-f3] 'shell-command)
+(global-set-key [S-f4] 'shell)
 
 (setq inhibit-startup-screen t)
+(setq line-move-visual nil)
+(setq emacspeak-gnus-punctuation-mode 'all)
+(setq emacspeak-message-punctuation-mode 'all)
+(setq dtk-unicode-untouched-charsets '(ascii cyrillic-iso8859-5 latin-iso8859-1))
+(setq kill-buffer-query-functions nil)
+
+(require 'w3m)
+(setq mm-text-html-renderer 'w3m-standalone)
+(remove-hook 'w3m-after-cursor-move-hook 'w3m-print-this-url)
+(remove-hook 'w3m-after-cursor-move-hook 'w3m-show-form-hint)
+
+(remove-hook 'w3m-after-cursor-move-hook 'w3m-highlight-current-anchor)
+(remove-hook 'w3m-after-cursor-move-hook 'w3m-auto-show)
+
+(setq browse-url-browser-function 'w3m-browse-url)
+(setq w3m-search-engine-alist
+      '(
+        ("google" "http://www.google.ru/search?q=%s&hl=ru&ie=koi8-r" koi8-r)
+        ))
+(setq w3m-search-default-engine "google")
+(setq w3m-use-cookies t)
 EOF
 
 chown 1000:1000 ./chroot/home/luwrain/.emacs
@@ -53,7 +76,16 @@ diff -ur orig/dtk-speak.el new/dtk-speak.el
          (goto-char (point-min))
 diff -ur orig/emacspeak-speak.el new/emacspeak-speak.el
 --- orig/emacspeak-speak.el	2016-03-07 20:34:08.543543849 +0600
-+++ new/emacspeak-speak.el	2016-03-07 20:37:18.411540651 +0600
++++ new/emacspeak-speak.el	2016-03-08 00:55:16.151280008 +0600
+@@ -762,7 +762,7 @@
+      "sEnterregular expression to match lines that are decorative ASCII: ")
+ 
+ (defcustom emacspeak-unspeakable-rule
+-  "^[^0-9a-zA-Z]+\$"
++  "^\\\\W+\$"
+   "*Pattern to match lines of special chars.
+ This is a regular expression that matches lines containing only
+ non-alphanumeric characters.  emacspeak will generate a tone
 @@ -1055,7 +1055,7 @@
      (cond
       ((emacspeak-is-alpha-p char) (dtk-letter (char-to-string
