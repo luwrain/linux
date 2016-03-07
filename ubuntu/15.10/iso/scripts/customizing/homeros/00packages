@@ -1,3 +1,3 @@
 
-in-chroot apt-get -y --force-yes install emacspeak
+in-chroot apt-get -y --force-yes install emacspeak dwm
 in-chroot apt-get -y --force-yes install mbrola mbrola-en1 freespeech
