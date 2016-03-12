@@ -106,7 +106,7 @@ static private class Current
     private boolean signed = false;
     private boolean bigEndian = false;
 
-    @Override public boolean init(String[] cmdLine, Registry registry, String path)
+    @Override public boolean initByRegistry(Registry registry, String path)
     {
 	try {
 	    final RegOptions options = RegistryProxy.create(registry, path, RegOptions.class);
@@ -132,6 +132,11 @@ static private class Current
 	Log.debug("linux", "starting service thread for command speech output \'" + name + "\'");
 	executor.execute(task);
 	return true;
+    }
+
+    @Override public boolean initByArgs(String[] args)
+    {
+	return false;
     }
 
     @Override public PuncMode getCurrentPuncMode()

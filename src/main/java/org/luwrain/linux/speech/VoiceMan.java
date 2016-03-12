@@ -48,8 +48,7 @@ public class VoiceMan implements Channel
     private String name = DEFAULT_NAME;
     private boolean def = true;
 
-    @Override public boolean init(String[] cmdLine, 
-				  Registry registry, String regPath)
+    @Override public boolean initByRegistry(Registry registry, String regPath)
     {
 	String host = null;
 	int port = 0;
@@ -64,6 +63,7 @@ public class VoiceMan implements Channel
 	    Log.debug("voiceman", "host value from the registry is " + (host != null?host:""));
 	    Log.debug("voiceman", "hport value from the registry is " + port);
 	}
+	/*
 	final CmdLineUtils cmdLineUtils = new CmdLineUtils(cmdLine);
 	final String h = cmdLineUtils.getFirstArg(CMDLINE_HOST);
 	final String p = cmdLineUtils.getFirstArg(CMDLINE_HOST);
@@ -93,7 +93,13 @@ public class VoiceMan implements Channel
 	    Log.warning("voiceman", "unable to get port value, using default");
 	    port = DEFAULT_PORT;
 	}
+	*/
 	return connect(host, port);
+    }
+
+    @Override public boolean initByArgs(String[] args)
+    {
+	return false;
     }
 
     private boolean connect(String host, int port)

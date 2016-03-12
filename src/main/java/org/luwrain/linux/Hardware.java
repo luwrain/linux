@@ -158,11 +158,6 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	return MountedPartitions.getMountedPartitions();
     }
 
-    @Override public File getRoot(File relativeTo)
-    {
-	return new File("/");
-    }
-
     @Override public org.luwrain.hardware.AudioMixer getAudioMixer()
     {
 	if (mixer == null)
@@ -210,5 +205,10 @@ return b.toString();
 	    e.printStackTrace();
 	    return -1;
 	}
+    }
+
+    @Override public Battery[] getBatteries()
+    {
+	return null;
     }
 }

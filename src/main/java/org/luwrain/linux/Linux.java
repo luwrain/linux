@@ -31,16 +31,19 @@ public class Linux implements org.luwrain.os.OperatingSystem
     private Path scriptsDir;
     private Hardware hardware;
 
+    /*
     interface ChannelBasicData
     {
 	String getType();
     };
+    */
 
-    @Override public String init(String dataDir)
+    @Override public boolean init(String dataDir)
     {
+	NullCheck.notNull(dataDir, "dataDir");
 	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
 	scriptsDir = Paths.get(dataDir).resolve("scripts");
-	return null;
+	return true;
     }
 
     @Override public org.luwrain.hardware.Hardware getHardware()
@@ -50,9 +53,24 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	return hardware;
     }
 
-    @Override public void openFileInDesktop(File file)
+    @Override public boolean shutdown()
     {
-	throw new UnsupportedOperationException("This OS does not support for Desktop action OPEN");
+	return false;
+    }
+
+    @Override public boolean reboot()
+    {
+	return false;
+    }
+
+    @Override public boolean suspend(boolean hibernate)
+    {
+	return false;
+    }
+
+    @Override public void openFileInDesktop(Path path)
+    {
+	throw new UnsupportedOperationException("Linux has no support of opening files in desktop environment");
     }
 
     @Override public KeyboardHandler getCustomKeyboardHandler(String subsystem)
@@ -67,30 +85,19 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	}
     }
 
-    @Override public Channel loadSpeechChannel(String[] cmdLine, Registry registry, String regPath)
+    @Override public Channel loadSpeechChannel(String type)
     {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(regPath, "regPath");
-	try {
-	    final ChannelBasicData data = RegistryProxy.create(registry, regPath, ChannelBasicData.class);
-	    switch(data.getType())
-	    {
-	    case "command":
-		return new Command();
-
-	    case "voiceman":
-		return new VoiceMan();
-
-
-	    default:
-		return null;
-	    }
-	}
-	catch (Exception e)
+	NullCheck.notNull(type, "type");
+	switch(type)
 	{
-	    Log.error("linux", "unexpected exception while loading speech channel from " + regPath);
-	    e.printStackTrace();
+	case "command":
+	    return new Command();
+	case "voiceman":
+	    return new VoiceMan();
+	default:
+	    Log.error("linux", "unknown speech channel type:" + type);
 	    return null;
 	}
     }
 }
+
