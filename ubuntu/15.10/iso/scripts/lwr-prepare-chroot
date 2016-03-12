@@ -28,7 +28,7 @@ in-chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyril
 in-chroot apt-get -y --force-yes install wpasupplicant
 in-chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
 in-chroot apt-get -y --force-yes install voiceman rhvoice espeak yasr eflite
-in-chroot apt-get -y --force-yes install lame sox mpg123
+in-chroot apt-get -y --force-yes install lame sox mpg123 mplayer2 youtube-dl
 in-chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
 
 # Activating startup on tty1

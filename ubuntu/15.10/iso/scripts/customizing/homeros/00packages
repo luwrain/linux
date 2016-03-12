@@ -1,4 +1,8 @@
 
 in-chroot apt-get -y --force-yes install emacspeak w3m w3m-el
-in-chroot apt-get -y --force-yes install mbrola mbrola-en1 freespeech
-in-chroot apt-get -y --force-yes install pmount fetchmail dwm
+in-chroot apt-get -y --force-yes install mbrola mbrola-en1 freespeech 
+in-chroot apt-get -y --force-yes install libttspico libttspico-dev libttspico-utils libttspico-data
+in-chroot apt-get -y --force-yes install pmount openssh-server fetchmail procmail dwm
+in-chroot apt-get -y --force-yes install vlc mplayer2
+in-chroot apt-get -y --force-yes install openjdk-8-jdk gcc g++ make autoconf automake dh-make  dpkg-dev
+in-chroot apt-get -y --force-yes install poppler-utils ghostscript
