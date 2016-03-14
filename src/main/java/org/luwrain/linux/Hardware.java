@@ -60,7 +60,6 @@ final class Hardware implements org.luwrain.hardware.Hardware
 		modelStr != null && modelStr.startsWith("0x"))
 	    {
 		dev.model = pciIds.findDevice(vendorStr.substring(2), dev.model.substring(2));
-		//		System.out.println(dev.model);
 	    }
 	    if (dev.model == null || dev.model.isEmpty())
 		dev.model = modelStr;

@@ -84,8 +84,6 @@ private StringBuilder newText = null;
 
     private void onData(byte[] data) throws IOException
     {
-	for(int i = 0;i < data.length;++i)
-	    System.out.println("char " + data[i] + " " + (char)data[i]);
 	final ByteArrayInputStream s = new ByteArrayInputStream(data);
 	final BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
 	int c = 0;
@@ -118,17 +116,14 @@ private StringBuilder newText = null;
 
     private void onIsoControl(int c)
     {
-	//	System.out.println("iso " + c);
 		switch(c)
 		{
 		case 7://bell
 		    bell = true;
 		    return;
 		case 10://new line
-		    System.out.println("here");
 		    {
 			final String line = lines.get(hotPointY);
-			System.out.println("new line " + line);
 			if (hotPointX < line.length())
 			{
 			    lines.set(hotPointY, line.substring(0, hotPointX));
