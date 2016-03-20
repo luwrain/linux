@@ -196,8 +196,12 @@ setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
 
+sed  -i -e s/'^RUN_BRLTTY=.*$'/'RUN_BRLTTY=yes'/ ./chroot/etc/default/brltty
+
 cp -r ./dist/luwrain ./chroot/home/luwrain/
 cp -r ./dist/.luwrain ./chroot/home/luwrain/
+[ -d ./dist/profile ] && cp -r ./dist/profile/. ./chroot/home/luwrain/
+ln -s /usr/lib/jni/libbrlapi_java.so ./chroot/home/luwrain/luwrain/jni/libbrlapi_java.so
 chown -R 1000:1000 ./chroot/home/luwrain/
 cp -r ./dist/install/. ./chroot/sbin/
 cp -r ./dist/lwr-install.conf ./chroot/etc/

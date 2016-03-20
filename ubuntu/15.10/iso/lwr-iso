@@ -1,6 +1,5 @@
 #!/bin/bash -evx
 
-
 THIS="${0##*/}"
 
 [ -z "$1" ] && echo "$THIS:no Ubuntu image given" >&2 && exit 1
