@@ -61,14 +61,11 @@ class PciIds
 
     public String findDevice(String vendorCode, String deviceCode)
     {
-	//	System.out.println(vendorCode + " " + deviceCode);
 	if (!vendors.containsKey(vendorCode))
 	    return null;
 final Vendor v = vendors.get(vendorCode);
-//System.out.println(v.devices.size());
 if (!v.devices.containsKey(deviceCode))
     return null;
-//System.out.println("found");
 return v.devices.get(deviceCode).name;
     }
 
@@ -85,10 +82,8 @@ return v.devices.get(deviceCode).name;
     private void onDevice(String line)
     {
 	final Matcher matcher = DEVICE_PATTERN.matcher(line);
-	//	System.out.println("matcher");
 	if (!matcher.find())
 	    return;
-	//	System.out.println(matcher.group(1));
 	final Device d = new Device(matcher.group(2));
 	lastVendor.devices.put(matcher.group(1).trim(), d);
     }

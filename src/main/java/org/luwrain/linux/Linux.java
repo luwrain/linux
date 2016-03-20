@@ -29,20 +29,15 @@ public class Linux implements org.luwrain.os.OperatingSystem
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
     private Path scriptsDir;
+    private Scripts scripts = null;
     private Hardware hardware;
-
-    /*
-    interface ChannelBasicData
-    {
-	String getType();
-    };
-    */
 
     @Override public boolean init(String dataDir)
     {
 	NullCheck.notNull(dataDir, "dataDir");
 	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
 	scriptsDir = Paths.get(dataDir).resolve("scripts");
+	scripts = new Scripts(scriptsDir);
 	return true;
     }
 
@@ -55,17 +50,17 @@ public class Linux implements org.luwrain.os.OperatingSystem
 
     @Override public boolean shutdown()
     {
-	return false;
+	return scripts.runSync("lwr-shutdown", true);
     }
 
     @Override public boolean reboot()
     {
-	return false;
+	return scripts.runSync("lwr-reboot", true);
     }
 
     @Override public boolean suspend(boolean hibernate)
     {
-	return false;
+	return scripts.runSync("lwr-suspend", true);
     }
 
     @Override public void openFileInDesktop(Path path)
