@@ -31,6 +31,9 @@ in-chroot apt-get -y --force-yes install voiceman rhvoice espeak yasr eflite
 in-chroot apt-get -y --force-yes install lame sox mpg123 mplayer2 youtube-dl
 in-chroot apt-get -y --force-yes install luwrain-live openjdk-8-jre openjfx
 
+# Locale
+#echo 'LANG="ru_RU.UTF-8"' > ./chroot/etc/default/locale
+
 # Activating startup on tty1
 in-chroot systemctl set-default multi-user.target
 mkdir -p './chroot/etc/systemd/system/getty@tty1.service.d'
@@ -63,6 +66,8 @@ done
 /usr/bin/amixer set Master 80% &> /dev/null
 /usr/bin/amixer set Master unmute &> /dev/null
 
+killall brltty
+/sbin/brltty -t ru
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi
@@ -187,6 +192,12 @@ in-chroot update-ca-certificates -f
 sed -i -e s/'^\(java.*\)$'/'#\1'/ ./chroot/etc/java-8-openjdk/sound.properties
 sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ ./chroot/etc/java-8-openjdk/sound.properties
 
+# brltty
+sed  -i -e s/'^RUN_BRLTTY=.*$'/'RUN_BRLTTY=yes'/ ./chroot/etc/default/brltty
+# Russian only
+sed  -i -e s/'^ARGUMENTS=.*$'/'ARGUMENTS="-q -t ru"'/ ./chroot/etc/default/brltty
+sed -i -e s/'^.*text-table.*Russian.*$'/'text-table ru'/ ./chroot/etc/brltty.conf
+
 # luwrain user settings
 cat <<EOF > ./chroot/home/luwrain/.xinitrc
 exec &> /tmp/xinitrc.log
@@ -195,8 +206,6 @@ setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
-
-sed  -i -e s/'^RUN_BRLTTY=.*$'/'RUN_BRLTTY=yes'/ ./chroot/etc/default/brltty
 
 cp -r ./dist/luwrain ./chroot/home/luwrain/
 cp -r ./dist/.luwrain ./chroot/home/luwrain/

@@ -1,0 +1,18 @@
+
+cat <<EOF > ./chroot/usr/local/bin/show-video
+#!/bin/bash -e
+
+/usr/bin/mplayer -fs "\$1" &> /dev/null
+exit \$?
+EOF
+
+cat <<EOF > ./chroot/usr/local/bin/show-photo
+#!/bin/bash -e
+
+/usr/bin/geeqie -f "\$1" &> /dev/null
+exit \$?
+EOF
+
+for i in photo video; do
+chmod 755 ./chroot/usr/local/bin/show-$i
+done
