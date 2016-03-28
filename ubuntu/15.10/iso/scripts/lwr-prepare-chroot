@@ -207,13 +207,15 @@ setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
 
-cp -r ./dist/luwrain ./chroot/home/luwrain/
-cp -r ./dist/.luwrain ./chroot/home/luwrain/
+#cp -r ./dist/luwrain ./chroot/home/luwrain/
+#cp -r ./dist/.luwrain ./chroot/home/luwrain/
 [ -d ./dist/profile ] && cp -r ./dist/profile/. ./chroot/home/luwrain/
+[ -d ./dist/etc ] && cp -r ./dist/etc/. ./chroot/etc/
+[ -d ./dist/opt ] && cp -r ./dist/opt/. ./chroot/opt/
 ln -s /usr/lib/jni/libbrlapi_java.so ./chroot/home/luwrain/luwrain/jni/libbrlapi_java.so
-chown -R 1000:1000 ./chroot/home/luwrain/
 cp -r ./dist/install/. ./chroot/sbin/
-cp -r ./dist/lwr-install.conf ./chroot/etc/
+chown -R 1000:1000 ./chroot/home/luwrain/
+chown -R root:root ./chroot/opt/
 
 # Temporary patches
 sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru
