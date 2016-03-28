@@ -6,6 +6,20 @@ cat <<EOF > ./chroot/usr/local/bin/show-video
 exit \$?
 EOF
 
+cat <<EOF > ./chroot/usr/local/bin/show-dvd
+#!/bin/bash -e
+
+/usr/bin/mplayer -fs -dvd-device "\$1" dvd://1 &> /dev/null
+exit \$?
+EOF
+
+cat <<EOF > ./chroot/usr/local/bin/show-pdf
+#!/bin/bash -e
+
+/usr/bin/xpdf -fullscreen "\$1" &> /dev/null
+exit \$?
+EOF
+
 cat <<EOF > ./chroot/usr/local/bin/show-photo
 #!/bin/bash -e
 
@@ -13,6 +27,6 @@ cat <<EOF > ./chroot/usr/local/bin/show-photo
 exit \$?
 EOF
 
-for i in photo video; do
+for i in photo video dvd pdf; do
 chmod 755 ./chroot/usr/local/bin/show-$i
 done
