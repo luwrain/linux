@@ -1,0 +1,15 @@
+
+
+cat <<EOF > ./chroot/home/luwrain/.gitconfig
+[user]
+	name = Michael Pozhidaev
+	email = michael.pozhidaev@gmail.com
+EOF
+
+cat <<EOF > ./chroot/home/luwrain/.signature
+Michael Pozhidaev. Tomsk, Russia.
+Russian info page: http://www.marigostra.ru/
+English info page: http://www.marigostra.com/
+EOF
+
+chown -R 1000:1000 ./chroot/home/luwrain/
