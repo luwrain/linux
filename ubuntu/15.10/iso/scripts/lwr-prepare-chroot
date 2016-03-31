@@ -24,7 +24,7 @@ EOF
 in-chroot apt-get update
 in-chroot apt-get -y --force-yes install linux-image-generic
 in-chroot apt-get -y --force-yes install brltty libbrlapi-java libbrlapi-jni
-in-chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic acpi
+in-chroot apt-get -y --force-yes install libncursesw5 vorbis-tools console-cyrillic acpi ntfs-3g
 in-chroot apt-get -y --force-yes install wpasupplicant
 in-chroot apt-get -y --force-yes install dvd+rw-tools growisofs syslinux syslinux-legacy
 in-chroot apt-get -y --force-yes install voiceman rhvoice espeak yasr eflite
@@ -68,6 +68,8 @@ done
 
 killall brltty
 /sbin/brltty -t ru
+
+export VOICEMAN_LIBAO_DRIVER=alsa
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi

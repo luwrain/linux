@@ -1,25 +1,13 @@
 
 
-cat <<EOF > ./chroot/home/luwrain/dwm/build
+cat <<EOF > ./chroot/home/luwrain/.dwm/build
 #!/bin/bash -e
 
-cd /home/luwrain/dwm
+cd /home/luwrain/.dwm
 make 
 EOF
 
-chmod 755 ./chroot/home/luwrain/dwm/build
+chmod 755 ./chroot/home/luwrain/.dwm/build
 
-in-chroot  /home/luwrain/dwm/build
-
-cat <<EOF > ./chroot/home/luwrain/.xinitrc
-exec &> /tmp/xinitrc.log
-export LANG=en_US.UTF-8
-export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
-setxkbmap -layout "us,ru"
-setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
-#exec ~/luwrain/luwrain.sh
-aplay ~/luwrain/data/sounds/alternative/startup1.wav &> /dev/null
-exec ~/dwm/dwm
-EOF
-
+in-chroot  /home/luwrain/.dwm/build
 chown -R 1000:1000 ./chroot/home/luwrain/
