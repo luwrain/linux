@@ -89,6 +89,8 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	    return new Command();
 	case "voiceman":
 	    return new VoiceMan();
+	case "emacspeak":
+return new Emacspeak();
 	default:
 	    Log.error("linux", "unknown speech channel type:" + type);
 	    return null;
