@@ -21,6 +21,9 @@ public class Emacspeak implements Channel
     private boolean def = false;
     private String name = "";
     private String command = "";
+    private Process process;
+    private OutputStream stream;
+    private BufferedWriter writer;
     private int defPitch = DEFAULT_PARAM_VALUE;
     private int defRate = DEFAULT_PARAM_VALUE;
 
@@ -47,6 +50,11 @@ public class Emacspeak implements Channel
 	}
 	if (name.trim().isEmpty())
 	    name = "Emacspeak (" + command + ")";
+	if (!startProcess())
+	{
+	    Log.error("linux", "unable to start an emacspeak server for channel \'" + name + "\' by command \'" + command + "\'");
+	    return false;
+	}
 	Log.debug("linux", "emacspeak speech channel with name \'" + name + "\' initialized, command=\'\'" + command + "\'");
 	return true;
     }
@@ -59,12 +67,18 @@ public class Emacspeak implements Channel
 	    Log.error("linux", "unable to initialize emacspeak speech channel using string arguments:no command given");
 	    return false;
 	}
+	command = args[0];
 	if (args.length >= 2)
 	    name = args[1];
 	if (args.length >= 3 && args[2].trim().toLowerCase().equals("default"))
 	    def = true;
 	if (name.trim().isEmpty())
 	    name = "Emacspeak (" + command + ")";
+	if (!startProcess())
+	{
+	    Log.error("linux", "unable to start an emacspeak server for channel \'" + name + "\' by command \'" + command + "\'");
+	    return false;
+	}
 	Log.debug("linux", "emacspeak speech channel with name \'" + name + "\' initialized, command=\'\'" + command + "\'");
 	return true;
     }
@@ -130,12 +144,31 @@ public class Emacspeak implements Channel
     @Override public long speak(String text, Listener listener,
 				int relPitch, int relRate)
     {
+	try {
+	    writer.write("q {" + text + "}\n");
+	    writer.write("d\n");
+	writer.flush();
+	stream.flush();
+	}
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	}
 	return -1;
     }
 
     @Override public long speakLetter(char letter, Listener listener,
  int relPitch, int relRate)
     {
+	try {
+	    writer.write("l {" + letter + "}\n");
+	writer.flush();
+	stream.flush();
+	}
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	}
 	return -1;
     }
 
@@ -152,9 +185,38 @@ public class Emacspeak implements Channel
 
     @Override public void silence()
     {
+	try {
+	    writer.write("s\n");
+	writer.flush();
+	stream.flush();
+	}
+	catch(IOException e)
+	{
+	    e.printStackTrace();
+	}
     }
 
     @Override public void close()
     {
+    }
+
+    private boolean startProcess()
+    {
+	try {
+	process = new ProcessBuilder(command).start();
+//	    p.getOutputStream().close();
+	stream = process.getOutputStream();
+	process.getInputStream().close();
+
+writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+
+	return true;
+	}
+	catch(IOException e)
+	{
+	    Log.error("linux", "unable to start an emacspeak server " + command + ":" + e.getMessage());
+	    e.printStackTrace();
+	    return false;
+	}
     }
 }
