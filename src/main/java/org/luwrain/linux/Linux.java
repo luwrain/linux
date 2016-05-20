@@ -16,7 +16,9 @@
 
 package org.luwrain.linux;
 
+import java.util.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.*;
 
 import org.luwrain.core.*;
@@ -31,6 +33,8 @@ public class Linux implements org.luwrain.os.OperatingSystem
     private Path scriptsDir;
     private Scripts scripts = null;
     private Hardware hardware;
+    private String[] cpus = new String[0];
+    private int ramSizeKb = 0;
 
     @Override public boolean init(String dataDir)
     {
@@ -38,7 +42,36 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
 	scriptsDir = Paths.get(dataDir).resolve("scripts");
 	scripts = new Scripts(scriptsDir);
+	readCpuInfo();
+	readMemInfo();
 	return true;
+    }
+
+    @Override public String getProperty(String propName)
+    {
+	NullCheck.notNull(propName, "propName");
+	if (propName.startsWith("luwrain.hardware.cpu."))
+	{
+	    final String numStr = propName.substring("luwrain.hardware.cpu.".length());
+	    try {
+		final int n = Integer.parseInt(numStr);
+		return n < cpus.length?cpus[n]:"";
+	    }
+	    catch(NumberFormatException e)
+	    {
+		e.printStackTrace();
+		return "";
+	    }
+	}
+	switch(propName)
+	{
+	case "luwrain.hardware.ramsizekb":
+	    return "" + ramSizeKb; 
+	case "luwrain.hardware.ramsizemb":
+	    return "" + (ramSizeKb / 1024); 
+	default:
+	    return "";
+	}
     }
 
     @Override public org.luwrain.hardware.Hardware getHardware()
@@ -90,11 +123,54 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	case "voiceman":
 	    return new VoiceMan();
 	case "emacspeak":
-return new Emacspeak();
+	    return new Emacspeak();
 	default:
 	    Log.error("linux", "unknown speech channel type:" + type);
 	    return null;
 	}
     }
-}
 
+    private void readCpuInfo()
+    {
+	try {
+	    final LinkedList<String> res = new LinkedList<String>();
+	    for(String s: Files.readAllLines(Constants.CPU_INFO))
+		if (s.matches("model\\s*name\\s*:.*"))
+		    res.add(s.substring(s.indexOf(":") + 1).trim());
+	    cpus = res.toArray(new String[res.size()]);
+	}
+	catch(IOException e)
+	{
+	    Log.debug("linux", "unable to read CPU info:" + e.getMessage());
+	    e.printStackTrace();
+	}
+    }
+
+    private void readMemInfo()
+    {
+	try {
+	    String totalStr = "";
+	    String swapStr = "";
+	    final LinkedList<String> res = new LinkedList<String>();
+	    for(String s: Files.readAllLines(Constants.MEM_INFO))
+	    {
+		if (s.matches("MemTotal\\s*:.* kB"))
+		    totalStr = s.substring(s.indexOf(":") + 1).trim();
+		if (s.matches("SwapTotal\\s*:.* kB"))
+		    swapStr = s.substring(s.indexOf(":") + 1).trim();
+	    }
+	    if (totalStr.endsWith("kB"))
+		totalStr = totalStr.substring(0, totalStr.length() - 2).trim();
+	    if (swapStr.endsWith("kB"))
+		swapStr = swapStr.substring(0, swapStr.length() - 2).trim();
+	    final int total = Integer.parseInt(totalStr);
+	    final int swap = Integer.parseInt(swapStr);
+	    ramSizeKb = total - swap;
+	}
+	catch(IOException | NumberFormatException e)
+	{
+	    Log.debug("linux", "unable to read memory info:" + e.getMessage());
+	    e.printStackTrace();
+	}
+    }
+}

@@ -16,8 +16,13 @@
 
 package org.luwrain.linux;
 
+import java.nio.file.*;
+
 class Constants
 {
+    static public final Path CPU_INFO = Paths.get("/proc/cpuinfo");
+    static public final Path MEM_INFO = Paths.get("/proc/meminfo");
+
     static final String SYS_DIR = "/sys";
     static final String SYS_BLOCK_DIR = "/sys/block";
     static final String MEDIA_DIR = "/media";
