@@ -74,6 +74,11 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	}
     }
 
+    @Override public Braille getBraille()
+    {
+	return new BrlApi();
+    }
+
     @Override public org.luwrain.hardware.Hardware getHardware()
     {
 	if (hardware == null)
