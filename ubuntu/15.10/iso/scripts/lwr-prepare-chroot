@@ -11,7 +11,7 @@ linux-image-4.2.0-16
 
 in-chroot apt-get -y autoremove
 
-echo "nameserver $NAMESERVER" > ./chroot/run/resolvconf/resolv.conf
+echo "nameserver $LWRISO_NAMESERVER" > ./chroot/run/resolvconf/resolv.conf
 
 cat <<EOF > ./chroot/etc/apt/sources.list
 deb http://download.luwrain.org/ubuntu/ trusty main
@@ -209,13 +209,18 @@ setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
 EOF
 
-#cp -r ./dist/luwrain ./chroot/home/luwrain/
-#cp -r ./dist/.luwrain ./chroot/home/luwrain/
+for i in ./install/*; do
+    if echo "$i" | egrep -q '.conf$'; then
+	cp "$i" ./chroot/etc/
+    else
+	cp "$i" ./chroot/sbin/
+    fi
+done
 [ -d ./dist/profile ] && cp -r ./dist/profile/. ./chroot/home/luwrain/
 [ -d ./dist/etc ] && cp -r ./dist/etc/. ./chroot/etc/
 [ -d ./dist/opt ] && cp -r ./dist/opt/. ./chroot/opt/
+
 ln -s /usr/lib/jni/libbrlapi_java.so ./chroot/home/luwrain/luwrain/jni/libbrlapi_java.so
-cp -r ./dist/install/. ./chroot/sbin/
 chown -R 1000:1000 ./chroot/home/luwrain/
 chown -R root:root ./chroot/opt/
 

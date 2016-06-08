@@ -3,7 +3,7 @@
 cd /iso
 . config.sh
 
-echo "nameserver $NAMESERVER" > /run/resolvconf/resolv.conf
+echo "nameserver $LWRISO_NAMESERVER" > /run/resolvconf/resolv.conf
 apt-get update
 apt-get -y --force-yes install syslinux syslinux-common syslinux-utils squashfs-tools genisoimage
 mksquashfs chroot disk/casper/filesystem.squashfs -comp xz > /dev/null
