@@ -45,6 +45,9 @@ fi
 umount $TARGET_ROOT_DEV &> /dev/null ||:
 rm -f $LOG
 
+msg 'Formatting root filesystem'
+mkfs.ext4 "$TARGET_ROOT_DEV"  &>> $LOG
+
 msg 'Mounting the root partition of the future system'
 mkdir -p $TARGET_MOUNT &>> $LOG
 mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
@@ -69,7 +72,31 @@ done
 msg 'grub installed'
 
 msg "Finalizing"
+TARGET_ROOT_UUID="UUID=$(blkid "$TARGET_ROOT_DEV"  | sed s/'^.*UUID="\([^"]*\)".*$'/'\1'/)"
 echo $TARGET_ROOT_DEV / ext4 noatime,errors=remount-ro 0 1 >> $TARGET_MOUNT/etc/fstab
+echo '127.0.0.1 localhost.localdomain localhost' >> $TARGET_MOUNT/etc/hosts
+
+cat <<EOF > $TARGET_MOUNT/etc/rc.livecd
+#!/bin/bash
+
+for i in PCM Speaker; do
+    /usr/bin/amixer set  \$i 100% &> /dev/null
+    /usr/bin/amixer set  \$i unmute &> /dev/null
+done
+/usr/bin/amixer set Master 80% &> /dev/null
+/usr/bin/amixer set Master unmute &> /dev/null
+
+killall brltty
+/sbin/brltty -t ru
+
+export VOICEMAN_LIBAO_DRIVER=alsa
+if ! [ -e /tmp/voiceman.socket ]; then
+    /usr/bin/voicemand -d
+fi
+
+/bin/su - luwrain -c /usr/bin/startx
+EOF
+chmod 755 $TARGET_MOUNT/etc/rc.livecd
 
 #if [[ ! -z $TARGET_SWAP_DEV ]]; then
 #	echo $TARGET_SWAP_DEV none swap defaults 0 0 >> $TARGET_MOUNT/etc/fstab

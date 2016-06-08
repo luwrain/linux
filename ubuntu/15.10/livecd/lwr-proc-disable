@@ -1,5 +1,0 @@
-#!/bin/bash -e
-
-. config.sh
-
-umount  $CHROOT_DIR/proc/
