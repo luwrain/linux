@@ -47,6 +47,7 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	shiftPressed=event.isShiftDown();
 	leftAltPressed=event.isAltDown();
 	KeyboardEvent.Special code = null;
+	//	System.exit(event.getCode());
 	switch(event.getCode())
 	{
 	    // Functions keys
@@ -86,7 +87,6 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	case F12:
 	    code=KeyboardEvent.Special.F12;
 	    break;
-	    // Arrows
 	case LEFT:
 	    code=KeyboardEvent.Special.ARROW_LEFT;
 	    break;
@@ -99,7 +99,6 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	case DOWN:
 	    code=KeyboardEvent.Special.ARROW_DOWN;
 	    break;
-	    // Jump keys
 	case HOME:
 	    code=KeyboardEvent.Special.HOME;
 	    break;
@@ -121,7 +120,6 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	case CONTEXT_MENU:
 	    code=KeyboardEvent.Special.CONTEXT_MENU;
 	    break;
-	    // modificators
 	case CONTROL:
 	    code=KeyboardEvent.Special.CONTROL;
 	    break;
@@ -137,7 +135,7 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	default:
 	    return;
 	}
-	consumer.enqueueEvent(new KeyboardEvent(true,code,' ',shiftPressed,controlPressed,leftAltPressed,rightAltPressed));
+	consumer.enqueueEvent(new KeyboardEvent(code, shiftPressed, controlPressed, leftAltPressed));
     }
 
     @Override public void onKeyReleased(Object obj)
@@ -172,14 +170,65 @@ class KeyboardJavafxHandler implements KeyboardHandler
 			    code=KeyboardEvent.Special.TAB; else
 			{
 			    // FIXME: javafx characters return as String type we need a char (now return first symbol)
-			    final KeyboardEvent emulated=new KeyboardEvent(false, null,
-									   event.getCharacter().charAt(0),
-									   shiftPressed,controlPressed,leftAltPressed,rightAltPressed);
+			    char c = translateControlChar(									   event.getCharacter().charAt(0));
+			    final KeyboardEvent emulated=new KeyboardEvent(c, shiftPressed,controlPressed,leftAltPressed);
 			    consumer.enqueueEvent(emulated);
 			    return;
 			}
 	//	final int _code=code;
-	consumer.enqueueEvent(new KeyboardEvent(true, code, ' ',
-						     shiftPressed,controlPressed,leftAltPressed,rightAltPressed));
+	consumer.enqueueEvent(new KeyboardEvent(code, 
+						shiftPressed,controlPressed,leftAltPressed));
+    }
+
+    private char translateControlChar(char c)
+    {
+	switch(c)
+	{
+	case '':
+	    return 'a';
+	case '':
+	    return 'b';
+	case '':
+	    return 'c';
+	case '':
+	    return 'd';
+	case '':
+	    return 'e';
+	case '':
+	    return 'f';
+	case '':
+	    return 'g';
+	    //FIXME:h
+	    //FIXME:i
+	case '':
+	    return 'k';
+	    //FIXME:l
+	case '':
+	    return 'o';
+	case '':
+	    return 'p';
+	case '':
+	    return 'q';
+	case '':
+	    return 'r';
+	case '':
+	    return 's';
+	case '':
+	    return 't';
+	case '':
+	    return 'u';
+	case '':
+	    return 'v';
+	case '':
+	    return 'w';
+	case '':
+	    return 'x';
+	case '':
+	    return 'y';
+	case '':
+	    return 'z';
+	default:
+	    return c;
+	}
     }
 }
