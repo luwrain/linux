@@ -202,7 +202,11 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	    //FIXME:i
 	case '':
 	    return 'k';
-	    //FIXME:l
+	case '':
+	    return 'l';
+	    //FIXME:m
+	case '':
+	    return 'n';
 	case '':
 	    return 'o';
 	case '':
