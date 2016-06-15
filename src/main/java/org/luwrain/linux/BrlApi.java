@@ -4,8 +4,10 @@ package org.luwrain.linux;
 import java.util.concurrent.*;
 
 import org.a11y.BrlAPI.*;
+import org.a11y.BrlAPI.Constants;
+
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
+import org.luwrain.core.events.*;import org.a11y.BrlAPI.Constants;
 
 public class BrlApi implements org.luwrain.os.Braille
 {
@@ -87,12 +89,16 @@ Log.info("linux", "braille supported successfully initialized");
 	try {
 	    final long key = brlApi.readKey(false);
 	    if (key != -1)
+		onKey(new Key(key));
+	    /*
 	    {
 		eventConsumer.enqueueEvent(new KeyboardEvent('a'));
 	    }
+	    */
 	}
 	catch(java.lang.Exception e)
 	{
+	    	    Log.error("linux", "unable to read a key from brlapi:" + e.getClass().getName() + ":" + e.getMessage());
 	    e.printStackTrace();
 	}
     }
@@ -113,4 +119,18 @@ Log.info("linux", "braille supported successfully initialized");
 	    }
 	}, null);
     }
+
+    private void onKey(Key key)
+    {
+	Log.debug("linux", "processing brltty key " + key.getCode());
+
+	if (key.getType() == Constants.KEY_TYPE_CMD)
+	    {
+		switch(key.getCommand())
+		    {
+		    case Constants.KEY_CMD_CHRLT:
+			break;
+		    }
+	    }
+	    }
 }
