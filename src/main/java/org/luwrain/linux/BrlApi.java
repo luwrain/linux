@@ -157,6 +157,15 @@ Log.info("linux", "braille supported successfully initialized");
 	    {
 		switch(key.getCommand())
 		    {
+		    case 30:
+			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ESCAPE));
+break;
+
+		    case 29:
+			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.WINDOWS));
+break;
+
+
 		    case Constants.KEY_CMD_CHRLT:
 						eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
 			break;
