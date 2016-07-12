@@ -23,8 +23,6 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.os.*;
-import org.luwrain.speech.*;
-import org.luwrain.linux.speech.*;
 
 public class Linux implements org.luwrain.os.OperatingSystem
 {
@@ -114,23 +112,6 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	case "javafx":
 	    return new KeyboardJavafxHandler();
 	default:
-	    return null;
-	}
-    }
-
-    @Override public Channel loadSpeechChannel(String type)
-    {
-	NullCheck.notNull(type, "type");
-	switch(type)
-	{
-	case "command":
-	    return new Command();
-	case "voiceman":
-	    return new VoiceMan();
-	case "emacspeak":
-	    return new Emacspeak();
-	default:
-	    Log.error("linux", "unknown speech channel type:" + type);
 	    return null;
 	}
     }
