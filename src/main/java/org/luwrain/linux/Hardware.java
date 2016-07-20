@@ -101,8 +101,6 @@ final class Hardware implements org.luwrain.hardware.Hardware
     {
 	NullCheck.notNull(device, "device");
 	int count = 0;
-	if (mount(device.devName, new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
-	    ++count;
 	final File[] files = new File(new File(Constants.SYS_BLOCK_DIR), device.devName).listFiles();
 	for(File f: files)
 	{
@@ -111,6 +109,8 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	    if (mount(f.getName(), new File(new File(Constants.MEDIA_DIR), f.getName()).getAbsolutePath()))
 	    ++count;
 	}
+	if (mount(device.devName, new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
+	    ++count;
 	    return count;
     }
 

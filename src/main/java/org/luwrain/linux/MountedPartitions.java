@@ -38,6 +38,8 @@ class MountedPartitions
 	    //	    System.out.println(type);
 	    if (!type.startsWith("ext") &&
 		!type.equals("iso9660") &&
+		!type.equals("vfat") &&
+		!type.equals("fat") &&
 		!type.equals("cifs"))
 		continue;
 	    final String[] nameParts = store.toString().split(" \\(");
