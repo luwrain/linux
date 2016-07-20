@@ -37,17 +37,11 @@ class MountedPartitions
 	    final String type = store.type();
 	    //	    System.out.println(type);
 	    if (!type.startsWith("ext") &&
-		!type.equals("iso9660"))
+		!type.equals("iso9660") &&
+		!type.equals("cifs"))
 		continue;
-	    /*
-	    if (type.equals("proc") ||
-		type.equals("devpts") ||
-		type.equals("sysfs") ||
-		type.equals("tmpfs"))
-		continue;
-	    */
 	    final String[] nameParts = store.toString().split(" \\(");
-	    if (nameParts == null || nameParts.length < 1 || nameParts[0] == null)
+	    if (nameParts.length < 1 || nameParts[0] == null)
 		continue;
 	    final String path = nameParts[0];
 	    Partition l = null;
@@ -83,7 +77,7 @@ other.add(l);
 	return res.toArray(new Partition[res.size()]);
     }
 
-    static public Partition removable(FileStore store, String path)
+    static private Partition removable(FileStore store, String path)
     {
 	final String[] parts = store.name().split("/");
 	if (parts == null || parts.length < 1 || parts[0] == null)
@@ -91,12 +85,12 @@ other.add(l);
 	return new Partition(Partition.REMOVABLE, new File(path), parts[parts.length - 1], true);
     }
 
-    static public Partition remote(FileStore store, String path)
+    static private Partition remote(FileStore store, String path)
     {
 	return new Partition(Partition.REMOTE, new File(path), store.name(), true);
     }
 
-    static public Partition regular(FileStore store, String path)
+    static private Partition regular(FileStore store, String path)
     {
 	if (path.equals("/"))
 	    return null;
