@@ -80,7 +80,7 @@ public class Linux implements org.luwrain.os.OperatingSystem
     @Override public org.luwrain.hardware.Hardware getHardware()
     {
 	if (hardware == null)
-	    hardware = new Hardware(scriptsDir);
+	    hardware = new Hardware(scripts, scriptsDir);
 	return hardware;
     }
 

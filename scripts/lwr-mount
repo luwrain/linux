@@ -1,0 +1,22 @@
+#!/bin/bash
+
+THIS="${0##*/}"
+
+DEV_NAME="$1"
+MOUNT_POINT="$2"
+
+[ -z "$DEV_NAME" ] && echo "$THIS:no device name given" >&2 && exit 1
+[ -z "$MOUNT_POINT" ] && echo "$THIS:no mount point given" >&2 && exit 1
+
+mkdir -p "$MOUNT_POINT"
+
+if     mount -o umask=000 "/dev/$DEV_NAME" "$MOUNT_POINT"; then
+    exit 0 
+fi   
+
+if mount "/dev/$DEV_NAME" "$MOUNT_POINT"; then
+    exit 0	
+fi   
+
+rmdir  "$MOUNT_POINT"
+exit 1

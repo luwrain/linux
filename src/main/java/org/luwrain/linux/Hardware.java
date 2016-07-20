@@ -21,16 +21,20 @@ import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.core.Log;
+import org.luwrain.core.NullCheck;
 import org.luwrain.hardware.*;
 
 final class Hardware implements org.luwrain.hardware.Hardware
 {
     private final PciIds pciIds = new PciIds();
     private AudioMixer mixer;
+    private Scripts scripts;
     private Path scriptsDir;
 
-    Hardware(Path scriptsDir)
+    Hardware(Scripts scripts, Path scriptsDir)
     {
+	NullCheck.notNull(scripts, "scripts");
+	this.scripts = scripts;
 	pciIds.load();
 	this.scriptsDir = scriptsDir;
     }
@@ -50,10 +54,8 @@ final class Hardware implements org.luwrain.hardware.Hardware
 		dev.vendor = pciIds.findVendor(dev.vendor.substring(2));
 	    if (dev.vendor == null || dev.vendor.isEmpty())
 		dev.vendor = vendorStr;
-
 	    final String classStr = readTextFile(new File(d, "class").getAbsolutePath());
 	    dev.cls = classStr;
-
 	    final String modelStr = readTextFile(new File(d, "device").getAbsolutePath());
 	    dev.model = modelStr;
 	    if (vendorStr != null && vendorStr.startsWith("0x") &&
@@ -63,7 +65,6 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	    }
 	    if (dev.model == null || dev.model.isEmpty())
 		dev.model = modelStr;
-
 	    devices.add(dev);
 	}
 	return devices.toArray(new SysDevice[devices.size()]);
@@ -98,8 +99,7 @@ final class Hardware implements org.luwrain.hardware.Hardware
 
     @Override public int mountAllPartitions(StorageDevice device)
     {
-	if (device == null)
-	    return -1;
+	NullCheck.notNull(device, "device");
 	int count = 0;
 	if (mount(device.devName, new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
 	    ++count;
@@ -116,8 +116,7 @@ final class Hardware implements org.luwrain.hardware.Hardware
 
     @Override public int umountAllPartitions(StorageDevice device)
     {
-	if (device == null)
-	    return -1;
+	NullCheck.notNull(device, "device");
 	int count = 0;
 	if (umount(new File(new File(Constants.MEDIA_DIR), device.devName).getAbsolutePath()))
 	    ++count;
@@ -132,26 +131,6 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	    return count;
     }
 
-    private boolean mount(String devName, String mountPoint)
-    {
-	if (exec("sudo mkdir -p \'" + mountPoint + "\'") != 0)
-	    return false;
-	if (exec("sudo mount -o umask=000  \'/dev/" + devName + "\' \'" + mountPoint + "\'") == 0)
-	    return true;
-	if (exec("sudo mount \'/dev/" + devName + "\' \'" + mountPoint + "\'") == 0)
-	    return true;
-	exec("sudo rmdir -p \'" + mountPoint + "\'");
-	return false;
-    }
-
-    private boolean umount(String mountPoint)
-    {
-	if (exec("sudo umount \'" + mountPoint + "\'") != 0)
-	    return false;
-	exec("sudo rmdir \'" + mountPoint + "\'");
-	return true;
-    }
-
     @Override public Partition[] getMountedPartitions()
     {
 	return MountedPartitions.getMountedPartitions();
@@ -162,6 +141,21 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	if (mixer == null)
 	    mixer = new AudioMixer(scriptsDir);
 	return mixer;
+    }
+
+    @Override public Battery[] getBatteries()
+    {
+	return null;
+    }
+
+    private boolean mount(String devName, String mountPoint)
+    {
+	return scripts.runSync("lwr-mount", new String[]{devName, mountPoint}, true);
+    }
+
+    private boolean umount(String mountPoint)
+    {
+	return scripts.runSync("lwr-umount", new String[]{mountPoint}, true);
     }
 
     static private String     readTextFile(String fileName)
@@ -181,33 +175,5 @@ return b.toString();
 	    e.printStackTrace();
 	    return "";
 	}
-    }
-
-    static private int exec(String cmd)
-    {
-	Log.debug("linux", "executing:" + cmd);
-	try {
-	    final Process p = Runtime.getRuntime().exec(new String[]{"/bin/bash", "-c", cmd});
-	    p.waitFor();
-	    final int res = p.exitValue();
-	    Log.debug("linux", "exit code:" + res);
-	    return res;
-	}
-	catch (InterruptedException e)
-	{
-	    e.printStackTrace();
-	    Thread.currentThread().interrupt();
-	    return -1;
-	}
-	catch(IOException e)
-	{
-	    e.printStackTrace();
-	    return -1;
-	}
-    }
-
-    @Override public Battery[] getBatteries()
-    {
-	return null;
     }
 }
