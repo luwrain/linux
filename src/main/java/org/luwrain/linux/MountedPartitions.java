@@ -35,11 +35,17 @@ class MountedPartitions
 	for(FileStore store: stores)
 	{
 	    final String type = store.type();
+	    //	    System.out.println(type);
+	    if (!type.startsWith("ext") &&
+		!type.equals("iso9660"))
+		continue;
+	    /*
 	    if (type.equals("proc") ||
 		type.equals("devpts") ||
 		type.equals("sysfs") ||
 		type.equals("tmpfs"))
 		continue;
+	    */
 	    final String[] nameParts = store.toString().split(" \\(");
 	    if (nameParts == null || nameParts.length < 1 || nameParts[0] == null)
 		continue;
