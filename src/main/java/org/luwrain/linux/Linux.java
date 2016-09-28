@@ -159,4 +159,15 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	    e.printStackTrace();
 	}
     }
+
+    @Override public org.luwrain.core.OsCommand runOsCommand(String cmd, 
+							     org.luwrain.core.OsCommand.Output output , org.luwrain.core.OsCommand.Listener listener )
+    {
+	NullCheck.notEmpty(cmd, "cmd");
+	final LinkedList<String> arg = new LinkedList<String>();
+	arg.add("/bin/bash");
+	arg.add("-c");
+	arg.add(cmd);
+	return new OsCommand(output, listener, arg);
+    }
 }
