@@ -18,20 +18,24 @@ class OsCommand implements org.luwrain.core.OsCommand
     private final LinkedList<String> lines = new LinkedList<String>();
 
     OsCommand(Output output, Listener listener,
-	      List<String> cmd)
+	      List<String> cmd, String dir)
     {
 	NullCheck.notNull(cmd, "cmd");
+	NullCheck.notNull(dir, "dir");
 	this.output = output;
 	this.listener = listener;
-	run(cmd);
+	run(cmd, dir);
     }
 
-    private void run(List<String> cmd)
+    private void run(List<String> cmd, String dir)
     {
 	NullCheck.notNull(cmd, "cmd");
+	NullCheck.notNull(dir, "dir");
 	task = new FutureTask(()->{
 		try {
 		    final ProcessBuilder builder = new ProcessBuilder(cmd);
+		    if (!dir.isEmpty())
+		    builder.directory(new File(dir));
 		    builder.redirectErrorStream(true);
 		    final Process p = builder.start();
 		    p.getOutputStream().close();

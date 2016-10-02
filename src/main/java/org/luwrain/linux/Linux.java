@@ -160,14 +160,15 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	}
     }
 
-    @Override public org.luwrain.core.OsCommand runOsCommand(String cmd, 
+    @Override public org.luwrain.core.OsCommand runOsCommand(String cmd, String dir,
 							     org.luwrain.core.OsCommand.Output output , org.luwrain.core.OsCommand.Listener listener )
     {
 	NullCheck.notEmpty(cmd, "cmd");
+	NullCheck.notNull(dir, "dir");
 	final LinkedList<String> arg = new LinkedList<String>();
 	arg.add("/bin/bash");
 	arg.add("-c");
 	arg.add(cmd);
-	return new OsCommand(output, listener, arg);
+	return new OsCommand(output, listener, arg, dir);
     }
 }
