@@ -10,7 +10,7 @@ MOUNT_POINT="$2"
 
 mkdir -p "$MOUNT_POINT"
 
-if     mount -o umask=000 "/dev/$DEV_NAME" "$MOUNT_POINT"; then
+if     mount -o umask=000,utf8,iocharset=8859-1 "/dev/$DEV_NAME" "$MOUNT_POINT"; then
     exit 0 
 fi   
 
