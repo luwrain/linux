@@ -12,6 +12,7 @@ linux-image-4.2.0-16
 in-chroot apt-get -y autoremove
 
 echo "nameserver $LWRISO_NAMESERVER" > ./chroot/run/resolvconf/resolv.conf
+echo "nameserver $LWRISO_NAMESERVER" > /run/resolvconf/resolv.conf
 
 cat <<EOF > ./chroot/etc/apt/sources.list
 deb http://download.luwrain.org/ubuntu/ trusty main
@@ -63,7 +64,7 @@ for i in PCM Speaker; do
     /usr/bin/amixer set  \$i 100% &> /dev/null
     /usr/bin/amixer set  \$i unmute &> /dev/null
 done
-/usr/bin/amixer set Master 80% &> /dev/null
+/usr/bin/amixer set Master 100% &> /dev/null
 /usr/bin/amixer set Master unmute &> /dev/null
 
 killall brltty
@@ -74,7 +75,8 @@ if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi
 
-/usr/bin/greeter-ru
+#/usr/bin/greeter-ru
+/opt/greeter/greeter.sh
 /bin/su - luwrain -c /usr/bin/startx
 EOF
 chmod 755 ./chroot/etc/rc.livecd
@@ -204,6 +206,7 @@ sed -i -e s/'^.*text-table.*Russian.*$'/'text-table ru'/ ./chroot/etc/brltty.con
 cat <<EOF > ./chroot/home/luwrain/.xinitrc
 exec &> /tmp/xinitrc.log
 export LANG=en_US.UTF-8
+export LUWRAIN_LANG=ru
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 exec ~/luwrain/luwrain.sh
@@ -219,6 +222,7 @@ done
 [ -d ./dist/profile ] && cp -r ./dist/profile/. ./chroot/home/luwrain/
 [ -d ./dist/etc ] && cp -r ./dist/etc/. ./chroot/etc/
 [ -d ./dist/opt ] && cp -r ./dist/opt/. ./chroot/opt/
+[ -d ./dist/bin ] && cp -r ./dist/bin/. ./chroot/usr/local/bin/
 
 ln -s /usr/lib/jni/libbrlapi_java.so ./chroot/home/luwrain/luwrain/jni/libbrlapi_java.so
 chown -R 1000:1000 ./chroot/home/luwrain/
@@ -227,6 +231,11 @@ chown -R root:root ./chroot/opt/
 # Temporary patches
 sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru
 sed -i -e s/ДLUWRAIN/LUWRAIN/ ./chroot/usr/share/luwrain-live/frames/ru/00.txt
+
+find scripts.d -type f -executable | sort | while read l ; do
+    source "$l"
+done
+
 
 if [ -n "$LWRISO_CUSTOMIZING" ]; then
     find "./customizing/$LWRISO_CUSTOMIZING" -type f | sort | while read l ; do
