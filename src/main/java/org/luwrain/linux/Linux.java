@@ -37,7 +37,11 @@ public class Linux implements org.luwrain.os.OperatingSystem
     @Override public boolean init(String dataDir)
     {
 	NullCheck.notNull(dataDir, "dataDir");
-	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME);
+
+    	String libname="SAPIImpl."+System.getProperty("sun.arch.data.model");
+	//    	System.loadLibrary(libname);
+
+	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
 	scriptsDir = Paths.get(dataDir).resolve("scripts");
 	scripts = new Scripts(scriptsDir);
 	readCpuInfo();
