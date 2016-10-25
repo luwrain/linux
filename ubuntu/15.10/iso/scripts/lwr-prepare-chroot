@@ -55,134 +55,7 @@ sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/sys
 
 # Autostart actions
 sed -i -e s/'^allowed_users=.*$'/'allowed_users=anybody'/ ./chroot/etc/X11/Xwrapper.config
-cat <<EOF > ./chroot/etc/rc.livecd
-#!/bin/bash
-# LLUWRAIN live CD autolaunch script (executed in loop from /etc/systemd/system/getty@tty1.service.d/override.conf)
-# Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-for i in PCM Speaker; do
-    /usr/bin/amixer set  \$i 100% &> /dev/null
-    /usr/bin/amixer set  \$i unmute &> /dev/null
-done
-/usr/bin/amixer set Master 100% &> /dev/null
-/usr/bin/amixer set Master unmute &> /dev/null
-
-killall brltty
-/sbin/brltty -t ru
-
-export VOICEMAN_LIBAO_DRIVER=alsa
-if ! [ -e /tmp/voiceman.socket ]; then
-    /usr/bin/voicemand -d
-fi
-
-#/usr/bin/greeter-ru
-/opt/greeter/greeter.sh
-/bin/su - luwrain -c /usr/bin/startx
-EOF
-chmod 755 ./chroot/etc/rc.livecd
-
-# Preparing speech utils
-cd ./chroot/etc/yasr
-sed -i -e s/'^\(synthesizer=.*\)$'/'#\1'/ yasr.conf
-sed -i -e s/'^.*synthesizer.*emacspeak.*$'/'synthesizer=emacspeak server'/ yasr.conf
-sed -i -e s/'^\(synthesizer port=.*\)$'/'#\1'/ yasr.conf
-sed -i -e s:'^.*synthesizer port.*eflite.*$':'synthesizer port=|/usr/bin/voiceman-emacspeak': yasr.conf
-cd ../../..
-cat <<EOF > ./chroot/etc/voiceman.conf
-# VoiceMan configuration for LUWRAIN distribution
-# Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-[Global]
-inet socket port = 5511
-socket = "/tmp/voiceman.socket"
-log level = info
-default language = rus
-
-[characters]
-rus = "0123456789.,;:_-+=[]&<>""'/\\|?~\`!@#\$%^*(){}"
-EOF
-cat <<EOF > ./chroot/etc/voiceman.d/rhvoice-rus.output
-[output]
-name = RHVoice-rus
-type = command
-lang = rus
-synth command = "RHVoice -r %r -p %p | voiceman-trim --words"
-alsa player command = "exec aplay -"
-pitch num digits after dot = 2
-pitch min = "0.1"
-pitch aver = 1
-pitch max = "1.9"
-rate num digits after dot = 2
-rate max = "0.5"
-rate aver = 1.6
-rate min = 2
-EOF
-cat <<EOF > ./chroot/etc/voiceman.d/rhvoice-eng.output
-[output]
-name = RHVoice-eng
-type = command
-lang = eng
-synth command = "RHVoice -r %r -p %p | voiceman-trim --words"
-alsa player command = "exec aplay -"
-pitch num digits after dot = 2
-pitch min = "0.1"
-pitch aver = 1
-pitch max = "1.9"
-rate num digits after dot = 2
-rate max = "0.5"
-rate aver = 1.6
-rate min = 2
-EOF
-cat <<EOF > ./chroot/usr/share/voiceman/chars-table
-0:ноль
-1:один
-2:два
-3:три
-4:четыре
-5:пять
-6:шесть
-7:семь
-8:восемь
-9:девять
-.:точка
-,:запятая
-;:точка с запятой
-_:подчёркивание
--:дефис
-+:плюс
-=:равно
-[:левая квадратная
-]:правая квадратная
-&:амперсанд
-<:меньше
->:больше
-"""":двойные кавычки
-':апостроф
-/:черта в гору
-\\:черта с горы
-|:вертикальная черта
-?:вопросительный знак
-~:тильда
-\`:обратный апостроф
-!:восклицательный знак
-@:собачка
-"#":диез
-\$:знак доллара
-%:процент
-^:возведение в степень
-*:звезда
-(:левая круглая
-):правая круглая
-{:левая фигурная
-}:правая фигурная
-":":двоеточие
-ъ:твёрдый знак
-Ъ:твёрдый знак
-ь:мягкий знак
-Ь:мягкий знак
-й:и краткое
-Й:и краткое
-EOF
 
 
 # General environment patches
@@ -196,46 +69,12 @@ in-chroot update-ca-certificates -f
 sed -i -e s/'^\(java.*\)$'/'#\1'/ ./chroot/etc/java-8-openjdk/sound.properties
 sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ ./chroot/etc/java-8-openjdk/sound.properties
 
-# brltty
-sed  -i -e s/'^RUN_BRLTTY=.*$'/'RUN_BRLTTY=yes'/ ./chroot/etc/default/brltty
-# Russian only
-sed  -i -e s/'^ARGUMENTS=.*$'/'ARGUMENTS="-q -t ru"'/ ./chroot/etc/default/brltty
-sed -i -e s/'^.*text-table.*Russian.*$'/'text-table ru'/ ./chroot/etc/brltty.conf
 
-# luwrain user settings
-cat <<EOF > ./chroot/home/luwrain/.xinitrc
-exec &> /tmp/xinitrc.log
-export LANG=en_US.UTF-8
-export LUWRAIN_LANG=ru
-setxkbmap -layout "us,ru"
-setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
-exec ~/luwrain/luwrain.sh
-EOF
 
-for i in ./install/*; do
-    if echo "$i" | egrep -q '.conf$'; then
-	cp "$i" ./chroot/etc/
-    else
-	cp "$i" ./chroot/sbin/
-    fi
-done
-[ -d ./dist/profile ] && cp -r ./dist/profile/. ./chroot/home/luwrain/
-[ -d ./dist/etc ] && cp -r ./dist/etc/. ./chroot/etc/
-[ -d ./dist/opt ] && cp -r ./dist/opt/. ./chroot/opt/
-[ -d ./dist/bin ] && cp -r ./dist/bin/. ./chroot/usr/local/bin/
-
-ln -s /usr/lib/jni/libbrlapi_java.so ./chroot/home/luwrain/luwrain/jni/libbrlapi_java.so
-chown -R 1000:1000 ./chroot/home/luwrain/
-chown -R root:root ./chroot/opt/
-
-# Temporary patches
-sed  -i -e s:'^RECORDING_COMMAND=':'RECORDING_COMMAND="/usr/bin/ogg123 -d alsa $GREETER_DIR/recordings/ru.ogg"': ./chroot/usr/bin/greeter-ru
-sed -i -e s/ДLUWRAIN/LUWRAIN/ ./chroot/usr/share/luwrain-live/frames/ru/00.txt
 
 find scripts.d -type f -executable | sort | while read l ; do
     source "$l"
 done
-
 
 if [ -n "$LWRISO_CUSTOMIZING" ]; then
     find "./customizing/$LWRISO_CUSTOMIZING" -type f | sort | while read l ; do
