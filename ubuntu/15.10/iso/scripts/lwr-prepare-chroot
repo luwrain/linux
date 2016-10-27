@@ -58,12 +58,6 @@ sed -i -e s/'^allowed_users=.*$'/'allowed_users=anybody'/ ./chroot/etc/X11/Xwrap
 
 
 
-# General environment patches
-in-chroot useradd -G cdrom,audio,video,users luwrain
-in-chroot cp -r /etc/skel /home/luwrain
-in-chroot chown -R luwrain:luwrain /home/luwrain
-echo 'luwrain ALL=NOPASSWD:ALL' > ./chroot/etc/sudoers.d/luwrain
-chmod 400 ./chroot/etc/sudoers.d/luwrain
 in-chroot update-ca-certificates -f
 #Disabling pulseaudio for Java
 sed -i -e s/'^\(java.*\)$'/'#\1'/ ./chroot/etc/java-8-openjdk/sound.properties
@@ -74,7 +68,7 @@ sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ ./chroot/etc/java-8-o
 
 find scripts.d -type f -executable | sort | while read l ; do
     source "$l"
-done
+done &> /iso/log-scripts.txt
 
 if [ -n "$LWRISO_CUSTOMIZING" ]; then
     find "./customizing/$LWRISO_CUSTOMIZING" -type f | sort | while read l ; do
