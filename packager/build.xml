@@ -1,0 +1,23 @@
+<project name="luwrain" default="fxpkg" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
+  <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+    uri="javafx:com.sun.javafx.tools.ant"
+    classpath="/opt/java/lib/ant-javafx.jar"/>
+
+  <target name="fxpkg">
+    <delete dir="out"/>
+    <fx:deploy nativeBundles="image" width="100" height="100" outdir="out" outfile="luwrain">
+      <fx:application name="luwrain" mainClass="org.luwrain.core.Init">
+<fx:argument>super</fx:argument>
+</fx:application>
+      <fx:info title="LUWRAIN" vendor="LUWRAIN project"/>
+      <fx:preferences shortcut="true"/>
+      <fx:resources>
+        <fx:fileset dir="dist" includes="jar/*.jar"/>
+<!--        <fx:fileset dir="../luwrain/jar" includes="luwrain.jar"/>-->
+<!--         <fx:fileset dir="../lib-stage4" includes="luwrain*.jar"/>-->
+        <fx:fileset dir="dist" includes="data/**"/>
+        <!-- 				<fx:fileset dir="../../../../extensions-mssapi/build/jni" includes="*.dll"/> -->
+      </fx:resources>
+    </fx:deploy>
+  </target>
+</project>

@@ -1,0 +1,14 @@
+#!/bin/bash -e
+# Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+# This file is part of LUWRAIN
+
+find-jars()
+{
+find  dist/"$1"/ -iname '*.jar' | sed s:dist/$1:$1:g | xargs  echo  | sed s/" $1"/:$1/g
+}
+
+rm -rf ./out ./luwrain
+ant
+cp -r out/bundles/luwrain ./luwrain
+CLASSPATH=$(find-jars jar):$(find-jars lib)
+sed -i -e s'|^app.classpath=$|'"app.classpath=$CLASSPATH"'|' luwrain/app/package.cfg
