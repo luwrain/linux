@@ -12,3 +12,4 @@ ant
 cp -r out/bundles/luwrain ./luwrain
 CLASSPATH=$(find-jars jar):$(find-jars lib)
 sed -i -e s'|^app.classpath=$|'"app.classpath=$CLASSPATH"'|' luwrain/app/package.cfg
+rm -rf out
