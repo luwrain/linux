@@ -27,6 +27,7 @@ cd "$LUWRAIN_HOME"
 
 exec java \
 -cp jar/luwrain.jar:jar/luwrain-base.jar \
+-Djava.security.egd=file:/dev/./urandom \
 -Djava.library.path="$LUWRAIN_HOME" \
 "$LUWRAIN_MAIN_CLASS" \
 "$@" &> ~/.luwrain.log
