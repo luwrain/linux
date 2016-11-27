@@ -170,7 +170,7 @@ class KeyboardJavafxHandler implements KeyboardHandler
 			    code=KeyboardEvent.Special.TAB; else
 			{
 			    // FIXME: javafx characters return as String type we need a char (now return first symbol)
-			    char c = translateControlChar(									   event.getCharacter().charAt(0));
+			    char c = event.getCharacter().charAt(0);
 			    final KeyboardEvent emulated=new KeyboardEvent(c, shiftPressed,controlPressed,leftAltPressed);
 			    consumer.enqueueEvent(emulated);
 			    return;
@@ -178,61 +178,5 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	//	final int _code=code;
 	consumer.enqueueEvent(new KeyboardEvent(code, 
 						shiftPressed,controlPressed,leftAltPressed));
-    }
-
-    private char translateControlChar(char c)
-    {
-	switch(c)
-	{
-	case '':
-	    return 'a';
-	case '':
-	    return 'b';
-	case '':
-	    return 'c';
-	case '':
-	    return 'd';
-	case '':
-	    return 'e';
-	case '':
-	    return 'f';
-	case '':
-	    return 'g';
-	    //FIXME:h
-	    //FIXME:i
-	case '':
-	    return 'k';
-	case '':
-	    return 'l';
-	    //FIXME:m
-	case '':
-	    return 'n';
-	case '':
-	    return 'o';
-	case '':
-	    return 'p';
-	case '':
-	    return 'q';
-	case '':
-	    return 'r';
-	case '':
-	    return 's';
-	case '':
-	    return 't';
-	case '':
-	    return 'u';
-	case '':
-	    return 'v';
-	case '':
-	    return 'w';
-	case '':
-	    return 'x';
-	case '':
-	    return 'y';
-	case '':
-	    return 'z';
-	default:
-	    return c;
-	}
     }
 }
