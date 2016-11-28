@@ -1,6 +1,6 @@
 #!/bin/bash -e
 # Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-# This file is part of the LUWRAIN.
+# This file is part of LUWRAIN.
 
 THIS="${0##*/}"
 LUWRAIN_MAIN_CLASS=org.luwrain.core.Init
@@ -30,4 +30,3 @@ exec java \
 -Djava.security.egd=file:/dev/./urandom \
 -Djava.library.path="$LUWRAIN_HOME" \
 "$LUWRAIN_MAIN_CLASS" \
-"$@" &> ~/.luwrain.log
