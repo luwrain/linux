@@ -16,7 +16,9 @@
         <fx:fileset dir="dist" includes="registry/**"/>
         <fx:fileset dir="dist" includes="i18n/**"/>
         <fx:fileset dir="dist" includes="sqlite/**"/>
-        <fx:fileset dir="dist/jni" includes="*.so"/>
+        <fx:fileset dir="dist" includes="rhvoice/**"/>
+        <fx:fileset dir="dist" includes="*.so*"/>
+        <fx:fileset dir="dist" includes="*.txt"/>
         <fx:fileset dir="dist" includes="jni.zip"/>
       </fx:resources>
     </fx:deploy>
