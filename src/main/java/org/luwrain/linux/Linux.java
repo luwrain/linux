@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.nio.file.*;
 
 import org.luwrain.core.*;
-import org.luwrain.os.*;
+import org.luwrain.base.*;
 
-public class Linux implements org.luwrain.os.OperatingSystem
+public class Linux implements org.luwrain.base.OperatingSystem
 {
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
@@ -81,7 +81,7 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	return new BrlApi();
     }
 
-    @Override public org.luwrain.hardware.Hardware getHardware()
+    @Override public org.luwrain.base.Hardware getHardware()
     {
 	if (hardware == null)
 	    hardware = new Hardware(scripts, scriptsDir);
@@ -108,7 +108,7 @@ public class Linux implements org.luwrain.os.OperatingSystem
 	throw new UnsupportedOperationException("Linux has no support of opening files in desktop environment");
     }
 
-    @Override public KeyboardHandler getCustomKeyboardHandler(String subsystem)
+    @Override public org.luwrain.interaction.KeyboardHandler getCustomKeyboardHandler(String subsystem)
     {
 	NullCheck.notNull(subsystem, "subsystem");
 	switch(subsystem.toLowerCase().trim())

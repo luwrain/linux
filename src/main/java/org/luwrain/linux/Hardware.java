@@ -20,11 +20,10 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-import org.luwrain.core.Log;
-import org.luwrain.core.NullCheck;
-import org.luwrain.hardware.*;
+import org.luwrain.core.*;
+import org.luwrain.base.*;
 
-final class Hardware implements org.luwrain.hardware.Hardware
+final class Hardware implements org.luwrain.base.Hardware
 {
     private final PciIds pciIds = new PciIds();
     private AudioMixer mixer;
@@ -136,7 +135,7 @@ final class Hardware implements org.luwrain.hardware.Hardware
 	return MountedPartitions.getMountedPartitions();
     }
 
-    @Override public org.luwrain.hardware.AudioMixer getAudioMixer()
+    @Override public org.luwrain.base.AudioMixer getAudioMixer()
     {
 	if (mixer == null)
 	    mixer = new AudioMixer(scriptsDir);

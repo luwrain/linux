@@ -20,7 +20,7 @@ import java.nio.file.*;
 import java.io.File;
 import java.util.LinkedList;
 
-import org.luwrain.hardware.Partition;
+import org.luwrain.base.*;
 
 class MountedPartitions
 {

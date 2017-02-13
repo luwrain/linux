@@ -19,10 +19,10 @@ package org.luwrain.linux;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-import org.luwrain.core.NullCheck;
-import org.luwrain.core.EventConsumer;
+import org.luwrain.core.*;
+import org.luwrain.base.*;
 import org.luwrain.core.events.KeyboardEvent;
-import org.luwrain.os.KeyboardHandler;
+import org.luwrain.interaction.KeyboardHandler;
 
 class KeyboardJavafxHandler implements KeyboardHandler
 {

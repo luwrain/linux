@@ -9,7 +9,7 @@ import org.a11y.BrlAPI.Constants;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;import org.a11y.BrlAPI.Constants;
 
-public class BrlApi implements org.luwrain.os.Braille
+public class BrlApi implements org.luwrain.base.Braille
 {
     static private final int STEP_DELAY = 10;
 
@@ -17,11 +17,11 @@ public class BrlApi implements org.luwrain.os.Braille
     private FutureTask task = null;
 
     private Brlapi brlApi = null;
-    private EventConsumer eventConsumer;
+    private org.luwrain.base.EventConsumer eventConsumer;
     private String driverName;
     private DisplaySize displaySize;
 
-    @Override public InitResult init(EventConsumer eventConsumer)
+    @Override public InitResult init(org.luwrain.base.EventConsumer eventConsumer)
     {
 	NullCheck.notNull(eventConsumer, "eventConsumer");
 	this.eventConsumer = eventConsumer;
