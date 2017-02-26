@@ -75,7 +75,7 @@ public class Operations implements FilesOperations
 	    final File[] whatToCopy = new File[args.length - 2];
 	    for(int i = 1;i < args.length - 1;++i)
 		whatToCopy[i- 1] = new File(args[i]).getAbsoluteFile();
-	    final File copyTo = new File(args[args.length - 1]).getAbsoluteFile();
+	    final File copyTo = new File(args[args.length - 1]);
 	    System.out.println("Copying:");
 	    for(File f: whatToCopy)
 		System.out.println(f.toString());
@@ -100,7 +100,9 @@ public class Operations implements FilesOperations
 		}
 		@Override public FilesOperation.ConfirmationChoices confirmOverwrite(Path path)
 		{
-		    return FilesOperation.ConfirmationChoices.CANCEL;
+		    NullCheck.notNull(path, "path");
+		    System.out.println("approving overwrite of " + path);
+		    return FilesOperation.ConfirmationChoices.OVERWRITE;
 		}
 	};
     }

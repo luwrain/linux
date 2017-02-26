@@ -28,11 +28,9 @@ abstract class CopyingBase extends Base
     private int percents = 0;
     private int lastPercents = 0;//Useful for filtering out notifications with the same number of percents
 
-    private boolean overwriteApproved = false;
-
-    CopyingBase(Listener listener, String opName)
+    CopyingBase(Listener listener, String name)
     {
-	super(listener, opName);
+	super(listener, name);
     }
 
     protected Result copy(Path[] toCopy, Path dest) throws IOException
@@ -43,9 +41,7 @@ abstract class CopyingBase extends Base
 	for(Path p: toCopy)
 	    if (!p.isAbsolute())
 		throw new IllegalArgumentException("Paths of all source files must be absolute");
-	if (!dest.isAbsolute())
-	    throw new IllegalArgumentException("Destination path must be absolute");
-	//Calculating the total size of source files
+	//Calculating total size of source files
 	totalBytes = 0;
 	for(Path f: toCopy)
 	{
@@ -59,6 +55,7 @@ abstract class CopyingBase extends Base
 	    final Path parent = toCopy[0].getParent();
 	    NullCheck.notNull(parent, "parent");
 	    d = parent.resolve(d);
+	    status("absolute destination path:" + d.toString());
 	}
 	if (toCopy.length == 1)
 	    return singleSource(toCopy[0], d); else
@@ -106,41 +103,46 @@ abstract class CopyingBase extends Base
 	return copySingleFile(fileFrom, fileTo);//This takes care if fromFile is a symlink
     }
 
-    private Result multipleSource(Path[] filesFrom, Path fileTo) throws IOException
+    private Result multipleSource(Path[] toCopy, Path dest) throws IOException
     {
 	status("multiple source mode");
-	if (exists(fileTo, false) && !isDirectory(fileTo, true))
+	if (exists(dest, false) && !isDirectory(dest, true))
 	{
-	    switch(confirmOverwrite(fileTo))
+	    status("" + dest.toString() + " exists and is not a directory");
+	    switch(confirmOverwrite(dest))
 	    {
 	    case SKIP:
 		return new Result();
 	    case CANCEL:
 		return new Result(Result.Type.INTERRUPTED);
 	    }
-	    Files.delete(fileTo);
+	    status("deleting previously existing " + dest.toString());
+	    Files.delete(dest);
 	}
-	Files.createDirectory(fileTo);
-	return copyRecurse(filesFrom, fileTo);
+	if (!exists(dest, false))//just for the case dest is a symlink to a directory
+	Files.createDirectories(dest);
+	return copyRecurse(toCopy, dest);
     }
 
     private Result copyRecurse(Path[] filesFrom, Path fileTo) throws IOException
     {
 	NullCheck.notNullItems(filesFrom, "filesFrom");
 	NullCheck.notNull(fileTo, "fileTo");
-	status("copyRecurse:copying " + filesFrom.length + " item(s) to " + fileTo);
+	status("copyRecurse:copying " + filesFrom.length + " entries to " + fileTo);
 	//toFile should already exist and should be a directory
 	for(Path f: filesFrom)
 	{
 	    if (!isDirectory(f, false))
 	    {
+		status("" + f.toString() + " is not a directory");
 		final Result res = copyFileToDir(f, fileTo);
 		if (res.getType() != Result.Type.OK)
 		    return res;
 		continue;
 	    }
-	    //f is a directory
+	    status("" + f.toString() + " is a directory");
 	    final Path newDest = fileTo.resolve(f.getFileName());
+	    status("new destination is " + newDest.toString());
 	    if (exists(newDest, false) && !isDirectory(newDest, true))
 	    {
 		status("" + newDest + " already exists and isn\'t a directory, asking confirmation and trying to delete it");
@@ -151,8 +153,10 @@ abstract class CopyingBase extends Base
 		case CANCEL:
 		    return new Result(Result.Type.INTERRUPTED);
 		}
+		status("deleting previously existing " + newDest.toString());
 		Files.delete(newDest);
 	    }
+	    if (!exists(newDest, false))//just for the case newDest  is a symlink to a directory
 	    Files.createDirectories(newDest);
 	    status("" + newDest + " prepared");
 	    final Result res = copyRecurse(getDirContent(f), newDest);
