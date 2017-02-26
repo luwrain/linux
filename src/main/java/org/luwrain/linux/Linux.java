@@ -28,6 +28,7 @@ public class Linux implements org.luwrain.base.OperatingSystem
 {
     private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
+    private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private Path scriptsDir;
     private Scripts scripts = null;
     private Hardware hardware;
@@ -174,5 +175,10 @@ public class Linux implements org.luwrain.base.OperatingSystem
 	arg.add("-c");
 	arg.add(cmd);
 	return new OsCommand(output, listener, arg, dir);
+    }
+
+    @Override public FilesOperations getFilesOperations()
+    {
+	return filesOperations;
     }
 }
