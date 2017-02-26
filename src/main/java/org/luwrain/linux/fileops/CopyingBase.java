@@ -120,7 +120,7 @@ abstract class CopyingBase extends Base
 	    Files.delete(dest);
 	}
 	if (!exists(dest, false))//just for the case dest is a symlink to a directory
-	Files.createDirectories(dest);
+	    Files.createDirectories(dest);
 	return copyRecurse(toCopy, dest);
     }
 
@@ -157,7 +157,7 @@ abstract class CopyingBase extends Base
 		Files.delete(newDest);
 	    }
 	    if (!exists(newDest, false))//just for the case newDest  is a symlink to a directory
-	    Files.createDirectories(newDest);
+		Files.createDirectories(newDest);
 	    status("" + newDest + " prepared");
 	    final Result res = copyRecurse(getDirContent(f), newDest);
 	    if (res.getType() != Result.Type.OK)
@@ -173,12 +173,10 @@ abstract class CopyingBase extends Base
 	return copySingleFile(file, destDir.resolve(file.getFileName()));
     }
 
-    //Saves the symlinks and asks confirmation if overriteApproved is false
     private Result copySingleFile(Path fromFile, Path toFile) throws IOException
     {
 	NullCheck.notNull(fromFile, "fromFile");
 	NullCheck.notNull(toFile, "toFile");
-	status("copying single file " + fromFile + " to " + toFile);
 	if (exists(toFile, false))
 	{
 	    status("" + toFile + " already exists");
@@ -196,7 +194,6 @@ abstract class CopyingBase extends Base
 	    Files.createSymbolicLink(toFile, Files.readSymbolicLink(fromFile));
 	    return new Result();
 	}
-	status("opening streams and copying data");
 	final InputStream in = Files.newInputStream(fromFile);
 	final OutputStream out = Files.newOutputStream(toFile);
 	try {
@@ -217,7 +214,6 @@ abstract class CopyingBase extends Base
 	    in.close();
 	    out.close();
 	}
-	status("" + fromFile + " successfully copied to " + toFile);
 	return new Result();
     }
 
@@ -228,7 +224,7 @@ abstract class CopyingBase extends Base
 	percents = (int)lPercents;
 	if (percents > lastPercents)
 	{
-onProgress(this);
+	    onProgress(this);
 	    lastPercents = percents;
 	}
     }
