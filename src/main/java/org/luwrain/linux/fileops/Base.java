@@ -32,8 +32,6 @@ abstract class Base implements FilesOperation
     private boolean finished = false;
     private boolean finishingAccepted = false ;
     private Result result = new Result();
-    private Path extInfoPath = null;
-    private IOException extInfoIoException = null;
     protected boolean interrupted = false;
 
     Base(Listener listener, String name)
@@ -49,15 +47,19 @@ abstract class Base implements FilesOperation
     @Override public void run()
     {
 	try {
-	    result = work();
+	    try {
+		result = work();
+	    }
+	    catch (Exception e)
+	    {
+		Log.error("linux", name + ":" + e.getClass().getName() + ":" + e.getMessage());
+		result = new Result(Result.Type.EXCEPTION, e);
+	    }
 	}
-	catch (IOException e)
-	{
-	    Log.error("linux", name + ":" + e.getClass().getName() + ":" + e.getMessage());
-	    result = new Result(Result.Type.EXCEPTION, e);
+	finally {
+	    finished = true;
+	    listener.onOperationProgress(this);
 	}
-	finished = true;
-	listener.onOperationProgress(this);
     }
 
     @Override public synchronized void interrupt()
@@ -78,16 +80,6 @@ abstract class Base implements FilesOperation
     @Override public synchronized Result getResult()
     {
 	return result;
-    }
-
-    @Override public synchronized  Path getExtInfoPath()
-    {
-	return extInfoPath;
-    }
-
-    @Override public IOException getExtInfoIoException()
-    {
-	return extInfoIoException;
     }
 
     @Override public boolean finishingAccepted()
@@ -160,11 +152,6 @@ abstract class Base implements FilesOperation
     {
 	NullCheck.notNull(path, "path");
 	return listener.confirmOverwrite(path);
-    }
-
-    protected void setResultExtInfoPath(Path path)
-    {
-	extInfoPath = path;
     }
 
     protected void onProgress(FilesOperation op)
