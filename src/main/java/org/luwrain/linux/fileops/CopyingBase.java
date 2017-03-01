@@ -76,15 +76,18 @@ abstract class CopyingBase extends Base
 	{
 	    //fileFrom is a directory, we must copy its content to newly created directory
 	    status("" + fileFrom + " is a directory and isn\'t a symlink");
-	    switch(confirmOverwrite(dest))
+	    if (exists(dest, false))
 	    {
-	    case SKIP:
-		return new Result();
-	    case CANCEL:
-		return new Result(Result.Type.INTERRUPTED);
+		switch(confirmOverwrite(dest))
+		{
+		case SKIP:
+		    return new Result();
+		case CANCEL:
+		    return new Result(Result.Type.INTERRUPTED);
+		}
+		status("deleting previously existing " + dest.toString());
+		Files.delete(dest);
 	    }
-	    status("deleting previously existing " + dest.toString());
-	    Files.delete(dest);
 	    Files.createDirectories(dest);
 	    //Copying the content of fileFrom to the newly created directory dest
 	    return copyRecurse(getDirContent(fileFrom), dest);

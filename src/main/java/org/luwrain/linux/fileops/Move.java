@@ -116,7 +116,7 @@ class Move extends CopyingBase
 	status("performing moving through copying to " + moveTo.toString());
 	final Result res = copy(toMove, moveTo);
 	status("copying result is " + res.toString());
-	if (res.getType() == Result.Type.OK)
+	if (res.getType() != Result.Type.OK)
 	    return res;
 	status("deleting source files");
 	for(Path p: toMove)
