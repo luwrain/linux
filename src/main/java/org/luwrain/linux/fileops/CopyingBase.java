@@ -62,45 +62,53 @@ abstract class CopyingBase extends Base
 	    return multipleSource(toCopy, d);
     }
 
-    private Result singleSource(Path fileFrom, Path fileTo) throws IOException
+    private Result singleSource(Path fileFrom, Path dest) throws IOException
     {
-	status("single source mode: " + fileFrom + " -> " + fileTo);
+	status("single source mode:copying " + fileFrom + " to " + dest);
 	//The destination directory already exists, just copying whatever fileFrom is
-	if (isDirectory(fileTo, true))
+	if (isDirectory(dest, true))
 	{
-	    status("" + fileTo + " exists and is a directory (or a symlink to a directory)");
-	    return copyRecurse(new Path[]{fileFrom}, fileTo);
+	    status("" + dest + " exists and is a directory (or a symlink to a directory)");
+	    return copyRecurse(new Path[]{fileFrom}, dest);
 	}
 	//The destination isn't a directory, maybe even doesn't exist
 	if (isDirectory(fileFrom, false))
 	{
 	    //fileFrom is a directory, we must copy its content to newly created directory
 	    status("" + fileFrom + " is a directory and isn\'t a symlink");
-	    //This will fail, if fileTo points to anything different than a directory
-	    Files.createDirectories(fileTo);
-	    //Copying the content of fileFrom to the newly created directory fileTo
-	    return copyRecurse(getDirContent(fileFrom), fileTo);
-	}
-	//We sure that fileFrom and fileTo aren't directories, but fileTo may exist
-	if (!Files.isSymbolicLink(fileFrom) && !isRegularFile(fileFrom, false))
-	{
-	    status("" + fileFrom + "is not a symlink and is not a regular file, nothing to do");
-	    return new Result();//Silently do nothing
-	}
-	status("" + fileFrom + " is a symlink or a regular file");
-	if (exists(fileTo, false))
-	{
-	    status("" + fileTo + " exists, trying to overwrite it");
-	    switch(confirmOverwrite(fileTo))
+	    switch(confirmOverwrite(dest))
 	    {
 	    case SKIP:
 		return new Result();
 	    case CANCEL:
 		return new Result(Result.Type.INTERRUPTED);
 	    }
-	    Files.delete(fileTo);
+	    status("deleting previously existing " + dest.toString());
+	    Files.delete(dest);
+	    Files.createDirectories(dest);
+	    //Copying the content of fileFrom to the newly created directory dest
+	    return copyRecurse(getDirContent(fileFrom), dest);
 	}
-	return copySingleFile(fileFrom, fileTo);//This takes care if fromFile is a symlink
+	//We sure that fileFrom and dest aren't directories, but dest may exist
+	if (!Files.isSymbolicLink(fileFrom) && !isRegularFile(fileFrom, false))
+	{
+	    status("" + fileFrom + "is not a symlink and is not a regular file, nothing to do");
+	    return new Result();//Silently do nothing
+	}
+	status("" + fileFrom + " is a symlink or a regular file");
+	if (exists(dest, false))
+	{
+	    status("" + dest + " exists, trying to overwrite it");
+	    switch(confirmOverwrite(dest))
+	    {
+	    case SKIP:
+		return new Result();
+	    case CANCEL:
+		return new Result(Result.Type.INTERRUPTED);
+	    }
+	    Files.delete(dest);
+	}
+	return copySingleFile(fileFrom, dest);//This takes care if fromFile is a symlink
     }
 
     private Result multipleSource(Path[] toCopy, Path dest) throws IOException
