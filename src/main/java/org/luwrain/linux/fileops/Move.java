@@ -39,7 +39,6 @@ class Move extends CopyingBase
 
     @Override protected Result work() throws IOException
     {
-
 	Path dest = moveTo;
 	if (!dest.isAbsolute())
 	{
@@ -55,10 +54,10 @@ class Move extends CopyingBase
 	private Result multipleSource(Path dest) throws IOException
 	{
 	    NullCheck.notNull(dest, "dest");
-	    //dest should be a directory
+	    //dest should be a directory (trying to implement the same behaviour as by 'mv' utility in Linux)
 	    if (!isDirectory(dest, true))
 		return new Result(Result.Type.MOVE_DEST_NOT_DIR);
-	    //All paths should belong to the same partition
+	    //All paths must belong to the same partition
 	    for(Path p: toMove)
 		if (!Files.getFileStore(p).equals(Files.getFileStore(dest)))
 		    return movingThroughCopying();
@@ -112,8 +111,21 @@ class Move extends CopyingBase
 	return new Result();
     }
 
-    private Result movingThroughCopying()
+    private Result movingThroughCopying() throws IOException
     {
+	status("performing moving through copying to " + moveTo.toString());
+	final Result res = copy(toMove, moveTo);
+	status("copying result is " + res.toString());
+	if (res.getType() == Result.Type.OK)
+	    return res;
+	status("deleting source files");
+	for(Path p: toMove)
+	{
+	    status("deleting " + p.toString());
+	    final Result delRes = deleteFileOrDir(p);
+	    if (delRes.getType() != Result.Type.OK)
+		return delRes;
+	}
 	return new Result();
     }
 }

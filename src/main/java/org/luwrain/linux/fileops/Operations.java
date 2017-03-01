@@ -87,6 +87,30 @@ public class Operations implements FilesOperations
 	    System.exit(0);
 	}
 
+	//move
+	if (args[0].equals("move"))
+	{
+	    if (args.length < 3)
+	    {
+		System.err.println("ERROR:too few arguments");
+		System.exit(1);
+	    }
+	    final File[] whatToMove = new File[args.length - 2];
+	    for(int i = 1;i < args.length - 1;++i)
+		whatToMove[i- 1] = new File(args[i]).getAbsoluteFile();
+	    final File moveTo = new File(args[args.length - 1]);
+	    System.out.println("Moving:");
+	    for(File f: whatToMove)
+		System.out.println(f.toString());
+	    System.out.println("To:");
+	    System.out.println(moveTo.toString());
+	    final FilesOperation op = operations.move(createListener(), "Testing moving", whatToMove, moveTo);
+	    op.run();
+	    System.out.println(op.getResult().toString());
+	    System.exit(0);
+	}
+
+
 	System.err.println("ERROR:unknown operation:" + args[0]);
 	System.exit(1);
     }
