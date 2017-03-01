@@ -46,6 +46,9 @@ class Move extends CopyingBase
 	    NullCheck.notNull(parent, "parent");
 	    dest = parent.resolve(dest);
 	}
+	for(Path path: toMove)
+	    if (dest.startsWith(path))
+		return new Result(Result.Type.SOURCE_PARENT_OF_DEST);
 	if (toMove.length > 1)
 	    return multipleSource(dest);
 	return singleSource(dest);

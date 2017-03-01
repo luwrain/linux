@@ -57,6 +57,9 @@ abstract class CopyingBase extends Base
 	    d = parent.resolve(d);
 	    status("absolute destination path:" + d.toString());
 	}
+	for(Path path: toCopy)
+	    if (d.startsWith(path))
+		return new Result(Result.Type.SOURCE_PARENT_OF_DEST);
 	if (toCopy.length == 1)
 	    return singleSource(toCopy[0], d); else
 	    return multipleSource(toCopy, d);
