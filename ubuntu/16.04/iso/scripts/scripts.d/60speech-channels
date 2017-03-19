@@ -1,6 +1,4 @@
-#!/bin/bash -evx
 
-CHANNELS_DIR=$LWRISO_ROOT/opt/luwrain/i18n/ru/org/luwrain/speech/channels/
 mkdir -p $CHANNELS_DIR
 pushd $CHANNELS_DIR
 

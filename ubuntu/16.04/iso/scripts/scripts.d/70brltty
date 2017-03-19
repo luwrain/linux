@@ -1,6 +1,6 @@
-#!/bin/bash -evx
 
-# brltty
+install-pkg brltty libbrlapi-java libbrlapi-jni
+
 sed  -i -e s/'^RUN_BRLTTY=.*$'/'RUN_BRLTTY=yes'/ ./chroot/etc/default/brltty
 # Russian only
 sed  -i -e s/'^ARGUMENTS=.*$'/'ARGUMENTS="-q -t ru"'/ ./chroot/etc/default/brltty

@@ -1,4 +1,3 @@
-#!/bin/bash -evx
 
 [ -d ./dist/profile ] && cp -r ./dist/profile/. $LWRISO_ROOT/home/luwrain/
 [ -d ./dist/etc ] && cp -r ./dist/etc/. $LWRISO_ROOT/etc/

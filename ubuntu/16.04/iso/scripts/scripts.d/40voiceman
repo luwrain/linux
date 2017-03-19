@@ -1,4 +1,3 @@
-#!/bin/bash -evx
 
 cat <<EOF > ./chroot/etc/voiceman.conf
 # VoiceMan configuration for LUWRAIN distribution

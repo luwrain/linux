@@ -1,0 +1,8 @@
+
+chroot-run apt-get -y remove pulseaudio pulseaudio-utils \
+ubiquity \
+libreoffice-core firefox thunderbird libunity9 \
+network-manager 
+#linux-image-4.2.0-16
+
+chroot-run apt-get -y autoremove

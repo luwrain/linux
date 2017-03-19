@@ -1,7 +1,0 @@
-
-
-mkdir -p ./chroot/opt/msp
-
-cat <<EOF > ./chroot/opt/msp/fstab.wrk
-/dev/sda3 /wrk ext4 nosuid,relatime 1 2
-EOF
