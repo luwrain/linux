@@ -1,0 +1,20 @@
+
+
+cat <<EOF > ./chroot/usr/local/bin/crypt-enable
+#!/bin/bash -e
+
+CRYPT_DEVICE=/dev/sda2
+CRYPT_NAME=private
+CRYPT_POINT=/crypt
+
+if ! [ -e "/dev/mapper/\$CRYPT_NAME" ]; then
+    cryptsetup luksOpen "\$CRYPT_DEVICE" "\$CRYPT_NAME"
+fi
+
+if ! mount | grep -q "\$CRYPT_DEVICE"; then
+    mkdir -p "\$CRYPT_POINT"
+    mount /dev/mapper/"\$CRYPT_NAME" "\$CRYPT_POINT"
+fi
+EOF
+
+chmod 755 ./chroot/usr/local/bin/crypt-enable
