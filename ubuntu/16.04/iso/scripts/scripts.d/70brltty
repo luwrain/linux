@@ -7,4 +7,4 @@ sed  -i -e s/'^ARGUMENTS=.*$'/'ARGUMENTS="-q -t ru"'/ ./chroot/etc/default/brltt
 sed -i -e s/'^.*text-table.*Russian.*$'/'text-table ru'/ ./chroot/etc/brltty.conf
 
 #ln -s /usr/lib/jni/libbrlapi_java.so $LWRISO_ROOT/home/luwrain/luwrain/jni/libbrlapi_java.so
-ln -s /usr/lib/jni/libbrlapi_java.so $LWRISO_ROOT/opt/luwrain/jni/libbrlapi_java.so
+ln -s /usr/lib/jni/libbrlapi_java.so $LWRISO_ROOT/opt/luwrain/libbrlapi_java.so

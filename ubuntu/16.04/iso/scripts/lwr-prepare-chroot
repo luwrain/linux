@@ -1,4 +1,4 @@
-#!/bin/bash -evx
+#!/bin/bash -e
 
 cd /iso
 . config.sh
@@ -10,7 +10,8 @@ cd /iso
 #sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/system/systemd-vconsole-setup.service
 
 find scripts.d -type f -executable | sort | while read l ; do
+    echo Launching $l
     source "$l"
-done &> /iso/log-scripts.txt
+done
 
-# ISO chroot prepared!
+echo ISO chroot prepared!
