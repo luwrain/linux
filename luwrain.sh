@@ -6,9 +6,9 @@ THIS="${0##*/}"
 LUWRAIN_MAIN_CLASS=org.luwrain.core.Init
 
 if [ -z "$LUWRAIN_HOME" ]; then
-    if [ -e ~/luwrain/luwrain.sh ]; then
+    if [ -e ~/luwrain/jar/luwrain ]; then
 	LUWRAIN_HOME=~/luwrain
-    elif [ -e /opt/luwrain/luwrain.sh ]; then
+    elif [ -e /opt/luwrain/jar/luwrain.jar ]; then
 	LUWRAIN_HOME=/opt/luwrain
     else
 	echo "$THIS:unable to find the directory with LUWRAIN distribution (must be ~/luwrain or /opt/luwrain)" >&2
