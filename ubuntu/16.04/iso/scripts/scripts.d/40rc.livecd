@@ -8,8 +8,7 @@ for i in PCM Speaker; do
     /usr/bin/amixer set  \$i 100% &> /dev/null
     /usr/bin/amixer set  \$i unmute &> /dev/null
 done
-/usr/bin/amixer set Master 100% &> /dev/null
-/usr/bin/amixer set Master unmute &> /dev/null
+/usr/bin/amixer set Master 100% unmute &> /dev/null
 
 killall brltty
 /sbin/brltty -t ru
@@ -19,7 +18,6 @@ if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi
 
-#/usr/bin/greeter-ru
 /opt/greeter/greeter.sh
 /bin/su - luwrain -c /usr/bin/startx
 EOF
