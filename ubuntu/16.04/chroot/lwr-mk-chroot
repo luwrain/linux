@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+THIS="${0##*/}"
+
+. config.sh
+
+[ -z "$1" ] && echo "$THIS:no Ubuntu image given" >&2 && exit 1
+[ -z "$2" ] && echo "$THIS:no destination directory given" >&2 && exit 1
+
+DEST_DIR="$2"
+SQUASHFS="$1/casper/filesystem.squashfs"
+
+unsquashfs -d "$DEST_DIR" "$SQUASHFS" > /dev/null
+echo "nameserver $LWR_NAMESERVER" > $DEST_DIR/run/resolvconf/resolv.conf
+
+cat <<EOF > $DEST_DIR/etc/apt/sources.list
+deb http://security.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+EOF
+
+
+#mount --bind /proc "$CHROOT/proc"
+#umount "$CHROOT/proc"
+
