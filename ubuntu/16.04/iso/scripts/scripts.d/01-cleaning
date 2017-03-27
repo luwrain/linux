@@ -5,12 +5,6 @@ remove-pkg()
 chroot-run apt-get -y remove $@
 }
 
-#chroot-run apt-get -y remove pulseaudio pulseaudio-utils \
-#ubiquity \
-#libreoffice-core firefox thunderbird libunity9 \
-#network-manager 
-#linux-image-4.2.0-16
-
 remove-pkg pulseaudio pulseaudio-utils
 remove-pkg libreoffice-common libreoffice-core thunderbird libunity9
 remove-pkg libgtk-3-common libgtk2.0-common libqtcore4 libqt5core5a
@@ -23,6 +17,11 @@ remove-pkg libsane-common liborbit-2.0 a11y-profile-manager at-spi2-core
 remove-pkg gconf-service gedit-common imagemagick-common
 remove-pkg gcc-5 gdb
 remove-pkg glib-networking-common gvfs-common
+remove-pkg transmission-common totem-common shotwell-common openprinting-ppds nautilus-data make
+remove-pkg ttf-ancient-fonts-symbola fonts-stix fonts-noto-cjk
+
+
+
 
 remove-pkg $(apt-cache search language-pack-gnome | cut -f1 -d' ')
 remove-pkg $(apt-cache search gnome | grep ^gnome- | cut -f1 -d' ')
@@ -41,5 +40,6 @@ remove-pkg $(apt-cache search fcitx | grep ^fcitx | cut -f1 -d' ')
 remove-pkg $(apt-cache search gir1 | grep ^gir1 | cut -f1 -d' ')
 remove-pkg $(apt-cache search libgnome | grep ^libgnome | cut -f1 -d' ')
 remove-pkg $(apt-cache search printer-driver | grep ^printer-driver | cut -f1 -d' ')
+remove-pkg $(apt-cache search mythes | grep ^mythes | cut -f1 -d' ')
 
 chroot-run apt-get -y autoremove
