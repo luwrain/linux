@@ -1,8 +1,33 @@
 
-chroot-run apt-get -y remove pulseaudio pulseaudio-utils \
-ubiquity \
-libreoffice-core firefox thunderbird libunity9 \
-network-manager 
+
+remove-pkg()
+{
+chroot-run apt-get -y remove $@
+}
+
+#chroot-run apt-get -y remove pulseaudio pulseaudio-utils \
+#ubiquity \
+#libreoffice-core firefox thunderbird libunity9 \
+#network-manager 
 #linux-image-4.2.0-16
 
+remove-pkg pulseaudio pulseaudio-utils
+#remove-pkg linux-image-4.4.0-66-generic
+remove-pkg libreoffice-common libreoffice-core thunderbird libunity9
+remove-pkg libgtk-3-common libgtk2.0-common libqtcore4 libqt5core5a
+remove-pkg ubuntu-touch-sounds ubuntu-sounds
+remove-pkg wbrazilian wfrench witalian wngerman wogerman wportuguese wspanish wswiss
+remove-pkg language-pack-de language-pack-de-base language-pack-es language-pack-es-base language-pack-fr language-pack-fr-base language-pack-it language-pack-it-base language-pack-pt language-pack-pt-base language-pack-zh-hans language-pack-zh-hans-base
+
+remove-pkg $(apt-cache search language-pack-gnome | cut -f1 -d' ')
+remove-pkg $(apt-cache search gnome | grep ^gnome- | cut -f1 -d' ')
+remove-pkg $(apt-cache search gnome | grep ^libgnome | cut -f1 -d' ')
+remove-pkg $(apt-cache search unity | grep ^unity | cut -f1 -d' ')
+remove-pkg $(apt-cache search ubiquity | grep ^ubiquity | cut -f1 -d' ')
+remove-pkg $(apt-cache search myspell | grep ^myspell | cut -f1 -d' ')
+remove-pkg $(apt-cache search firefox | grep ^firefox | cut -f1 -d' ')
+remove-pkg $(apt-cache search fonts | egrep '^fonts-(tlwg|tibetan|takao|sil|nanum|lohit|lao|khmeros|guru|arphic)' | cut -f1 -d' ')
+remove-pkg $(apt-cache search compiz | grep ^compiz | cut -f1 -d' ')
+
 chroot-run apt-get -y autoremove
+
