@@ -4,5 +4,5 @@ install-pkg libncursesw5 vorbis-tools console-cyrillic acpi ntfs-3g
 install-pkg wpasupplicant
 install-pkg luwrain-live
 install-pkg dvd+rw-tools growisofs syslinux syslinux-legacy
-install-pkg voiceman rhvoice espeak yasr
+install-pkg voiceman espeak yasr
 install-pkg lame sox mpg123 mplayer

@@ -1,5 +1,5 @@
 
-in-chroot apt-get -y --force-yes install openjdk-8-jre openjfx ant
+in-chroot apt-get -y --force-yes install openjdk-8-jre openjfx
 
 in-chroot update-ca-certificates -f
 
