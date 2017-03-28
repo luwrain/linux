@@ -15,3 +15,10 @@ install-pkg()
 {
 chroot-run apt-get -y --force-yes install $@
 }
+
+remove-pkg()
+{
+chroot-run apt-get -y remove $@
+}
+
+

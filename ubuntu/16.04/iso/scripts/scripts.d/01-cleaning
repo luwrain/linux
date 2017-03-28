@@ -1,10 +1,4 @@
 
-
-remove-pkg()
-{
-chroot-run apt-get -y remove $@
-}
-
 remove-pkg pulseaudio pulseaudio-utils
 remove-pkg libreoffice-common libreoffice-core thunderbird libunity9
 remove-pkg libgtk-3-common libgtk2.0-common libqtcore4 libqt5core5a
@@ -19,9 +13,7 @@ remove-pkg gcc-5 gdb
 remove-pkg glib-networking-common gvfs-common
 remove-pkg transmission-common totem-common shotwell-common openprinting-ppds nautilus-data make
 remove-pkg ttf-ancient-fonts-symbola fonts-stix fonts-noto-cjk
-
-
-
+remove-pkg tegaki-zinnia-japanese app-install-data ubuntu-wallpapers-xenial
 
 remove-pkg $(apt-cache search language-pack-gnome | cut -f1 -d' ')
 remove-pkg $(apt-cache search gnome | grep ^gnome- | cut -f1 -d' ')
