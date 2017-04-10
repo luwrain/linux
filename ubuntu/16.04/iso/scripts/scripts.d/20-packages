@@ -1,7 +1,10 @@
 
-#install-pkg linux-image-generic
-install-pkg libncursesw5 vorbis-tools console-cyrillic acpi ntfs-3g
-install-pkg wpasupplicant
+install-pkg libncursesw5 vorbis-tools acpi ntfs-3g wpasupplicant
+
+if [ "$LWRISO_LANG" == ru ]; then
+install-pkg 	    console-cyrillic 
+fi	    
+
 install-pkg luwrain-live
 install-pkg dvd+rw-tools growisofs syslinux syslinux-legacy
 install-pkg voiceman espeak yasr
