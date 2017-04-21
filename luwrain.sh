@@ -6,7 +6,7 @@ THIS="${0##*/}"
 LUWRAIN_MAIN_CLASS=org.luwrain.core.Init
 
 if [ -z "$LUWRAIN_HOME" ]; then
-    if [ -e ~/luwrain/jar/luwrain ]; then
+    if [ -e ~/luwrain/jar/luwrain.jar ]; then
 	LUWRAIN_HOME=~/luwrain
     elif [ -e /opt/luwrain/jar/luwrain.jar ]; then
 	LUWRAIN_HOME=/opt/luwrain
