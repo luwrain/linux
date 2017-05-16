@@ -29,4 +29,4 @@ exec java \
 -cp jar/luwrain.jar:jar/luwrain-base.jar \
 -Djava.security.egd=file:/dev/./urandom \
 -Djava.library.path="$LUWRAIN_HOME" \
-"$LUWRAIN_MAIN_CLASS" \
+"$LUWRAIN_MAIN_CLASS" "$@"
