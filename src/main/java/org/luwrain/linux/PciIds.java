@@ -25,7 +25,6 @@ import org.luwrain.core.*;
 
 class PciIds
 {
-    private final static String PCIIDS_FILE = "/usr/share/misc/pci.ids";
     static private final Pattern VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$");
     static private final Pattern DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
 
@@ -52,10 +51,10 @@ class PciIds
 	return v.devices.get(deviceCode).name;
     }
 
-    void load()
+    void load(File file)
     {
 	try  {
-	    final InputStream is = new FileInputStream(PCIIDS_FILE);
+	    final InputStream is = new FileInputStream(file);
 	    try {
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line = null;

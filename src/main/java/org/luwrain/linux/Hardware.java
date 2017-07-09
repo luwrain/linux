@@ -27,15 +27,20 @@ final class Hardware implements org.luwrain.base.Hardware
 {
     private final PciIds pciIds = new PciIds();
     private AudioMixer mixer;
-    private Scripts scripts;
-    private Path scriptsDir;
+    private final Scripts scripts;
+    private final org.luwrain.base.CoreProperties props;
+    private final Path scriptsDir;
 
-    Hardware(Scripts scripts, Path scriptsDir)
+    Hardware(Scripts scripts, org.luwrain.base.CoreProperties props)
     {
 	NullCheck.notNull(scripts, "scripts");
+	NullCheck.notNull(props, "props");
 	this.scripts = scripts;
-	pciIds.load();
-	this.scriptsDir = scriptsDir;
+	this.props = props;
+	final File pciidsFile = props.getFileProperty("luwrain.linux.pciids");
+	if (pciidsFile != null)
+	pciIds.load(pciidsFile);
+	this.scriptsDir = props.getFileProperty("luwrain.dir.scripts").toPath();
     }
 
     @Override public SysDevice[] getSysDevices()

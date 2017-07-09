@@ -17,37 +17,39 @@
 package org.luwrain.linux;
 
 import java.util.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.core.*;
 import org.luwrain.base.*;
 
-public class Linux implements org.luwrain.base.OperatingSystem
+public final class Linux implements org.luwrain.base.OperatingSystem
 {
-    private static final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
+    static private final String LOG_COMPONENT = "linux";
+    static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
+    private org.luwrain.base.CoreProperties props = null;
+    private Hardware hardware = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
-    private Path scriptsDir;
     private Scripts scripts = null;
-    private Hardware hardware;
     private String[] cpus = new String[0];
     private int ramSizeKb = 0;
 
-    @Override public boolean init(String dataDir)
+    @Override public InitResult init(org.luwrain.base.CoreProperties props)
     {
-	NullCheck.notNull(dataDir, "dataDir");
-
-    	String libname="SAPIImpl."+System.getProperty("sun.arch.data.model");
-	//    	System.loadLibrary(libname);
-
-	System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
-	scriptsDir = Paths.get(dataDir).resolve("scripts");
-	scripts = new Scripts(scriptsDir);
-	readCpuInfo();
-	readMemInfo();
-	return true;
+	NullCheck.notNull(props, "props");
+	try {
+	    this.props = props;
+	    System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
+	    scripts = new Scripts(props.getFileProperty("luwrain.dir.scripts").toPath());
+	    readCpuInfo();
+	    readMemInfo();
+	    return new InitResult();
+	}
+	catch(Throwable e)
+	{
+	    return new InitResult(e);
+	}
     }
 
     @Override public String getProperty(String propName)
@@ -85,7 +87,7 @@ public class Linux implements org.luwrain.base.OperatingSystem
     @Override public org.luwrain.base.Hardware getHardware()
     {
 	if (hardware == null)
-	    hardware = new Hardware(scripts, scriptsDir);
+	    hardware = new Hardware(scripts, props);
 	return hardware;
     }
 
@@ -123,27 +125,40 @@ public class Linux implements org.luwrain.base.OperatingSystem
 
     private void readCpuInfo()
     {
+	final File cpuInfoFile = props.getFileProperty("luwrain.linux.cpuinfo");
+	if (cpuInfoFile == null)
+	{
+	    Log.warning(LOG_COMPONENT, "no luwrain.linux.cpuinfo property, skipping reading CPU information");
+	    return;
+	}
 	try {
-	    final LinkedList<String> res = new LinkedList<String>();
-	    for(String s: Files.readAllLines(Constants.CPU_INFO))
+	    final List<String> res = new LinkedList<String>();
+	    for(String s: Files.readAllLines(cpuInfoFile.toPath()))
 		if (s.matches("model\\s*name\\s*:.*"))
 		    res.add(s.substring(s.indexOf(":") + 1).trim());
 	    cpus = res.toArray(new String[res.size()]);
 	}
 	catch(IOException e)
 	{
-	    Log.debug("linux", "unable to read CPU info:" + e.getMessage());
-	    e.printStackTrace();
+	    Log.error(LOG_COMPONENT, "unable to read CPU info:" + e.getClass().getName() + ":" + e.getMessage());
 	}
+	Log.debug(LOG_COMPONENT, "Found CPUs (" + cpus.length + "):");
+	for(String s: cpus)
+	    Log.debug(LOG_COMPONENT, s);
     }
 
     private void readMemInfo()
     {
+	final File memInfoFile = props.getFileProperty("luwrain.linux.meminfo");
+	if (memInfoFile == null)
+	{
+	    Log.warning(LOG_COMPONENT, "no luwrain.linux.meminfo property, skipping reading memory information");
+	    return;
+	}
 	try {
 	    String totalStr = "";
 	    String swapStr = "";
-	    final LinkedList<String> res = new LinkedList<String>();
-	    for(String s: Files.readAllLines(Constants.MEM_INFO))
+	    for(String s: Files.readAllLines(memInfoFile.toPath()))
 	    {
 		if (s.matches("MemTotal\\s*:.* kB"))
 		    totalStr = s.substring(s.indexOf(":") + 1).trim();
@@ -157,11 +172,12 @@ public class Linux implements org.luwrain.base.OperatingSystem
 	    final int total = Integer.parseInt(totalStr);
 	    final int swap = Integer.parseInt(swapStr);
 	    ramSizeKb = total - swap;
+	    Log.debug(LOG_COMPONENT, "RAM size (kb):" + ramSizeKb);
+	    Log.debug(LOG_COMPONENT, "swap size (kb):" + swap);
 	}
 	catch(IOException | NumberFormatException e)
 	{
-	    Log.debug("linux", "unable to read memory info:" + e.getMessage());
-	    e.printStackTrace();
+	    Log.error(LOG_COMPONENT, "unable to read memory information:" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 
