@@ -16,26 +16,26 @@
 
 package org.luwrain.linux;
 
+import java.util.*;
 import java.nio.file.*;
 import java.io.File;
-import java.util.LinkedList;
 
 import org.luwrain.base.*;
+import org.luwrain.core.*;
 
 class MountedPartitions
 {
-    static public Partition[] getMountedPartitions()
+    static Partition[] getMountedPartitions()
     {
-	final LinkedList<Partition> remotes = new LinkedList<Partition>();
-	final LinkedList<Partition> removables = new LinkedList<Partition>();
-	final LinkedList<Partition> regulars = new LinkedList<Partition>();
-	final LinkedList<Partition> other = new LinkedList<Partition>();
+	final List<Partition> remotes = new LinkedList<Partition>();
+	final List<Partition> removables = new LinkedList<Partition>();
+	final List<Partition> regulars = new LinkedList<Partition>();
+	final List<Partition> other = new LinkedList<Partition>();
 	final FileSystem fs = FileSystems.getDefault();
 	Iterable<FileStore> stores = fs.getFileStores();
 	for(FileStore store: stores)
 	{
 	    final String type = store.type();
-	    //	    System.out.println(type);
 	    if (!type.startsWith("ext") &&
 		!type.equals("iso9660") &&
 		!type.equals("vfat") &&
@@ -53,49 +53,55 @@ class MountedPartitions
 		    l = removable(store, path); else 
 		    l = regular(store, path);
 	    if (l != null)
-		switch(l.type())
+		switch(l.getPartType())
 		{
-		case Partition.REMOVABLE:
+		case REMOVABLE:
 		    removables.add(l);
-		break;
-		case Partition.REMOTE:
+		    break;
+		case REMOTE:
 		    remotes.add(l);
 		    break;
-		case Partition.REGULAR:
-regulars.add(l);
-		break;
+		case REGULAR:
+		    regulars.add(l);
+		    break;
 		default:
-other.add(l);
+		    other.add(l);
 		}
 	}
-	final LinkedList<Partition> res = new LinkedList<Partition>();
+	final List<Partition> res = new LinkedList<Partition>();
 	for(Partition p: removables)
 	    res.add(p);
 	for(Partition p: remotes)
 	    res.add(p);
 	for(Partition p: regulars)
 	    res.add(p);
-	res.add(new Partition(Partition.ROOT, new File("/"), "/", true));
+	res.add(new PartitionImpl(Partition.Type.ROOT, new File("/"), "/", true));
 	return res.toArray(new Partition[res.size()]);
     }
 
     static private Partition removable(FileStore store, String path)
     {
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
 	final String[] parts = store.name().split("/");
 	if (parts == null || parts.length < 1 || parts[0] == null)
 	    return null;
-	return new Partition(Partition.REMOVABLE, new File(path), parts[parts.length - 1], true);
+	return new PartitionImpl(Partition.Type.REMOVABLE, new File(path), parts[parts.length - 1], true);
     }
 
     static private Partition remote(FileStore store, String path)
     {
-	return new Partition(Partition.REMOTE, new File(path), store.name(), true);
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
+	return new PartitionImpl(Partition.Type.REMOTE, new File(path), store.name(), true);
     }
 
     static private Partition regular(FileStore store, String path)
     {
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
 	if (path.equals("/"))
 	    return null;
-	return new Partition(Partition.REGULAR, new File(path), path, true);
+	return new PartitionImpl(Partition.Type.REGULAR, new File(path), path, true);
     }
 }
