@@ -21,56 +21,60 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
 
+import org.luwrain.core.*;
+
 class PciIds
 {
-    private Pattern VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$");
-    private Pattern DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
-
     private final static String PCIIDS_FILE = "/usr/share/misc/pci.ids";
+    static private final Pattern VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$");
+    static private final Pattern DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
 
-    private class Device
-    {
-	public String name;
-
-	public Device(String name)
-	{
-	    this.name = name;
-	}
-    }
-
-    private class Vendor
-    {
-	public String name;
-	public TreeMap<String, Device> devices = new TreeMap<String, Device>();
-
-	public Vendor(String name)
-	{
-	    this.name = name;
-	}
-    }
-
-    private TreeMap<String, Vendor> vendors = new TreeMap<String, Vendor>();
+    private final TreeMap<String, Vendor> vendors = new TreeMap<String, Vendor>();
     private Vendor lastVendor = null;
 
-    public String findVendor(String code)
+    String findVendor(String code)
     {
+	NullCheck.notEmpty(code, "code");
 	if (!vendors.containsKey(code))
 	    return null;
 	return vendors.get(code).name;
     }
 
-    public String findDevice(String vendorCode, String deviceCode)
+    String findDevice(String vendorCode, String deviceCode)
     {
+	NullCheck.notNull(vendorCode, "vendorCode");
+	NullCheck.notNull(deviceCode, "deviceCode");
 	if (!vendors.containsKey(vendorCode))
 	    return null;
-final Vendor v = vendors.get(vendorCode);
-if (!v.devices.containsKey(deviceCode))
-    return null;
-return v.devices.get(deviceCode).name;
+	final Vendor v = vendors.get(vendorCode);
+	if (!v.devices.containsKey(deviceCode))
+	    return null;
+	return v.devices.get(deviceCode).name;
+    }
+
+    void load()
+    {
+	try  {
+	    final InputStream is = new FileInputStream(PCIIDS_FILE);
+	    try {
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		String line = null;
+		while ( (line = reader.readLine()) != null)
+		    onLine(line);
+	    }
+	    finally {
+		is.close();
+	    }
+	}
+	catch(Exception e)
+	{
+	    Log.error("linux", "unable to read PCIIDs from :" + e.getClass().getName() + ":" + e.getMessage());
+	}
     }
 
     private void onVendor(String line)
     {
+	NullCheck.notNull(line, "line");
 	final Matcher matcher = VENDOR_PATTERN.matcher(line);
 	if (!matcher.find())
 	    return;
@@ -81,10 +85,12 @@ return v.devices.get(deviceCode).name;
 
     private void onDevice(String line)
     {
+	NullCheck.notNull(line, "line");
 	final Matcher matcher = DEVICE_PATTERN.matcher(line);
 	if (!matcher.find())
 	    return;
 	final Device d = new Device(matcher.group(2));
+	NullCheck.notNull(lastVendor, "lastVendor");
 	lastVendor.devices.put(matcher.group(1).trim(), d);
     }
 
@@ -94,23 +100,30 @@ return v.devices.get(deviceCode).name;
 	    return;
 	if (line.charAt(0) != '\t')
 	    onVendor(line); else
-	if (lastVendor != null && line.charAt(1) != '\t')
-	    onDevice(line);
+	    if (lastVendor != null && line.charAt(1) != '\t')
+		onDevice(line);
     }
 
-    public void load()
+    static private class Device
     {
-	Path path = Paths.get(PCIIDS_FILE);
-	try {
-	    try (Scanner scanner =  new Scanner(path, "UTF-8"))
-		{
-		    while (scanner.hasNextLine())
-			onLine(scanner.nextLine());
-		}
-	}
-	catch(IOException e)
+	final String name;
+
+	Device(String name)
 	{
-	    e.printStackTrace();
+	    NullCheck.notNull(name, "name");
+	    this.name = name;
+	}
+    }
+
+    static private class Vendor
+    {
+	final String name;
+	final TreeMap<String, Device> devices = new TreeMap<String, Device>();
+
+	Vendor(String name)
+	{
+	    NullCheck.notNull(name, "name");
+	    this.name = name;
 	}
     }
 }
