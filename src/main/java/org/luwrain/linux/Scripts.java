@@ -17,27 +17,40 @@
 package org.luwrain.linux;
 
 import java.util.*;
-import java.nio.file.*;
 import java.io.*;
 
 import org.luwrain.core.*;
 
 class Scripts
 {
-    private Path scriptsDir;
+    enum ID {
+	MOUNT,
+	UMOUNT,
+	SHUTDOWN,
+	REBOOT,
+    };
 
-    Scripts(Path scriptsDir)
+    private File scriptsDir;
+
+    Scripts(File scriptsDir)
     {
 	NullCheck.notNull(scriptsDir, "scriptsDir");
 	this.scriptsDir = scriptsDir;
+    }
+
+    boolean runSync(ID id, boolean sudo)
+    {
+	NullCheck.notNull(id, "id");
+	return runSync(translateId(id), sudo);
     }
 
     boolean runSync(String scriptName, boolean sudo)
     {
 	NullCheck.notNull(scriptName, "scriptName");
 	try {
-	    final Process p = sudo?new ProcessBuilder("sudo", scriptsDir.resolve(scriptName).toString()).start():
-	    new ProcessBuilder(scriptsDir.resolve(scriptName).toString()).start();
+	    final Process p = sudo?
+	    new ProcessBuilder("sudo", getScriptPath(scriptName)).start():
+	    new ProcessBuilder(getScriptPath(scriptName)).start();
 	    p.getOutputStream().close();
 	    p.waitFor();
 	    return p.exitValue() == 0;
@@ -49,32 +62,35 @@ class Scripts
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error(Linux.LOG_COMPONENT, "unable to run the script \'" + scriptName + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
     }
 
-    boolean runSync(String scriptName, String[] args,
-		    boolean sudo)
+    boolean runSync(ID id, String[] args, boolean sudo)
+    {
+	NullCheck.notNull(id, "id");
+	NullCheck.notNullItems(args, "args");
+	return runSync(translateId(id), args, sudo);
+    }
+
+    boolean runSync(String scriptName, String[] args, boolean sudo)
     {
 	NullCheck.notNull(scriptName, "scriptName");
 	NullCheck.notNullItems(args, "args");
-	Log.debug("linux", "running script \'" + scriptName + "\' with " + args.length + " argument(s)" + (sudo?" using sudo":""));
-	for(int i = 0;i < args.length;++i)
-	    Log .debug("linux", "arg" + i + ":" + args[i]);
-	final LinkedList<String> cmd = new LinkedList<String>();
+	final List<String> cmd = new LinkedList<String>();
 	if (sudo)
 	    cmd.add("sudo");
-	cmd.add(scriptsDir.resolve(scriptName).toString());
+	cmd.add(getScriptPath(scriptName));
 	for(String s: args)
 	    cmd.add(s);
 	try {
 	    final Process p = new ProcessBuilder(cmd.toArray(new String[cmd.size()])).start();
 	    p.getOutputStream().close();
 	    p.waitFor();
-final int res = p.exitValue();
-Log.debug("linux", "exit code is " + res);
-return res == 0;
+	    final int res = p.exitValue();
+	    Log.debug("linux", "exit code is " + res);
+	    return res == 0;
 	}
 	catch(InterruptedException e)
 	{
@@ -83,10 +99,20 @@ return res == 0;
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error(Linux.LOG_COMPONENT, "unable to run the script \'" + scriptName + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
     }
 
+    private String getScriptPath(String scriptName)
+    {
+	NullCheck.notEmpty(scriptName, "scriptName");
+	return new File(scriptsDir, scriptName).toString();
+    }
 
+    private String translateId(ID id)
+    {
+	NullCheck.notNull(id, "id");
+	return "lwr-" + id.toString().toLowerCase().replaceAll("_", "-");
+    }
 }
