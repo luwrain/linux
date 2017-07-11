@@ -63,20 +63,29 @@ final class Hardware implements org.luwrain.base.Hardware
 	final File[] pciDirs = pciDevDir.listFiles();
 	for(File d: pciDirs)
 	{
+	    final String classStr = readTextFile(new File(d, "class").getAbsolutePath());
 	    final String vendorStr = readTextFile(new File(d, "vendor").getAbsolutePath());
 	    final String modelStr = readTextFile(new File(d, "device").getAbsolutePath());
 	    final SysDevice.Type type = SysDevice.Type.PCI;
 	    final String name = d.getName();
+	    final String cls;
+	    if (classStr != null && classStr.startsWith("0x"))
+	    {
+		final String res = pciIds.findClass(classStr.substring(2)); 
+		if (res != null && !res.isEmpty())
+		    cls = res; else
+		    cls = classStr;
+	    } else
+		cls = classStr;
 	    final String vendor;
 	    if (vendorStr != null && vendorStr.startsWith("0x"))
 	    {
 		final String res = pciIds.findVendor(vendorStr.substring(2)); 
-		if (res != null && res.isEmpty())
+		if (res != null && !res.isEmpty())
 		    vendor = res; else
 		    vendor = vendorStr;
 	    } else
 		vendor = vendorStr;
-	    final String classStr = readTextFile(new File(d, "class").getAbsolutePath());
 	    final String model;
 	    if (vendorStr != null && vendorStr.startsWith("0x") &&
 		modelStr != null && modelStr.startsWith("0x"))
@@ -89,7 +98,7 @@ final class Hardware implements org.luwrain.base.Hardware
 		model = modelStr;
 	    devices.add(new SysDeviceImpl(type,
 					  name,
-					  classStr,
+					  cls,
 					  vendor,
 					  model,
 					  "", //driver

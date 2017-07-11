@@ -25,11 +25,16 @@ import org.luwrain.core.*;
 
 class PciIds
 {
+    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+
     static private final Pattern VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$");
+    static private final Pattern CLASS_PATTERN = Pattern.compile("^C\\s*([^\\s]+)\\s+([^\\s].*)$");
     static private final Pattern DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
 
-    private final TreeMap<String, Vendor> vendors = new TreeMap<String, Vendor>();
+    private final Map<String, Vendor> vendors = new TreeMap<String, Vendor>();
+    private final Map<String, Class> classes = new TreeMap<String, Class>();
     private Vendor lastVendor = null;
+    private Class lastClass = null;
 
     String findVendor(String code)
     {
@@ -51,6 +56,22 @@ class PciIds
 	return v.devices.get(deviceCode).name;
     }
 
+    String findClass(String classCode)
+    {
+	NullCheck.notNull(classCode, "classCode");
+	if (classCode.length() < 2)
+	    return null;
+	if (!classes.containsKey(classCode.substring(0, 2)))
+	    return null;
+	final Class c = classes.get(classCode.substring(0, 2));
+	return c.name;
+	//	if (!v.devices.containsKey(deviceCode))
+	//	    return null;
+	//	return v.devices.get(deviceCode).name;
+    }
+
+
+
     void load(File file)
     {
 	try  {
@@ -67,7 +88,7 @@ class PciIds
 	}
 	catch(Exception e)
 	{
-	    Log.error("linux", "unable to read PCIIDs from :" + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to read PCIIDs from :" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 
@@ -80,7 +101,21 @@ class PciIds
 	final Vendor v = new Vendor(matcher.group(2));
 	vendors.put(matcher.group(1).trim(), v);
 	lastVendor = v;
+	lastClass = null;
     }
+
+    private void onClass(String line)
+    {
+	NullCheck.notNull(line, "line");
+	final Matcher matcher = CLASS_PATTERN.matcher(line);
+	if (!matcher.find())
+	    return;
+final Class c = new Class(matcher.group(2));
+classes.put(matcher.group(1).trim(), c);
+	lastVendor = null;
+	lastClass = c;
+    }
+
 
     private void onDevice(String line)
     {
@@ -97,6 +132,11 @@ class PciIds
     {
 	if (line.length() < 2 || line.charAt(0) == '#')
 	    return;
+
+	    if (Character.toLowerCase(line.charAt(0)) == 'c')
+	    onClass(line); else
+
+
 	if (line.charAt(0) != '\t')
 	    onVendor(line); else
 	    if (lastVendor != null && line.charAt(1) != '\t')
@@ -114,6 +154,17 @@ class PciIds
 	}
     }
 
+    static private class Subclass
+    {
+	final String name;
+
+Subclass(String name)
+	{
+	    NullCheck.notNull(name, "name");
+	    this.name = name;
+	}
+    }
+
     static private class Vendor
     {
 	final String name;
@@ -125,4 +176,17 @@ class PciIds
 	    this.name = name;
 	}
     }
+
+    static private class Class
+    {
+	final String name;
+	final TreeMap<String, Subclass> subclasses = new TreeMap<String, Subclass>();
+
+Class(String name)
+	{
+	    NullCheck.notNull(name, "name");
+	    this.name = name;
+	}
+    }
+
 }
