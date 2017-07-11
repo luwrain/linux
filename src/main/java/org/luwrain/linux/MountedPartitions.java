@@ -25,6 +25,8 @@ import org.luwrain.core.*;
 
 class MountedPartitions
 {
+        static final String MEDIA_DIR = "/media";
+
     static Partition[] getMountedPartitions()
     {
 	final List<Partition> remotes = new LinkedList<Partition>();
@@ -49,7 +51,7 @@ class MountedPartitions
 	    Partition l = null;
 	    if (store.type().equals("cifs"))
 		l = remote(store, path); else
-		if (path.startsWith(Constants.MEDIA_DIR))
+		if (path.startsWith(MEDIA_DIR))
 		    l = removable(store, path); else 
 		    l = regular(store, path);
 	    if (l != null)

@@ -25,7 +25,7 @@ import org.luwrain.base.*;
 
 public final class Linux implements org.luwrain.base.OperatingSystem
 {
-    static private final String LOG_COMPONENT = "linux";
+    static final String LOG_COMPONENT = "linux";
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
     private org.luwrain.base.CoreProperties props = null;
@@ -41,7 +41,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	try {
 	    this.props = props;
 	    System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
-	    scripts = new Scripts(props.getFileProperty("luwrain.dir.scripts").toPath());
+	    scripts = new Scripts(props.getFileProperty("luwrain.dir.scripts"));
 	    readCpuInfo();
 	    readMemInfo();
 	    return new InitResult();
