@@ -173,11 +173,6 @@ final class Hardware implements org.luwrain.base.Hardware
 	    return count;
     }
 
-    @Override public Partition[] getMountedPartitions()
-    {
-	return MountedPartitions.getMountedPartitions();
-    }
-
     @Override public org.luwrain.base.AudioMixer getAudioMixer()
     {
 	if (mixer == null)
@@ -198,6 +193,86 @@ final class Hardware implements org.luwrain.base.Hardware
     private boolean umount(String mountPoint)
     {
 	return scripts.runSync(Scripts.ID.UMOUNT, new String[]{mountPoint}, true);
+    }
+
+    @Override public Partition[] getMountedPartitions()
+    {
+	final List<Partition> remotes = new LinkedList<Partition>();
+	final List<Partition> removables = new LinkedList<Partition>();
+	final List<Partition> regulars = new LinkedList<Partition>();
+	final List<Partition> other = new LinkedList<Partition>();
+	final FileSystem fs = FileSystems.getDefault();
+	Iterable<FileStore> stores = fs.getFileStores();
+	for(FileStore store: stores)
+	{
+	    final String type = store.type();
+	    if (!type.startsWith("ext") &&
+		!type.equals("iso9660") &&
+		!type.equals("vfat") &&
+		!type.equals("fat") &&
+		!type.equals("cifs"))
+		continue;
+	    final String[] nameParts = store.toString().split(" \\(");
+	    if (nameParts.length < 1 || nameParts[0] == null)
+		continue;
+	    final String path = nameParts[0];
+	    Partition l = null;
+	    if (store.type().equals("cifs"))
+		l = createRemotePartition(store, path); else
+		if (path.startsWith(MEDIA_DIR))
+		    l = createRemovablePartition(store, path); else 
+		    l = createRegularPartition(store, path);
+	    if (l != null)
+		switch(l.getPartType())
+		{
+		case REMOVABLE:
+		    removables.add(l);
+		    break;
+		case REMOTE:
+		    remotes.add(l);
+		    break;
+		case REGULAR:
+		    regulars.add(l);
+		    break;
+		default:
+		    other.add(l);
+		}
+	}
+	final List<Partition> res = new LinkedList<Partition>();
+	for(Partition p: removables)
+	    res.add(p);
+	for(Partition p: remotes)
+	    res.add(p);
+	for(Partition p: regulars)
+	    res.add(p);
+	res.add(new PartitionImpl(Partition.Type.ROOT, new File("/"), "/", true));
+	return res.toArray(new Partition[res.size()]);
+    }
+
+private Partition createRemovablePartition(FileStore store, String path)
+    {
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
+	final String[] parts = store.name().split("/");
+	if (parts == null || parts.length < 1 || parts[0] == null)
+	    return null;
+	return new PartitionImpl(Partition.Type.REMOVABLE, new File(path), parts[parts.length - 1], true);
+    }
+
+private Partition createRemotePartition(FileStore store, String path)
+    {
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
+	return new PartitionImpl(Partition.Type.REMOTE, new File(path), store.name(), true);
+    }
+
+private Partition createRegularPartition(FileStore store, String path)
+    {
+	NullCheck.notNull(store, "store");
+	NullCheck.notEmpty(path, "path");
+	if (path.equals("/"))
+	    return null;
+	return new PartitionImpl(Partition.Type.REGULAR, new File(path), path, true);
     }
 
     static private String     readTextFile(String fileName)
