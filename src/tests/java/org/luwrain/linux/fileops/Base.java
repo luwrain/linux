@@ -10,11 +10,11 @@ class Base
 
     final Random rand = new Random();
 
-    void writeRandFile(File f, int len) throws IOException
+    void writeRandFile(File file, int len) throws IOException
     {
 	if (len < 0)
 	    throw new IllegalArgumentException("len (" + len + ") may not be negative");
-	final FileOutputStream f = new FileOutputStream(f);
+	final FileOutputStream f = new FileOutputStream(file);
 	final byte[] buf = new byte[2048];
 	int written = 0;
 	while (written < len)

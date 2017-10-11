@@ -5,6 +5,12 @@
       <include name="**/*.jar"/>
     </fileset>
   </path>
+    <path id="mainjar">
+    <pathelement location="."/>
+    <fileset dir="jar">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
   <target name="clean">
     <delete dir="build"/>
     <delete dir="jar"/>
@@ -33,14 +39,35 @@
       </fileset>
     </jar>
   </target>
-  <target name="javadoc">
-    <mkdir dir="api"/>
-    <javadoc classpathref="classpath" destdir="api" defaultexcludes="yes" author="false" version="true" use="true" windowtitle="Accessible environment Luwrain" private="false">
-      <fileset dir="java">
-        <include name="**/*.java"/>
+    <target name="compile-tests" depends="jar">
+    <mkdir dir="build"/>
+    <mkdir dir="build/tests"/>
+    <javac srcdir="src/tests/java" destdir="build/tests" source="1.8" target="1.8">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="mainjar"/>
+      </classpath>
+    </javac>
+  </target>
+  <target name="jar-tests" depends="compile-tests">
+    <jar jarfile="jar/luwrain-linux-tests.jar">
+      <fileset dir="./build/tests">
+        <include name="**/*.class"/>
       </fileset>
-      <doctitle><![CDATA[<h1>Accessible environment Luwrain</h1>]]></doctitle>
-      <bottom><![CDATA[<i>Visit <a href="http://luwrain.org">luwrain.org</a> for more information</i>]]></bottom>
-    </javadoc>
+    </jar>
+  </target>
+  <target name="junit" depends="jar-tests">
+    <junit printsummary="yes">
+      <classpath>
+        <path refid="classpath"/>
+        <path refid="mainjar"/>
+      </classpath>
+      <formatter type="xml" usefile="true" />
+      <batchtest fork="yes">
+        <fileset dir="build/tests">
+          <include name="**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
   </target>
 </project>
