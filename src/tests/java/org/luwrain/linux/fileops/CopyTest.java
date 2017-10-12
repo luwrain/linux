@@ -17,6 +17,7 @@
 package org.luwrain.linux.fileops;
 
 import java.io.*;
+import java.nio.file.*;
 
 import org.junit.*;
 
@@ -24,27 +25,56 @@ import org.luwrain.core.*;
 
 public class CopyTest extends Assert
 {
-    @Test public void singleFile() throws IOException
+    @Test public void singleFileToEmptyDir() throws Exception
     {
-	final File srcFile = createSingleFileTestingDir("testing.dat", 5123456);
+	final String fileName = "testing.dat";
+	final File srcFile = createSingleFileTestingDir(fileName, 5123456);
 	final File destDir = createDestDir();
+	final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile.toPath()}, destDir.toPath());
+	copyOp.run();
+	assertTrue(copyOp.getResult().isOk());
+	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(new File(destDir, fileName))));
+    }
+
+    @Test public void singleFileToNonExistingFile() throws Exception
+    {
+	final String fileName = "testing.dat";
+	final File srcFile = createSingleFileTestingDir(fileName, 5123456);
+	final File destDir = createDestDir();
+	final File destFile = new File(destDir, fileName);
+	final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile.toPath()}, destFile.toPath());
+	copyOp.run();
+	assertTrue(copyOp.getResult().isOk());
+	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(destFile)));
+    }
+
+        //FIXME:copy single dir to existing dir
+    //FIXME:copy single dir to non existing dir
+    //FIXME:copy multiple dirs to non existing dir
+    //FIXME:copy multiple dirs to existing dirs
+    //FIXME:symlinks
+    //FIXME:non existing dest, must be an error
+
+    @After @Before public void deleteTmpDir()
+    {
+	TestingBase.deleteTmpDir();
     }
 
     private File createSingleFileTestingDir(String fileName, int len) throws IOException
     {
-	Base.TMP_DIR.mkdir();
-	final File srcDir = new File(Base.TMP_DIR, "src");
+	TestingBase.TMP_DIR.mkdir();
+	final File srcDir = new File(TestingBase.TMP_DIR, "src");
 	srcDir.mkdir();
 	final File file = new File(srcDir, fileName);
-	final Base base = new Base();
+	final TestingBase base = new TestingBase();
 	base.writeRandFile(file, len);
 	return file;
     }
 
     private File createDestDir() throws IOException
     {
-	Base.TMP_DIR.mkdir();
-	final File destDir = new File(Base.TMP_DIR, "dest");
+	TestingBase.TMP_DIR.mkdir();
+	final File destDir = new File(TestingBase.TMP_DIR, "dest");
 	destDir.mkdir();
 	return destDir;
     }

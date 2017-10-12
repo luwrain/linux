@@ -16,6 +16,8 @@
 
 package org.luwrain.linux.fileops;
 
+//NOTE:destdir must exist
+
 import java.io.*;
 import java.nio.file.*;
 
