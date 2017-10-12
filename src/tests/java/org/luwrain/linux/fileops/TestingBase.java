@@ -71,6 +71,8 @@ class TestingBase
 
     static private void deleteDirOrFile(File file)
     {
+	if (!file.getAbsolutePath().startsWith("/tmp/"))
+	    throw new RuntimeException("Dangerous file to delete:" + file.getAbsolutePath());
 	if (file.isDirectory())
 	    for(File f: file.listFiles())
 		deleteDirOrFile(f);
