@@ -36,7 +36,7 @@ public class CopyTest extends Assert
 	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(new File(destDir, fileName))));
     }
 
-    @Test public void singleFileToNonExistingFile() throws Exception
+    @Test public void singleFileToNonExistingPlace() throws Exception
     {
 	final String fileName = "testing.dat";
 	final File srcFile = createSingleTestingFile(fileName, 5123456);
@@ -48,20 +48,48 @@ public class CopyTest extends Assert
 	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(destFile)));
     }
 
-        @Test public void twoFilesToEmptyDir() throws Exception
+    @Ignore @Test public void singleFileToNonExistingPlaceInNonExistingDir() throws Exception
+    {
+	final String fileName = "testing.dat";
+	final File srcFile = createSingleTestingFile(fileName, 5123456);
+	final File destDir = createDestDir();
+	final File nonExistingDir = new File(destDir, "non-existing");
+	final File destFile = new File(nonExistingDir, fileName);
+	final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile.toPath()}, destFile.toPath());
+	copyOp.run();
+	assertTrue(copyOp.getResult().isOk());
+	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(destFile)));
+    }
+
+    @Test public void twoFilesToEmptyDir() throws Exception
     {
 	final String fileName1 = "testing1.dat";
-		final String fileName2 = "testing2.dat";
-			final File srcFile1 = createSingleTestingFile(fileName1, 5123456);
-						final File srcFile2 = createSingleTestingFile(fileName2, 5123456);
-						final File destDir = createDestDir();
-						final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile1.toPath(), srcFile2.toPath()}, destDir.toPath());
+	final String fileName2 = "testing2.dat";
+	final File srcFile1 = createSingleTestingFile(fileName1, 5123456);
+	final File srcFile2 = createSingleTestingFile(fileName2, 5123456);
+	final File destDir = createDestDir();
+	final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile1.toPath(), srcFile2.toPath()}, destDir.toPath());
 	copyOp.run();
 	assertTrue(copyOp.getResult().isOk());
 	assertTrue(TestingBase.calcSha1(srcFile1).equals(TestingBase.calcSha1(new File(destDir, fileName1))));
-		assertTrue(TestingBase.calcSha1(srcFile2).equals(TestingBase.calcSha1(new File(destDir, fileName2))));
+	assertTrue(TestingBase.calcSha1(srcFile2).equals(TestingBase.calcSha1(new File(destDir, fileName2))));
     }
 
+    @Test public void twoFilesToNonExistingPlace() throws Exception
+    {
+	final String fileName1 = "testing1.dat";
+	final String fileName2 = "testing2.dat";
+	final File srcFile1 = createSingleTestingFile(fileName1, 5123456);
+	final File srcFile2 = createSingleTestingFile(fileName2, 5123456);
+	final File destDir = createDestDir();
+	final File nonExistingPlace1 = new File(destDir, "non-existing1");
+	final File nonExistingPlace2 = new File(nonExistingPlace1, "non-existing2");
+	final org.luwrain.linux.fileops.Copy copyOp = new Copy(new DummyListener(), "test", new Path[]{srcFile1.toPath(), srcFile2.toPath()}, nonExistingPlace2.toPath());
+	copyOp.run();
+	assertTrue(copyOp.getResult().isOk());
+	assertTrue(TestingBase.calcSha1(srcFile1).equals(TestingBase.calcSha1(new File(nonExistingPlace2, fileName1))));
+	assertTrue(TestingBase.calcSha1(srcFile2).equals(TestingBase.calcSha1(new File(nonExistingPlace2, fileName2))));
+    }
 
         //FIXME:copy single dir to existing dir
     //FIXME:copy single dir to non existing dir
