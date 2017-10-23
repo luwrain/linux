@@ -1,4 +1,4 @@
-#!/bin/bash -evx
+#!/bin/bash -e
 
 THIS="${0##*/}"
 
@@ -9,6 +9,7 @@ CHROOT="$WORK/iso/chroot"
 DISK="$1"
 SQUASHFSSRC="$1/casper/filesystem.squashfs"
 
+(
 unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
 mkdir -p "$WORK/iso/disk"
 cp -r "$DISK/." "$WORK/iso/disk"
@@ -23,5 +24,6 @@ umount "$CHROOT/proc"
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
 chroot "$WORK" /iso/lwr-build-iso
 cp "$WORK/iso/luwrain.iso" luwrain.iso
+) > /tmp/lwr-iso.log 2>&1
 
-# OK!
+echo 'OK!'
