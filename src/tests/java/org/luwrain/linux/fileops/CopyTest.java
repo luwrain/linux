@@ -48,7 +48,7 @@ public class CopyTest extends Assert
 	assertTrue(TestingBase.calcSha1(srcFile).equals(TestingBase.calcSha1(destFile)));
     }
 
-    @Ignore @Test public void singleFileToNonExistingPlaceInNonExistingDir() throws Exception
+    @Test public void singleFileToNonExistingPlaceInNonExistingDir() throws Exception
     {
 	final String fileName = "testing.dat";
 	final File srcFile = createSingleTestingFile(fileName, 5123456);
@@ -75,7 +75,7 @@ public class CopyTest extends Assert
 	assertTrue(TestingBase.calcSha1(srcFile2).equals(TestingBase.calcSha1(new File(destDir, fileName2))));
     }
 
-    @Test public void twoFilesToNonExistingPlace() throws Exception
+    @Test public void twoFilesToNonExistingPlaceInNonExistingDir() throws Exception
     {
 	final String fileName1 = "testing1.dat";
 	final String fileName2 = "testing2.dat";

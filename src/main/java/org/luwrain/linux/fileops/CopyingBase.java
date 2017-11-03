@@ -114,6 +114,8 @@ abstract class CopyingBase extends Base
 	    }
 	    Files.delete(dest);
 	}
+	if (dest.getParent() != null)
+	    Files.createDirectories(dest.getParent());
 	return copySingleFile(fileFrom, dest);//This takes care if fromFile is a symlink
     }
 
