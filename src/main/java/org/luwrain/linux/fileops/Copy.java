@@ -16,28 +16,11 @@
 
 package org.luwrain.linux.fileops;
 
-//NOTE:destdir must exist
-
 import java.io.*;
 import java.nio.file.*;
 
 import org.luwrain.core.NullCheck;
 
-/**
- * Implementation of the files copying procedure. To make its behaviour
- * more predictable, impose three simple rules, which this algorithm must
- * always follow:
- *
- * <ul>
- * <li>Only regular files may be overwritten if they are exist</li>
- * <li>Symlinks are always copied as symlinks (their copying never led to
- * creating of regular files or directories)</li>
- * <li>Files of other types than regular files, directories or symlinks are
- * silently skipped</li>
- * <li>Source files may not be given by relative pathes</li>
- * <li>If the destination is given by a relative pathe, the parent of the first source used to resolve it</li>
- * </ul>
- */
 class Copy extends CopyingBase
 {
     private final Path[] copyFrom;
