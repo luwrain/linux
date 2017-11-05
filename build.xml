@@ -34,7 +34,12 @@
   <target name="jar" depends="compile">
     <mkdir dir="jar"/>
     <jar jarfile="jar/luwrain-linux.jar">
-      <fileset dir="./build">
+            <manifest>
+        <section name="org/luwrain">
+          <attribute name="Extensions" value="org.luwrain.linux.Extension"/>
+        </section>
+      </manifest>
+            <fileset dir="./build">
         <include name="**/*.class"/>
       </fileset>
     </jar>
