@@ -29,7 +29,7 @@ class PointerInputListening
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
     static private final int STEP_X = 30;
-    static private final int STEP_Y = 20;
+    static private final int STEP_Y = 30;
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final EventConsumer consumer;
@@ -64,6 +64,9 @@ class PointerInputListening
 			final int code = s.readUnsignedByte();
 			final int x = s.readByte();
 			final int y = s.readByte();
+
+						if ((code & 1) > 0)
+						    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
 			if ((code & 8) > 0)
 			    onOffset(x, y);
 		    } while(true);
