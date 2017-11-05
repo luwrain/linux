@@ -64,9 +64,10 @@ class PointerInputListening
 			final int code = s.readUnsignedByte();
 			final int x = s.readByte();
 			final int y = s.readByte();
-
-						if ((code & 1) > 0)
-						    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+			if ((code & 1) > 0)
+			    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+			if ((code & 2) > 0)
+			    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.CONTEXT_MENU));
 			if ((code & 8) > 0)
 			    onOffset(x, y);
 		    } while(true);
