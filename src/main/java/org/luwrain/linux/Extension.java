@@ -23,19 +23,27 @@ import org.luwrain.core.*;
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
     static private final String PREFIX_INPUT_POINTER = "--linux-input-pointer=";
+        static private final String PREFIX_INPUT_FIFO = "--linux-input-fifo=";
 
     private PointerInputListening[] pointerInputs = null;
+        private FifoInputListening[] fifoInputs = null;
 
     @Override public String init(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	final List<PointerInputListening> inputs = new LinkedList();
-	for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
+		final List<FifoInputListening> fifos = new LinkedList();
+		for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
 	    inputs.add(new PointerInputListening(luwrain, s));
-	for(PointerInputListening l: inputs)
+				for(String s: cmdLine.getArgs(PREFIX_INPUT_FIFO))
+fifos.add(new FifoInputListening(luwrain, s));
+					for(PointerInputListening l: inputs)
 	    l.run();
-	this.pointerInputs = inputs.toArray(new PointerInputListening[inputs.size()]);
+										for(FifoInputListening l: fifos)
+	    l.run();
+										this.pointerInputs = inputs.toArray(new PointerInputListening[inputs.size()]);
+																				this.fifoInputs = fifos.toArray(new FifoInputListening[fifos.size()]);
 	return null;
     }
 }
