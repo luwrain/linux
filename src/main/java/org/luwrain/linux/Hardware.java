@@ -37,11 +37,10 @@ final class Hardware implements org.luwrain.base.Hardware
     private final org.luwrain.base.CoreProperties props;
     private final Path scriptsDir;
 
-    Hardware(Scripts scripts, org.luwrain.base.CoreProperties props)
+    Hardware(org.luwrain.base.CoreProperties props)
     {
-	NullCheck.notNull(scripts, "scripts");
 	NullCheck.notNull(props, "props");
-	this.scripts = scripts;
+	this.scripts = new Scripts(props);
 	this.props = props;
 	final File pciidsFile = props.getFileProperty("luwrain.linux.pciids");
 	if (pciidsFile != null)

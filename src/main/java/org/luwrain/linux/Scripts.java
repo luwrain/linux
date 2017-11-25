@@ -23,19 +23,25 @@ import org.luwrain.core.*;
 
 class Scripts
 {
+    static private String SCRIPTS_DIR_PROP = "luwrain.dir.scripts";
+
     enum ID {
 	MOUNT,
 	UMOUNT,
 	SHUTDOWN,
 	REBOOT,
+	SUSPEND,
     };
 
     private File scriptsDir;
 
-    Scripts(File scriptsDir)
+    Scripts(org.luwrain.base.CoreProperties props)
     {
-	NullCheck.notNull(scriptsDir, "scriptsDir");
-	this.scriptsDir = scriptsDir;
+	NullCheck.notNull(props, "props");
+	final File file = props.getFileProperty(SCRIPTS_DIR_PROP);
+	if (file == null)
+	    throw new RuntimeException("No \'" + SCRIPTS_DIR_PROP + "\' property required for scripts processing");
+	this.scriptsDir = file;
     }
 
     boolean runSync(ID id, boolean sudo)

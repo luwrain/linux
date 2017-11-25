@@ -31,7 +31,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     private org.luwrain.base.CoreProperties props = null;
     private Hardware hardware = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
-    private Scripts scripts = null;
     private String[] cpus = new String[0];
     private int ramSizeKb = 0;
 
@@ -41,7 +40,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	try {
 	    this.props = props;
 	    System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
-	    scripts = new Scripts(props.getFileProperty("luwrain.dir.scripts"));
 	    readCpuInfo();
 	    readMemInfo();
 	    return new InitResult();
@@ -87,23 +85,8 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     @Override public org.luwrain.base.Hardware getHardware()
     {
 	if (hardware == null)
-	    hardware = new Hardware(scripts, props);
+	    hardware = new Hardware(props);
 	return hardware;
-    }
-
-    @Override public boolean shutdown()
-    {
-	return scripts.runSync("lwr-shutdown", true);
-    }
-
-    @Override public boolean reboot()
-    {
-	return scripts.runSync("lwr-reboot", true);
-    }
-
-    @Override public boolean suspend(boolean hibernate)
-    {
-	return scripts.runSync("lwr-suspend", true);
     }
 
     @Override public void openFileInDesktop(Path path)
@@ -186,7 +169,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     {
 	NullCheck.notEmpty(cmd, "cmd");
 	NullCheck.notNull(dir, "dir");
-	final LinkedList<String> arg = new LinkedList<String>();
+	final List<String> arg = new LinkedList();
 	arg.add("/bin/bash");
 	arg.add("-c");
 	arg.add(cmd);
