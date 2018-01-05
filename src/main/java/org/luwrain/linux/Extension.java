@@ -18,6 +18,7 @@ package org.luwrain.linux;
 
 import java.util.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public class Extension extends org.luwrain.core.extensions.EmptyExtension
@@ -88,5 +89,14 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    },
 
 	};
+    }
+
+    @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	final List<ExtensionObject> res = new LinkedList();
+	if (scripts.exists("webcam-take"))
+	res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
+	return res.toArray(new ExtensionObject[res.size()]);
     }
 }

@@ -110,6 +110,21 @@ class Scripts
 	}
     }
 
+    boolean exists(String scriptName)
+    {
+	NullCheck.notEmpty(scriptName, "scriptName");
+	final File file = new File(scriptsDir, scriptName);
+	return file.exists() && !file.isDirectory();
+    }
+
+        boolean exists(ID id)
+    {
+	NullCheck.notNull(id, "id");
+	final File file = new File(scriptsDir, translateId(id));
+	return file.exists() && !file.isDirectory();
+    }
+
+
     private String getScriptPath(String scriptName)
     {
 	NullCheck.notEmpty(scriptName, "scriptName");
