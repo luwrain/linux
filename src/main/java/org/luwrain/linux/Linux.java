@@ -25,7 +25,7 @@ import org.luwrain.base.*;
 
 public final class Linux implements org.luwrain.base.OperatingSystem
 {
-    static final String LOG_COMPONENT = "linux";
+    static public final String LOG_COMPONENT = "linux";
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
     private org.luwrain.base.CoreProperties props = null;

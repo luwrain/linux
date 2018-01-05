@@ -22,9 +22,11 @@ import java.nio.file.*;
 import java.nio.charset.*;
 
 import org.luwrain.core.*;
+import org.luwrain.linux.*;
 
 class Connections
 {
+    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
     static private final String INTERFACES_DIR = "/sys/class/net";
 
     interface ConnectionListener
@@ -33,11 +35,13 @@ class Connections
     }
 
     private final Luwrain luwrain;
+    private final Scripts scripts;
 
     Connections(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.luwrain = luwrain;
+	this.scripts = new Scripts(luwrain);
     }
 
     synchronized boolean connect(WifiNetwork connectTo, ConnectionListener listener)
@@ -45,11 +49,19 @@ class Connections
 	NullCheck.notNull(connectTo, "connectTo");
 	NullCheck.notNull(listener, "listener");
 	final String wlanInterface = getWlanInterface();
-	Log.debug("network", "wlan interface is " + wlanInterface);
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return false;
+	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
 	try {
-	    final Process p = new ProcessBuilder("sudo", luwrain.getFileProperty("luwrain.dir.scripts").toPath().resolve("lwr-wifi-connect").toString(), wlanInterface, connectTo.name, connectTo.getPassword()).start();
+	    final Process p = scripts.runAsync(Scripts.ID.WIFI_CONNECT, new String[]{
+		    wlanInterface,
+		    connectTo.name,
+		    connectTo.getPassword()}, true);
+	    if (p == null)
+	    {
+		Log.error(LOG_COMPONENT, "unable to connect to the wifi network \'" + wlanInterface + "\'");
+		return false;
+	    }
 	    p.getOutputStream().close();
 	    final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    String line = null;
@@ -65,7 +77,7 @@ class Connections
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error(LOG_COMPONENT, "unable to process wifi connection output:" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
     }
@@ -73,12 +85,17 @@ class Connections
     synchronized WifiScanResult scan()
     {
 	final String wlanInterface = getWlanInterface();
-	Log.debug("network", "wlan interface is " + wlanInterface);
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return new WifiScanResult();
+	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
 	final String dir;
 	try {
-	    final Process p = new ProcessBuilder("sudo", luwrain.getFileProperty("luwrain.dir.scripts").toPath().resolve("lwr-wifi-scan").toString(), wlanInterface).start();
+	    final Process p = scripts.runAsync(Scripts.ID.WIFI_SCAN, new String[]{wlanInterface}, true);
+	    if (p == null)
+	    {
+		Log.error(LOG_COMPONENT, "unable to scan for wifi networks through the interface \'" + wlanInterface + "\'");
+		return new WifiScanResult();
+	    }
 	    p.getOutputStream().close();
 	    final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    dir = r.readLine();
@@ -91,22 +108,21 @@ class Connections
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error(LOG_COMPONENT, "unable to scan for wifi networks through the interface \'" + wlanInterface + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    return new WifiScanResult();
 	}
-	Log.debug("network", "wifi scan result directory is " + dir);
+	Log.debug(LOG_COMPONENT, "wifi scan result directory is " + dir);
 	if (dir == null || dir.trim().isEmpty())
 	    return new WifiScanResult();
-	final LinkedList<WifiNetwork> networks = new LinkedList<WifiNetwork>();
+	final List<WifiNetwork> networks = new LinkedList();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(dir))) {
-		for (Path p : directoryStream) 
-		{
-		    Log.debug("network", "reading wifi network information from " + p.toString());
-		    final WifiNetwork n = readNetworkData(p);
-		    if (n != null)
-			networks.add(n);
-		}
-	    } 
+	    for (Path p : directoryStream) 
+	    {
+		final WifiNetwork n = readNetworkData(p);
+		if (n != null)
+		    networks.add(n);
+	    }
+	} 
 	catch (IOException e) 
 	{
 	    e.printStackTrace();
@@ -135,7 +151,7 @@ class Connections
 
     private String getWlanInterface()
     {
-	final LinkedList<Path> dirs = new LinkedList<Path>();
+	final List<Path> dirs = new LinkedList();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(INTERFACES_DIR))) {
 		for (Path p : directoryStream) 
 		    if (Files.isDirectory(p))
