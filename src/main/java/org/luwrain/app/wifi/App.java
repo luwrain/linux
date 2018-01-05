@@ -28,11 +28,11 @@ import org.luwrain.popups.Popups;
 
 public class App implements Application, MonoApp
 {
-    private Luwrain luwrain;
-    private Strings strings;
+    private Luwrain luwrain = null;
+    private Strings strings = null;
     private final Base base = new Base(this);
-    private ListArea listArea;
-    private ProgressArea progressArea;
+    private ListArea listArea = null;
+    private ProgressArea progressArea = null;
     private AreaLayoutSwitch layouts;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -61,7 +61,6 @@ public class App implements Application, MonoApp
 	params.appearance = new Appearance(luwrain, strings);
 	params.clickHandler = (area, index, obj)->onClick(obj);
 	params.name = strings.appName();
-	//	params.flags = ListArea.Params.loadRegularFlags(luwrain.getRegistry());
 
 	listArea = new ListArea(params){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -87,10 +86,10 @@ public class App implements Application, MonoApp
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-closeApp();
+			closeApp();
 			return true;
 		    case REFRESH:
-doScanning();
+			doScanning();
 			return true;
 		    default:
 			return super.onEnvironmentEvent(event);
@@ -123,7 +122,7 @@ doScanning();
 			switch(event.getSpecial())
 			{
 			case TAB:
-goToList();
+			    goToList();
 			    return true;
 			}
 		    return super.onKeyboardEvent(event);
@@ -135,12 +134,12 @@ goToList();
 			return super.onEnvironmentEvent(event);
 		    switch(event.getCode())
 		    {
-case CLOSE:
-closeApp();
-return true;
-default:
-return super.onEnvironmentEvent(event);
- }
+		    case CLOSE:
+			closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
 		}
 	    };
     }
@@ -178,7 +177,7 @@ return super.onEnvironmentEvent(event);
 	luwrain.setActiveArea(listArea);
     }
 
-private void goToProgress()
+    private void goToProgress()
     {
 	if (layouts.getCurrentIndex() == 0)
 	{
@@ -206,7 +205,6 @@ private void goToProgress()
 
     @Override public void closeApp()
     {
-	//FIXME:Checking threads;
 	luwrain.closeApp();
     }
 }

@@ -23,10 +23,10 @@ import org.luwrain.controls.*;
 
 class Appearance implements ListArea.Appearance
 {
-    private Luwrain luwrain;
-    private Strings strings;
+    private final Luwrain luwrain;
+    private final Strings strings;
 
-Appearance(Luwrain luwrain, Strings strings)
+    Appearance(Luwrain luwrain, Strings strings)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(strings, "strings");
@@ -40,10 +40,10 @@ Appearance(Luwrain luwrain, Strings strings)
 	NullCheck.notNull(flags, "flags");
 	if (!(item instanceof WifiNetwork))
 	    return;
-	    final WifiNetwork network = (WifiNetwork)item;
-	    luwrain.playSound(Sounds.LIST_ITEM);
-	    if (network.hasPassword() && flags.contains(Flags.BRIEF))
-		luwrain.say(network.toString() + " " + strings.withPassword()); else
+	final WifiNetwork network = (WifiNetwork)item;
+	luwrain.playSound(Sounds.LIST_ITEM);
+	if (network.hasPassword && flags.contains(Flags.BRIEF))
+	    luwrain.say(network.toString() + " " + strings.withPassword()); else
 	    luwrain.say(network.toString());
     }
 

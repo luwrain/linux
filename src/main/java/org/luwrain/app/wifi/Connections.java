@@ -23,7 +23,7 @@ import java.nio.charset.*;
 
 import org.luwrain.core.*;
 
-class Wifi 
+class Connections
 {
     static private final String INTERFACES_DIR = "/sys/class/net";
 
@@ -40,7 +40,7 @@ class Wifi
 	this.luwrain = luwrain;
     }
 
-    synchronized boolean connect(WifiNetwork connectTo, Network.ConnectionListener listener)
+    synchronized boolean connect(WifiNetwork connectTo, ConnectionListener listener)
     {
 	NullCheck.notNull(connectTo, "connectTo");
 	NullCheck.notNull(listener, "listener");
@@ -49,7 +49,7 @@ class Wifi
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return false;
 	try {
-	    final Process p = new ProcessBuilder("sudo", luwrain.getFileProperty("luwrain.dir.scripts").toPath().resolve("lwr-wifi-connect").toString(), wlanInterface, connectTo.getName(), connectTo.getPassword()).start();
+	    final Process p = new ProcessBuilder("sudo", luwrain.getFileProperty("luwrain.dir.scripts").toPath().resolve("lwr-wifi-connect").toString(), wlanInterface, connectTo.name, connectTo.getPassword()).start();
 	    p.getOutputStream().close();
 	    final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	    String line = null;

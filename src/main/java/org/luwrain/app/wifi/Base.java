@@ -24,18 +24,18 @@ import org.luwrain.popups.*;
 
 class Base
 {
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private Network network;
+    static private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    static private Connections connections;
     private Luwrain luwrain;
     private Strings strings;
     private final ListUtils.FixedModel listModel = new ListUtils.FixedModel();
     private FutureTask scanningTask;
     private FutureTask connectionTask;
-    private final WifiApp app;
+    private final App app;
 
     private boolean scanningInProgress = false;
 
-    Base(WifiApp app)
+    Base(App app)
     {
 	NullCheck.notNull(app, "app");
 	this.app = app;
@@ -69,7 +69,7 @@ class Base
     {
 	if (connectionTask != null && !connectionTask.isDone())
 	    return false;
-	if (connectTo.hasPassword() && !askForPassword(connectTo))
+	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
 	connectionTask = createConnectionTask(destArea, connectTo);
 	executor.execute(connectionTask);
@@ -80,13 +80,13 @@ class Base
     {
 	NullCheck.notNull(scanRes, "scanRes");
 	scanningInProgress = false;
-	if (scanRes.getType() != WifiScanResult.Type.SUCCESS)
+	if (scanRes.type != WifiScanResult.Type.SUCCESS)
 	{
 	    listModel.clear();
 	    app.onReady(false);
 	} else
 	{
-	    listModel.setItems(scanRes.getNetworks());
+	    listModel.setItems(scanRes.networks);
 	    app.onReady(true);
 	}
     }
@@ -94,7 +94,7 @@ class Base
     private FutureTask createScanningTask()
     {
 	return new FutureTask(()->{
-		final WifiScanResult res = network.wifiScan();
+		final WifiScanResult res = connections.scan();
 		luwrain.runInMainThread(()->acceptResult(res));
 	}, null);
     }
@@ -102,7 +102,7 @@ class Base
     private FutureTask createConnectionTask(final ProgressArea destArea, final WifiNetwork connectTo)
     {
 	return new FutureTask(()->{
-		if (network.wifiConnect(connectTo, (line)->luwrain.runInMainThread(()->destArea.addProgressLine(line))))
+		if (connections.connect(connectTo, (line)->luwrain.runInMainThread(()->destArea.addProgressLine(line))))
 		    luwrain.runInMainThread(()->luwrain.message("Подключение к сети установлено", Luwrain.MESSAGE_DONE)); else
 		    luwrain.runInMainThread(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MESSAGE_ERROR));
 	}, null);
