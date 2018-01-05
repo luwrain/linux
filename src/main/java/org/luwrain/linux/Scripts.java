@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -21,21 +21,23 @@ import java.io.*;
 
 import org.luwrain.core.*;
 
-class Scripts
+public final class Scripts
 {
     static private String SCRIPTS_DIR_PROP = "luwrain.dir.scripts";
 
-    enum ID {
+    public enum ID {
 	MOUNT,
 	UMOUNT,
 	SHUTDOWN,
 	REBOOT,
 	SUSPEND,
+	WIFI_CONNECT,
+	WIFI_SCAN,
     };
 
     private File scriptsDir;
 
-    Scripts(org.luwrain.base.CoreProperties props)
+    public Scripts(org.luwrain.base.CoreProperties props)
     {
 	NullCheck.notNull(props, "props");
 	final File file = props.getFileProperty(SCRIPTS_DIR_PROP);
@@ -44,13 +46,13 @@ class Scripts
 	this.scriptsDir = file;
     }
 
-    boolean runSync(ID id, boolean sudo)
+    public boolean runSync(ID id, boolean sudo)
     {
 	NullCheck.notNull(id, "id");
 	return runSync(translateId(id), sudo);
     }
 
-    boolean runSync(String scriptName, boolean sudo)
+    public boolean runSync(String scriptName, boolean sudo)
     {
 	NullCheck.notNull(scriptName, "scriptName");
 	try {
@@ -73,14 +75,14 @@ class Scripts
 	}
     }
 
-    boolean runSync(ID id, String[] args, boolean sudo)
+    public boolean runSync(ID id, String[] args, boolean sudo)
     {
 	NullCheck.notNull(id, "id");
 	NullCheck.notNullItems(args, "args");
 	return runSync(translateId(id), args, sudo);
     }
 
-    boolean runSync(String scriptName, String[] args, boolean sudo)
+    public boolean runSync(String scriptName, String[] args, boolean sudo)
     {
 	NullCheck.notNull(scriptName, "scriptName");
 	NullCheck.notNullItems(args, "args");
@@ -110,20 +112,46 @@ class Scripts
 	}
     }
 
-    boolean exists(String scriptName)
+    public Process runAsync(ID id, String[] args, boolean sudo)
+    {
+	NullCheck.notNull(id, "id");
+	NullCheck.notNullItems(args, "args");
+	return runAsync(translateId(id), args, sudo);
+    }
+
+    public Process runAsync(String scriptName, String[] args, boolean sudo)
+    {
+	NullCheck.notNull(scriptName, "scriptName");
+	NullCheck.notNullItems(args, "args");
+	final List<String> cmd = new LinkedList();
+	if (sudo)
+	    cmd.add("sudo");
+	cmd.add(getScriptPath(scriptName));
+	for(String s: args)
+	    cmd.add(s);
+	try {
+	    return new ProcessBuilder(cmd.toArray(new String[cmd.size()])).start();
+	}
+	catch(IOException e)
+	{
+	    Log.error(Linux.LOG_COMPONENT, "unable to run the script \'" + scriptName + "\':" + e.getClass().getName() + ":" + e.getMessage());
+	    return null;
+	}
+    }
+
+    public boolean exists(String scriptName)
     {
 	NullCheck.notEmpty(scriptName, "scriptName");
 	final File file = new File(scriptsDir, scriptName);
 	return file.exists() && !file.isDirectory();
     }
 
-        boolean exists(ID id)
+    public boolean exists(ID id)
     {
 	NullCheck.notNull(id, "id");
 	final File file = new File(scriptsDir, translateId(id));
 	return file.exists() && !file.isDirectory();
     }
-
 
     private String getScriptPath(String scriptName)
     {
