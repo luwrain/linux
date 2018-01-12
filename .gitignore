@@ -1,7 +1,4 @@
 build
 jar
 lib
-api
-*.so
-*.o
-
+TEST-*Test.xml
