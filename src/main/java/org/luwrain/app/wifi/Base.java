@@ -103,8 +103,8 @@ class Base
     {
 	return new FutureTask(()->{
 		if (connections.connect(connectTo, (line)->luwrain.runInMainThread(()->destArea.addProgressLine(line))))
-		    luwrain.runInMainThread(()->luwrain.message("Подключение к сети установлено", Luwrain.MESSAGE_DONE)); else
-		    luwrain.runInMainThread(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MESSAGE_ERROR));
+		    luwrain.runInMainThread(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
+		    luwrain.runInMainThread(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
 	}, null);
     }
 
