@@ -82,7 +82,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	return new BrlApi();
     }
 
-    @Override public org.luwrain.base.Hardware getHardware()
+    @Override public org.luwrain.base.hardware.Hardware getHardware()
     {
 	if (hardware == null)
 	    hardware = new Hardware(props);
@@ -125,9 +125,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	{
 	    Log.error(LOG_COMPONENT, "unable to read CPU info:" + e.getClass().getName() + ":" + e.getMessage());
 	}
-	Log.debug(LOG_COMPONENT, "Found CPUs (" + cpus.length + "):");
-	for(String s: cpus)
-	    Log.debug(LOG_COMPONENT, s);
     }
 
     private void readMemInfo()
@@ -155,8 +152,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	    final int total = Integer.parseInt(totalStr);
 	    final int swap = Integer.parseInt(swapStr);
 	    ramSizeKb = total - swap;
-	    Log.debug(LOG_COMPONENT, "RAM size (kb):" + ramSizeKb);
-	    Log.debug(LOG_COMPONENT, "swap size (kb):" + swap);
 	}
 	catch(IOException | NumberFormatException e)
 	{

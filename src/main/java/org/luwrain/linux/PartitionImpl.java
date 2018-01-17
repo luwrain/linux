@@ -18,7 +18,7 @@ package org.luwrain.linux;
 
 import java.io.File;
 
-import org.luwrain.base.*;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 
 class PartitionImpl implements Partition

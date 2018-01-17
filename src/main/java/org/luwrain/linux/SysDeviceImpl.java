@@ -1,7 +1,7 @@
 
 package org.luwrain.linux;
 
-import org.luwrain.base.*;
+import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 
 final class SysDeviceImpl implements SysDevice

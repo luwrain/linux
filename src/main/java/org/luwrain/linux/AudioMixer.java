@@ -21,7 +21,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 
-class AudioMixer implements org.luwrain.base.AudioMixer
+class AudioMixer implements org.luwrain.base.hardware .AudioMixer
 {
     private Path scriptsDir;
 

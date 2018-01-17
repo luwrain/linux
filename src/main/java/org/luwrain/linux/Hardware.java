@@ -21,9 +21,9 @@ import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.core.*;
-import org.luwrain.base.*;
+import org.luwrain.base.hardware.*;
 
-final class Hardware implements org.luwrain.base.Hardware
+final class Hardware implements org.luwrain.base.hardware.Hardware
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
@@ -172,7 +172,7 @@ final class Hardware implements org.luwrain.base.Hardware
 	    return count;
     }
 
-    @Override public org.luwrain.base.AudioMixer getAudioMixer()
+    @Override public org.luwrain.base.hardware.AudioMixer getAudioMixer()
     {
 	if (mixer == null)
 	    mixer = new AudioMixer(scriptsDir);
