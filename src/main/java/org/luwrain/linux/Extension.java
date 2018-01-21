@@ -88,6 +88,54 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 	    },
 
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "term";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    luwrain.launchApp("term");
+		}
+	    },
+
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "man";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    luwrain.launchApp("man");
+		}
+	    },
+
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "wifi";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    luwrain.launchApp("wifi");
+		}
+	    },
+
+	    new Command() {
+		@Override public String getName()
+		{
+		    return "install";
+		}
+		@Override public void onCommand(Luwrain luwrain)
+		{
+		    NullCheck.notNull(luwrain, "luwrain");
+		    luwrain.launchApp("install");
+		}
+	    },
+
 	};
     }
 
@@ -97,6 +145,60 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	final List<ExtensionObject> res = new LinkedList();
 	if (scripts.exists("webcam-take"))
 	res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
+
+	res.add(new Shortcut(){
+		@Override public String getExtObjName()
+		{
+		    return "man";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    return new Application[]{new org.luwrain.app.man.App()};
+		}
+	    });
+	
+	res.add(new Shortcut(){
+		@Override public String getExtObjName()
+		{
+		    return "install";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    return new Application[]{new org.luwrain.app.install.App()};
+		}
+	    });
+
+	res.add(new Shortcut(){
+		@Override public String getExtObjName()
+		{
+		    return "term";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    if (args.length == 1)
+			return new Application[]{new org.luwrain.app.term.TermApp(args[0])};
+		    return new Application[]{new org.luwrain.app.term.TermApp("/")};
+		}
+	    });
+
+	res.add(new Shortcut(){
+		@Override public String getExtObjName()
+		{
+		    return "wifi";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    return new Application[]{new org.luwrain.app.wifi.App()};
+		}
+	    });
+
 	return res.toArray(new ExtensionObject[res.size()]);
     }
 }
+
+
+
