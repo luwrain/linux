@@ -31,6 +31,7 @@ public final class App implements Application, MonoApp
     private Luwrain luwrain = null;
     private Strings strings = null;
     private Base base = null;
+    private ConsoleArea2 searchArea = null;
     private NavigationArea pageArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -48,6 +49,61 @@ public final class App implements Application, MonoApp
 
     private void createAreas()
     {
+	final ConsoleArea2.Params params = new ConsoleArea2.Params();
+	params.context = new DefaultControlEnvironment(luwrain);
+	params.model = base.getSearchAreaModel();
+	params.appearance = base.getSearchAreaAppearance();
+	params.areaName = strings.appName();
+	params.inputPos = ConsoleArea2.InputPos.TOP;
+	params.inputPrefix = "man>";
+	
+	searchArea = new ConsoleArea2(params){
+		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case ESCAPE:
+			    closeApp();
+			    return true;
+			case TAB:
+			    luwrain.setActiveArea(pageArea);
+			    return true;
+			}
+		    return super.onKeyboardEvent(event);
+		}
+		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		{
+		    NullCheck.notNull(event, "event");
+		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
+			return super.onEnvironmentEvent(event);
+		    switch(event.getCode())
+		    {
+		    case CLOSE:
+			closeApp();
+			return true;
+		    default:
+			return super.onEnvironmentEvent(event);
+		    }
+		}
+	    };
+	
+	searchArea.setConsoleClickHandler((area,index,obj)->{
+		    return false;
+	    });
+	
+	searchArea.setConsoleInputHandler((area,text)->{
+		NullCheck.notNull(text, "text");
+		if (text.trim().isEmpty())
+		    return ConsoleArea2.InputHandler.Result.REJECTED;
+		if (!base.search(text.trim().toLowerCase()))
+		    		    return ConsoleArea2.InputHandler.Result.REJECTED;
+		area.refresh();
+		luwrain.playSound(Sounds.DONE);
+		return ConsoleArea2.InputHandler.Result.OK;
+	    });
+
 	pageArea = new SimpleArea(new DefaultControlEnvironment(luwrain)){
 		@Override public boolean onKeyboardEvent(KeyboardEvent event)
 		{
@@ -58,11 +114,9 @@ public final class App implements Application, MonoApp
 			case ESCAPE:
 			    closeApp();
 			    return true;
-			    /*
 			case TAB:
-			    goToProgress();
+			    luwrain.setActiveArea(searchArea);
 			    return true;
-			    */
 			}
 		    return super.onKeyboardEvent(event);
 		}
@@ -96,7 +150,7 @@ public final class App implements Application, MonoApp
 
     @Override public AreaLayout getAreaLayout()
     {
-	return new AreaLayout(pageArea);
+	return new AreaLayout(AreaLayout.TOP_BOTTOM, searchArea, pageArea);
     }
 
     @Override public void closeApp()

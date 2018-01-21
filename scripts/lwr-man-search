@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+THIS="${0##*/}"
+
+[ -z "$1" ] && echo "$THIS:no search query given" >&2 && exit 1
+
+exec man  -k "$1"

@@ -26,6 +26,9 @@ public final class Scripts
     static private String SCRIPTS_DIR_PROP = "luwrain.dir.scripts";
 
     public enum ID {
+	INSTALL,
+	MAN_SEARCH,
+	MAN_PAGE,
 	MOUNT,
 	UMOUNT,
 	SHUTDOWN,
