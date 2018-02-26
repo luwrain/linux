@@ -35,6 +35,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	this.scripts = new Scripts(luwrain);
+	org.luwrain.app.wifi.App.initConnections(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	final List<PointerInputListening> inputs = new LinkedList();
 	final List<FifoInputListening> fifos = new LinkedList();

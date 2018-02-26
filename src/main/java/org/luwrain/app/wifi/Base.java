@@ -25,7 +25,7 @@ import org.luwrain.popups.*;
 class Base
 {
     static private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    static private Connections connections;
+    static Connections connections = null;
     private Luwrain luwrain;
     private Strings strings;
     private final ListUtils.FixedModel listModel = new ListUtils.FixedModel();
@@ -131,5 +131,4 @@ class Base
     network.setPassword(password);
     return true;
     }
-
 }

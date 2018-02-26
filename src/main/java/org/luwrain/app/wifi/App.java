@@ -207,4 +207,11 @@ public class App implements Application, MonoApp
     {
 	luwrain.closeApp();
     }
+
+    static public void initConnections(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	if (Base.connections == null)
+	Base.connections = new Connections(luwrain);
+    }
 }
