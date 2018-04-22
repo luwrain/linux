@@ -28,6 +28,7 @@ class FifoInputListening
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
     static private final String COMMAND_PREFIX = "command ";
+        static private final String UNIREF_PREFIX = "uniref ";
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final Luwrain luwrain;
@@ -89,6 +90,15 @@ class FifoInputListening
 	    if (!command.isEmpty())
 	luwrain.runUiSafely(()->{
 		luwrain.runCommand(command);
+	    });
+	return;
+	}
+		if (line.startsWith(UNIREF_PREFIX))
+	{
+	    final String uniref = line.substring(UNIREF_PREFIX.length()).trim();
+	    if (!uniref.isEmpty())
+	luwrain.runUiSafely(()->{
+		luwrain.openUniRef(uniref);
 	    });
 	return;
 	}
