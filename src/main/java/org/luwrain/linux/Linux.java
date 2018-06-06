@@ -20,26 +20,27 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
-import org.luwrain.core.*;
 import org.luwrain.base.*;
+import org.luwrain.core.*;
+
 
 public final class Linux implements org.luwrain.base.OperatingSystem
 {
     static public final String LOG_COMPONENT = "linux";
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
-    private org.luwrain.base.CoreProperties props = null;
+    private PropertiesBase props = null;
     private Hardware hardware = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private String[] cpus = new String[0];
     private int ramSizeKb = 0;
 
-    @Override public InitResult init(org.luwrain.base.CoreProperties props)
+    @Override public InitResult init(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
-	try {
-	    this.props = props;
-	    System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
+		    this.props = props;
+		    try {
+			System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
 	    readCpuInfo();
 	    readMemInfo();
 	    return new InitResult();
@@ -77,7 +78,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	}
     }
 
-    @Override public Braille getBraille()
+    @Override public org.luwrain.base.Braille getBraille()
     {
 	return new BrlApi();
     }

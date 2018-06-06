@@ -19,6 +19,7 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class Scripts
@@ -40,7 +41,7 @@ public final class Scripts
 
     private File scriptsDir;
 
-    public Scripts(org.luwrain.base.CoreProperties props)
+    public Scripts(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	final File file = props.getFileProperty(SCRIPTS_DIR_PROP);

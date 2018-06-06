@@ -11,7 +11,7 @@ final class ScriptsCommandLineTool implements CommandLineTool
     private final Scripts scripts;
     private final String name;
 
-    ScriptsCommandLineTool(org.luwrain.base.CoreProperties props, String name)
+    ScriptsCommandLineTool(PropertiesBase props, String name)
     {
 	NullCheck.notNull(props, "props");
 	NullCheck.notEmpty(name, "name");

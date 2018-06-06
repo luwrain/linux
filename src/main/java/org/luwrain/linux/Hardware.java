@@ -20,6 +20,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
+import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.base.hardware.*;
 
@@ -34,10 +35,10 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
     private final PciIds pciIds = new PciIds();
     private AudioMixer mixer;
     private final Scripts scripts;
-    private final org.luwrain.base.CoreProperties props;
+    private final PropertiesBase props;
     private final Path scriptsDir;
 
-    Hardware(org.luwrain.base.CoreProperties props)
+    Hardware(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	this.scripts = new Scripts(props);
