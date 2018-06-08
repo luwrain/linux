@@ -27,6 +27,7 @@ public final class Scripts
     static private String SCRIPTS_DIR_PROP = "luwrain.dir.scripts";
 
     public enum ID {
+	BATTERY_PERCENT,
 	INSTALL,
 	MAN_SEARCH,
 	MAN_PAGE,
@@ -141,6 +142,40 @@ public final class Scripts
 	    Log.error(Linux.LOG_COMPONENT, "unable to run the script \'" + scriptName + "\':" + e.getClass().getName() + ":" + e.getMessage());
 	    return null;
 	}
+    }
+
+    public String runSingleLineOutput(ID id, String[] args, boolean sudo)
+    {
+	NullCheck.notNull(id, "id");
+	NullCheck.notNullItems(args, "args");
+	final Process p = runAsync(id, args, sudo);
+	if (p == null)
+	    return null;
+			final StringBuilder b = new StringBuilder();
+	try {
+	p.getOutputStream().close();
+		final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line = r.readLine();
+		while (line != null)
+		{
+		    b.append(line);
+		    line = r.readLine();
+		}
+	}
+	catch(IOException e)
+	{
+	    return null;
+	}
+	try {
+		p.waitFor();
+	}
+	catch(InterruptedException e)
+	{
+	    Thread.currentThread().interrupt();
+	}
+		if (p.exitValue() == 0)
+		    return new String(b);
+		return null;
     }
 
     public boolean exists(String scriptName)

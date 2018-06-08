@@ -147,6 +147,8 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	if (scripts.exists("webcam-take"))
 	res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 
+	res.add(new SystemProperties.Battery(luwrain));
+
 	res.add(new Shortcut(){
 		@Override public String getExtObjName()
 		{
