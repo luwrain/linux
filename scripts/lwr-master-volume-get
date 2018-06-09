@@ -1,4 +1,5 @@
 #!/bin/bash -e
+# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
 amixer get Master |
 egrep -i 'mono:.*playback' |
