@@ -23,11 +23,12 @@ import org.luwrain.core.events.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-class FifoInputListening
+final class FifoInputListening
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
     static private final String COMMAND_PREFIX = "command ";
+    static private final String USB_DISK_ATTACHED_PREFIX = "usbdiskattached ";
         static private final String UNIREF_PREFIX = "uniref ";
 
     private final Executor executor = Executors.newSingleThreadExecutor();
@@ -47,7 +48,8 @@ class FifoInputListening
     {
 	task = createTask();
 	Log.debug(LOG_COMPONENT, "starting fifo input listening on " + fileName);
-	executor.execute(task);
+	//	executor.execute(task);
+	luwrain.executeBkg(task);
     }
 
     private FutureTask createTask()
@@ -84,6 +86,8 @@ class FifoInputListening
     private void processLine(String line)
     {
 	NullCheck.notNull(line, "line");
+
+	//command
 	if (line.startsWith(COMMAND_PREFIX))
 	{
 	    final String command = line.substring(COMMAND_PREFIX.length()).trim();
@@ -93,6 +97,21 @@ class FifoInputListening
 	    });
 	return;
 	}
+
+	//usb disk
+		if (line.startsWith(USB_DISK_ATTACHED_PREFIX))
+	{
+	    final String path = line.substring(USB_DISK_ATTACHED_PREFIX.length()).trim();
+	    if (!path.isEmpty())
+	luwrain.runUiSafely(()->{
+		//		luwrain.runCommand(command);
+		luwrain.playSound(Sounds.ANNOUNCEMENT);
+	    });
+	return;
+	}
+
+
+		//uniref
 		if (line.startsWith(UNIREF_PREFIX))
 	{
 	    final String uniref = line.substring(UNIREF_PREFIX.length()).trim();
