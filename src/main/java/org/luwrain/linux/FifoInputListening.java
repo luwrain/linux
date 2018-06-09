@@ -31,7 +31,6 @@ final class FifoInputListening
     static private final String USB_DISK_ATTACHED_PREFIX = "usbdiskattached ";
         static private final String UNIREF_PREFIX = "uniref ";
 
-    private final Executor executor = Executors.newSingleThreadExecutor();
     private final Luwrain luwrain;
     private final String fileName;
     private FutureTask task = null;
@@ -48,7 +47,6 @@ final class FifoInputListening
     {
 	task = createTask();
 	Log.debug(LOG_COMPONENT, "starting fifo input listening on " + fileName);
-	//	executor.execute(task);
 	luwrain.executeBkg(task);
     }
 
@@ -104,6 +102,16 @@ final class FifoInputListening
 	    final String path = line.substring(USB_DISK_ATTACHED_PREFIX.length()).trim();
 	    if (!path.isEmpty())
 	luwrain.runUiSafely(()->{
+		try {
+		final org.luwrain.linux.disks.Disk disk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
+		Log.debug("proba", disk.toString());
+		for(Object o: disk.getPartitions())
+		    Log.debug("proba", "part " + o.toString());
+		}
+		catch(Exception e)
+		{
+		    e.printStackTrace();
+		}
 		//		luwrain.runCommand(command);
 		luwrain.playSound(Sounds.ANNOUNCEMENT);
 	    });
