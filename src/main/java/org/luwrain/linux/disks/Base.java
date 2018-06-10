@@ -20,7 +20,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 
-class Base
+public class Base
 {
     protected final File path;
 
@@ -28,6 +28,16 @@ class Base
     {
 	NullCheck.notNull(path, "path");
 	this.path = path;
+    }
+
+    public File getDevFile()
+    {
+	return new File("/dev/" + getDevName());
+    }
+
+    public String getDevName()
+    {
+	return "sr0";
     }
 
     @Override public String toString()
