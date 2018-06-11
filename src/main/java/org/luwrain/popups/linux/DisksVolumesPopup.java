@@ -112,6 +112,62 @@ protected Volume result = null;
     }
     */
 
+    static protected Object[] prepareContent()
+    {
+	final List res = new LinkedList();
+	final DisksList disksList = new DisksList();
+	final VolumesList volumesList = new VolumesList();
+	final Volume[] volumes = volumesList.getVolumes();
+	for(Disk d: disksList.getRemovableDisks())
+	{
+	    {
+		int i = 0;
+		for(i = 0;i < volumes.length;++i)
+		    if (volumes[i].type == Volume.Type.REMOVABLE && volumes[i].name.equals(d.getDevName()))
+			break;
+		if (i < volumes.length)
+		    continue;
+	    }
+	    boolean found = false;
+	    for(Partition p: d.getPartitions())
+	    {
+		int k = 0;
+		for(k = 0;k < volumes.length;++k)
+		    if (volumes[k].type == Volume.Type.REMOVABLE && volumes[k].name.equals(p.getDevName()))
+			break;
+		if (k < volumes.length)
+		    found = true;
+	    }
+	    if (found)
+		continue;
+	    res.add(d);
+	}
+	for(Volume v: volumes)
+	    res.add(v);
+	return res.toArray(new Object[res.size()]);
+    }
+
+    static public String getVolumeTypeStr(Luwrain luwrain, Volume volume)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(volume, "volume");
+	switch(volume.type)
+	{
+	case ROOT:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
+	case USER_HOME:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
+	case REGULAR:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular");
+	case REMOTE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote");
+	case REMOVABLE:
+	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable");
+	default:
+	    return "";
+	}
+    }
+
     static private ListArea.Params constructParams(Luwrain luwrain, String name)
     {
 	NullCheck.notNull(luwrain, "luwrain");
@@ -119,7 +175,7 @@ protected Volume result = null;
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
-	params.model = new ListUtils.FixedModel();
+	params.model = new ListUtils.FixedModel(prepareContent());
 	params.appearance = new Appearance(luwrain);
 	//	params.flags = listFlags;
 	return params;
@@ -138,15 +194,20 @@ protected Volume result = null;
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flag ");
 	    final String value;
-	    /*
 	    if (item instanceof Volume)
 	    {
 		final Volume vol = (Volume)item;
 		if (flags.contains(Flags.BRIEF))
-		    value = part.getBriefTitle(); else
-		    value = part.getFullTitle();
+		    value = vol.name; else
+		    if (vol.type != Volume.Type.USER_HOME && vol.type != Volume.Type.ROOT)
+			value = getVolumeTypeStr(luwrain, vol) + " " + vol.name; else
+			value = getVolumeTypeStr(luwrain, vol);
 	    } else
-	    */
+		if (item instanceof Disk)
+		{
+		    final Disk disk = (Disk)item;
+		    value = "Неподключенное устройство " + disk.getDevName();//FIXME:
+		} else
 		value = item.toString();
 	    if (!value.trim().isEmpty())
 		luwrain.setEventResponse(DefaultEventResponse.text(value)); else

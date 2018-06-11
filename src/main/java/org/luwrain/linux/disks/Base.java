@@ -37,7 +37,7 @@ public class Base
 
     public String getDevName()
     {
-	return "sr0";
+	return path.getName();
     }
 
     @Override public String toString()

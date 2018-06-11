@@ -20,12 +20,28 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.util.*;
 
 public final class Disk extends Base
 {
     public Disk(File path)
     {
 	super(path);
+    }
+
+        public boolean isRemovable()
+    {
+	final File removableFile = new File(path, "removable");
+	if (!removableFile.exists() || removableFile.isDirectory())
+	    return false;
+	try {
+	    final String text = FileUtils.readTextFileSingleString(removableFile, "UTF-8");
+	    return text.equals("1\n");
+	}
+	catch(IOException e)
+	{
+	    return false;
+	}
     }
 
     public Partition[] getPartitions()
