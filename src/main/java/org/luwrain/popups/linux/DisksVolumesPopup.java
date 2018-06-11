@@ -52,9 +52,23 @@ protected Volume result = null;
 	    case ENTER:
 		closing.doOk();
 		return true;
-		/*
 	    case INSERT:
-		return attach();
+		{
+		final File[] res = mountSelected();
+		if (res == null)
+		    return false;
+		if (res.length == 0)
+		{
+		    luwrain.playSound(Sounds.ERROR);
+		    return true;
+		}
+			final ListUtils.FixedModel fixedModel = (ListUtils.FixedModel)getListModel();
+	fixedModel.setItems(prepareContent());
+	refresh();
+	luwrain.playSound(Sounds.DONE);
+	return true;
+		}
+		/*
 	    case DELETE:
 		return detach();
 		*/
@@ -74,25 +88,17 @@ protected Volume result = null;
 	return false;
     }
 
-    /*
-    private boolean attach()
+    protected File[] mountSelected()
     {
 	final Object selected = selected();
-	if (selected == null ||
-	    selected instanceof Partition ||
-	    selected instanceof String)
-	    return false;
-	final int res = control.attachStorageDevice(selected);
-	if (res < 0)
-	{
-	    luwrain.message("Во время попытки подключения разделов на съёмном накопителе произошла ошибка", Luwrain.MessageType.ERROR);
-	    return true;
-	}
-	luwrain.message("Подключено разделов: " + res, res > 0?Luwrain.MessageType.OK:Luwrain.MessageType.REGULAR);
-	refresh();
-	return true;
+	if (selected == null || !(selected instanceof Disk))
+	    return null;
+	final Disk disk = (Disk)selected;
+	final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
+return mounting.mountAll(disk);
     }
 
+    /*
     private boolean detach()
     {
 	final Object selected = selected();

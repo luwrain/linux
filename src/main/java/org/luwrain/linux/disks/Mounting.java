@@ -2,7 +2,7 @@
 package org.luwrain.linux.disks;
 
 import java.io.*;
-import java.nio.file.*;
+//import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.base.*;
@@ -27,19 +27,23 @@ public final class Mounting
 	this.scripts = new Scripts(propertiesBase);
     }
 
-public Base[] mountAll(Disk disk)
+public File[] mountAll(Disk disk)
     {
 	NullCheck.notNull(disk, "disk");
-	final List<Base> res = new LinkedList();
+	final List<File> res = new LinkedList();
 	    final Partition[] parts = disk.getPartitions();
 	    for(Partition p: parts)
-		if (mount(p.getDevFile(), mountPointConstructor.constructMountPoint(p.getDevFile())))
-			res.add(p);
+	    {
+		final File mountPoint = mountPointConstructor.constructMountPoint(p.getDevFile());
+		if (mount(p.getDevFile(), mountPoint))
+		    res.add(mountPoint);
+	    }
 	    if (!res.isEmpty())
-		return res.toArray(new Base[res.size()]);
-	    if (mount(disk.getDevFile(), mountPointConstructor.constructMountPoint(disk.getDevFile())))
-    return new Base[]{disk};
-	    return new Base[0];
+		return res.toArray(new File[res.size()]);
+	    final File mountPoint = mountPointConstructor.constructMountPoint(disk.getDevFile());
+	    if (mount(disk.getDevFile(), mountPoint))
+    return new File[]{mountPoint};
+	    return new File[0];
     }
 
 public int umountAllPartitions(Disk disk)
