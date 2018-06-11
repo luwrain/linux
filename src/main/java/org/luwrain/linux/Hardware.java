@@ -28,15 +28,13 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
-        static final String MEDIA_DIR = "/media";
-
-    private final File sysBlockDir;
+        private final File sysBlockDir;
     private final File pciDevDir;
     private final PciIds pciIds = new PciIds();
     private AudioMixer mixer;
     private final Scripts scripts;
     private final PropertiesBase props;
-    private final Path scriptsDir;
+        private final Path scriptsDir;
 
     Hardware(PropertiesBase props)
     {
@@ -108,171 +106,11 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
 	return devices.toArray(new SysDevice[devices.size()]);
     }
 
-    @Override public StorageDevice[] getStorageDevices()
-    {
-	final List<StorageDevice> devices = new LinkedList<StorageDevice>();
-	final File[] files = new File("/sys/block").listFiles();
-	for(File f: files)
-	{
-	    final File deviceDir = new File(f, "device");
-	    if (!deviceDir.exists() || !deviceDir.isDirectory())
-		continue;
-	    final StorageDevice dev = new StorageDevice();
-	    dev.devName = f.getName();
-	    dev.model = readTextFile(new File(deviceDir, "model").getAbsolutePath());
-	    try {
-		dev.capacity = Long.parseLong(readTextFile(new File(f, "size").getAbsolutePath()));
-	    }
-	    catch(NumberFormatException e)
-	    {
-		//		e.printStackTrace();
-		dev.capacity = 0;
-	    }
-	    dev.capacity *= 512;
-	    dev.removable = readTextFile(new File(f, "removable").getAbsolutePath()).equals("1");
-	    devices.add(dev);
-	}
-	return devices.toArray(new StorageDevice[devices.size()]);
-    }
-
-    @Override public int mountAllPartitions(StorageDevice device)
-    {
-	NullCheck.notNull(device, "device");
-	if (sysBlockDir == null)
-	    return 0;
-	int count = 0;
-	final File[] files = new File(sysBlockDir, device.devName).listFiles();
-	for(File f: files)
-	{
-	    if (!f.isDirectory() || !f.getName().startsWith(device.devName))
-		continue;
-	    if (mount(f.getName(), new File(new File(MEDIA_DIR), f.getName()).getAbsolutePath()))
-	    ++count;
-	}
-	if (mount(device.devName, new File(new File(MEDIA_DIR), device.devName).getAbsolutePath()))
-	    ++count;
-	    return count;
-    }
-
-    @Override public int umountAllPartitions(StorageDevice device)
-    {
-	NullCheck.notNull(device, "device");
-	if (sysBlockDir == null)
-	    return 0;
-	int count = 0;
-	if (umount(new File(new File(MEDIA_DIR), device.devName).getAbsolutePath()))
-	    ++count;
-	final File[] files = new File(sysBlockDir, device.devName).listFiles();
-	for(File f: files)
-	{
-	    if (!f.isDirectory() || !f.getName().startsWith(device.devName))
-		continue;
-	    if (umount(new File(new File(MEDIA_DIR), f.getName()).getAbsolutePath()))
-	    ++count;
-	}
-	    return count;
-    }
-
     @Override public org.luwrain.base.hardware.AudioMixer getAudioMixer()
     {
 	if (mixer == null)
 	    mixer = new AudioMixer(scriptsDir);
 	return mixer;
-    }
-
-    @Override public Battery[] getBatteries()
-    {
-	return null;
-    }
-
-    private boolean mount(String devName, String mountPoint)
-    {
-	return scripts.runSync(Scripts.ID.MOUNT, new String[]{devName, mountPoint}, true);
-    }
-
-    private boolean umount(String mountPoint)
-    {
-	return scripts.runSync(Scripts.ID.UMOUNT, new String[]{mountPoint}, true);
-    }
-
-    @Override public Partition[] getMountedPartitions()
-    {
-	final List<Partition> remotes = new LinkedList<Partition>();
-	final List<Partition> removables = new LinkedList<Partition>();
-	final List<Partition> regulars = new LinkedList<Partition>();
-	final List<Partition> other = new LinkedList<Partition>();
-	final FileSystem fs = FileSystems.getDefault();
-	Iterable<FileStore> stores = fs.getFileStores();
-	for(FileStore store: stores)
-	{
-	    final String type = store.type();
-	    if (!type.startsWith("ext") &&
-		!type.equals("iso9660") &&
-		!type.equals("vfat") &&
-		!type.equals("fat") &&
-		!type.equals("cifs"))
-		continue;
-	    final String[] nameParts = store.toString().split(" \\(");
-	    if (nameParts.length < 1 || nameParts[0] == null)
-		continue;
-	    final String path = nameParts[0];
-	    Partition l = null;
-	    if (store.type().equals("cifs"))
-		l = createRemotePartition(store, path); else
-		if (path.startsWith(MEDIA_DIR))
-		    l = createRemovablePartition(store, path); else 
-		    l = createRegularPartition(store, path);
-	    if (l != null)
-		switch(l.getPartType())
-		{
-		case REMOVABLE:
-		    removables.add(l);
-		    break;
-		case REMOTE:
-		    remotes.add(l);
-		    break;
-		case REGULAR:
-		    regulars.add(l);
-		    break;
-		default:
-		    other.add(l);
-		}
-	}
-	final List<Partition> res = new LinkedList<Partition>();
-	for(Partition p: removables)
-	    res.add(p);
-	for(Partition p: remotes)
-	    res.add(p);
-	for(Partition p: regulars)
-	    res.add(p);
-	res.add(new PartitionImpl(Partition.Type.ROOT, new File("/"), "/", true));
-	return res.toArray(new Partition[res.size()]);
-    }
-
-private Partition createRemovablePartition(FileStore store, String path)
-    {
-	NullCheck.notNull(store, "store");
-	NullCheck.notEmpty(path, "path");
-	final String[] parts = store.name().split("/");
-	if (parts == null || parts.length < 1 || parts[0] == null)
-	    return null;
-	return new PartitionImpl(Partition.Type.REMOVABLE, new File(path), parts[parts.length - 1], true);
-    }
-
-private Partition createRemotePartition(FileStore store, String path)
-    {
-	NullCheck.notNull(store, "store");
-	NullCheck.notEmpty(path, "path");
-	return new PartitionImpl(Partition.Type.REMOTE, new File(path), store.name(), true);
-    }
-
-private Partition createRegularPartition(FileStore store, String path)
-    {
-	NullCheck.notNull(store, "store");
-	NullCheck.notEmpty(path, "path");
-	if (path.equals("/"))
-	    return null;
-	return new PartitionImpl(Partition.Type.REGULAR, new File(path), path, true);
     }
 
     static private String     readTextFile(String fileName)
