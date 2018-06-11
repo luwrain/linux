@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2017 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -53,7 +53,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	}
     }
 
-    @Override public String getProperty(String propName)
+    public String getProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
 	if (propName.startsWith("luwrain.hardware.cpu."))
