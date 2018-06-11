@@ -32,6 +32,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     private PropertiesBase props = null;
     private Hardware hardware = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
+    private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
     private String[] cpus = new String[0];
     private int ramSizeKb = 0;
 
@@ -178,15 +179,24 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	return filesOperations;
     }
 
+    org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
+    {
+	return this.newlyAvailableDisk;
+    }
+
     void onUsbDiskAttached(Luwrain luwrain, String path)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(path, "path");
+	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
+	luwrain.message("Подключён новый съёмный диск", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
     }
 
     void onCdromChanged(Luwrain luwrain, String path)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(path, "path");
+	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
+	luwrain.message("Обнаружен новый носитель в приводе компакт-дисков", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
     }
 }
