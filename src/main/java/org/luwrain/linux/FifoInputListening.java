@@ -29,17 +29,21 @@ final class FifoInputListening
 
     static private final String COMMAND_PREFIX = "command ";
     static private final String USB_DISK_ATTACHED_PREFIX = "usbdiskattached ";
+        static private final String CDROM_CHANGED_PREFIX = "cdromchanged ";
         static private final String UNIREF_PREFIX = "uniref ";
 
     private final Luwrain luwrain;
+    private final Linux linux;
     private final String fileName;
     private FutureTask task = null;
 
-    FifoInputListening(Luwrain luwrain, String fileName)
+    FifoInputListening(Luwrain luwrain, Linux linux, String fileName)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(linux, "linux");
 	NullCheck.notEmpty(fileName, "fileName");
 	this.luwrain = luwrain;
+	this.linux = linux;
 	this.fileName = fileName;
     }
 
@@ -101,22 +105,19 @@ final class FifoInputListening
 	{
 	    final String path = line.substring(USB_DISK_ATTACHED_PREFIX.length()).trim();
 	    if (!path.isEmpty())
-	luwrain.runUiSafely(()->{
-		try {
-		final org.luwrain.linux.disks.Disk disk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
-		Log.debug("proba", disk.toString());
-		for(Object o: disk.getPartitions())
-		    Log.debug("proba", "part " + o.toString());
-		}
-		catch(Exception e)
-		{
-		    e.printStackTrace();
-		}
-		//		luwrain.runCommand(command);
-		luwrain.playSound(Sounds.ANNOUNCEMENT);
-	    });
+		luwrain.runUiSafely(()->linux.onUsbDiskAttached(luwrain, path));
 	return;
 	}
+
+			//cdrom
+		if (line.startsWith(CDROM_CHANGED_PREFIX))
+	{
+	    final String path = line.substring(CDROM_CHANGED_PREFIX.length()).trim();
+	    if (!path.isEmpty())
+		luwrain.runUiSafely(()->linux.onCdromChanged(luwrain, path));
+	return;
+	}
+
 
 
 		//uniref

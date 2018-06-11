@@ -26,8 +26,8 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     static private final String PREFIX_INPUT_POINTER = "--linux-input-pointer=";
     static private final String PREFIX_INPUT_FIFO = "--linux-input-fifo=";
 
+    static private Linux linux = null;
     private Scripts scripts = null;
-
     private PointerInputListening[] pointerInputs = null;
     private FifoInputListening[] fifoInputs = null;
 
@@ -42,7 +42,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
 	    inputs.add(new PointerInputListening(luwrain, s));
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_FIFO))
-	    fifos.add(new FifoInputListening(luwrain, s));
+	    fifos.add(new FifoInputListening(luwrain, linux, s));
 	for(PointerInputListening l: inputs)
 	    l.run();
 	for(FifoInputListening l: fifos)
@@ -201,6 +201,15 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 
 	return res.toArray(new ExtensionObject[res.size()]);
     }
+
+    static void setLinux(Linux newLinux)
+    {
+	if (newLinux == null)
+	    throw new NullPointerException("newLinux may not be null");
+	if (linux != null)
+	    throw new RuntimeException("linux object instance is already set");
+	linux = newLinux;
+	    }
 }
 
 

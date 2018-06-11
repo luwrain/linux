@@ -181,7 +181,11 @@ return mounting.mountAll(disk);
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
-	params.model = new ListUtils.FixedModel(prepareContent());
+	params.model = new ListUtils.FixedModel(prepareContent()){
+		@Override public void refresh()
+		{
+		    setItems(prepareContent());
+		}};
 	params.appearance = new Appearance(luwrain);
 	//	params.flags = listFlags;
 	return params;

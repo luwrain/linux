@@ -38,6 +38,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     @Override public InitResult init(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
+	Extension.setLinux(this);
 		    this.props = props;
 		    try {
 			System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
@@ -175,5 +176,17 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     @Override public FilesOperations getFilesOperations()
     {
 	return filesOperations;
+    }
+
+    void onUsbDiskAttached(Luwrain luwrain, String path)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(path, "path");
+    }
+
+    void onCdromChanged(Luwrain luwrain, String path)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	NullCheck.notNull(path, "path");
     }
 }
