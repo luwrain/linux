@@ -22,9 +22,8 @@ import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
-import org.luwrain.base.hardware.*;
 
-final class Hardware implements org.luwrain.base.hardware.Hardware
+final class Hardware
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
@@ -53,7 +52,7 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
 	    Log.warning(LOG_COMPONENT, "no \'luwrain.linux.pcidevdir\' property");
     }
 
-    @Override public SysDevice[] getSysDevices()
+    public SysDevice[] getSysDevices()
     {
 	if (pciDevDir == null)
 	    return new SysDevice[0];
@@ -94,7 +93,7 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
 		    model = modelStr;
 	    } else
 		model = modelStr;
-	    devices.add(new SysDeviceImpl(type,
+	    devices.add(new SysDevice(type,
 					  name,
 					  cls,
 					  vendor,
@@ -104,13 +103,6 @@ final class Hardware implements org.luwrain.base.hardware.Hardware
 					  ));
 	}
 	return devices.toArray(new SysDevice[devices.size()]);
-    }
-
-    @Override public org.luwrain.base.hardware.AudioMixer getAudioMixer()
-    {
-	if (mixer == null)
-	    mixer = new AudioMixer(scriptsDir);
-	return mixer;
     }
 
     static private String     readTextFile(String fileName)

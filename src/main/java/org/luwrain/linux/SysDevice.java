@@ -16,20 +16,25 @@
 
 package org.luwrain.linux;
 
-import org.luwrain.base.hardware.*;
 import org.luwrain.core.*;
 
-final class SysDeviceImpl implements SysDevice
+public final class SysDevice
 {
-    private final Type type;
-    private final String id;
-    private final String cls;
-    private final String vendor;
-    private final String model;
-    private final String driver;
-    private final String module;
+    public enum Type {
+	UNKNOWN,
+	PCI,
+	USB,
+    };
 
-    SysDeviceImpl(Type type,
+    public final Type type;
+    public final String id;
+    public final String cls;
+    public final String vendor;
+    public final String model;
+    public final String driver;
+    public final String module;
+
+    SysDevice(Type type,
 		  String id,
 		  String cls,
 		  String vendor,
@@ -51,40 +56,5 @@ final class SysDeviceImpl implements SysDevice
 	this.model = model;
 	this.driver = driver;
 	this.module = module;
-    }
-
-    @Override public Type getDevType()
-    {
-	return type;
-    }
-
-    @Override public String getDevId()
-    {
-	return id;
-    }
-
-    @Override public String getDevClass()
-    {
-	return cls;
-    }
-
-    @Override public String getDevVendor()
-    {
-	return vendor;
-    }
-
-    @Override public String getDevModel()
-    {
-	return model;
-    }
-
-    @Override public String getDevDriver()
-    {
-	return driver;
-    }
-
-    @Override public String getDevModule()
-    {
-	return module;
     }
 }

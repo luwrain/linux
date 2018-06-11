@@ -85,13 +85,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	return new BrlApi();
     }
 
-    @Override public org.luwrain.base.hardware.Hardware getHardware()
-    {
-	if (hardware == null)
-	    hardware = new Hardware(props);
-	return hardware;
-    }
-
     @Override public void openFileInDesktop(Path path)
     {
 	throw new UnsupportedOperationException("Linux has no support of opening files in desktop environment");

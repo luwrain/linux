@@ -21,7 +21,7 @@ import java.nio.file.*;
 
 import org.luwrain.core.*;
 
-class AudioMixer implements org.luwrain.base.hardware .AudioMixer
+class AudioMixer
 {
     private Path scriptsDir;
 
@@ -31,7 +31,7 @@ class AudioMixer implements org.luwrain.base.hardware .AudioMixer
 	this.scriptsDir = scriptsDir;
     }
 
-    @Override public int getMasterVolume()
+    public int getMasterVolume()
     {
 	try {
 	    final Process p = new ProcessBuilder("sudo", scriptsDir.resolve("lwr-master-volume-get").toString()).start();
@@ -58,7 +58,7 @@ class AudioMixer implements org.luwrain.base.hardware .AudioMixer
 	}
     }
 
-    @Override public void setMasterVolume(int value)
+    public void setMasterVolume(int value)
     {
 	int v = value;
 	if (v > 100)
