@@ -17,33 +17,28 @@
 package org.luwrain.linux;
 
 import java.io.*;
-import java.nio.file.*;
 import java.util.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
+import org.luwrain.util.*;
 
-final class Hardware
+public final class SysDevicesList
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 
-        private final File sysBlockDir;
+        private final PropertiesBase props;
+        private final PciIds pciIds = new PciIds();
+    private final File sysBlockDir;
     private final File pciDevDir;
-    private final PciIds pciIds = new PciIds();
-    private AudioMixer mixer;
-    private final Scripts scripts;
-    private final PropertiesBase props;
-        private final Path scriptsDir;
 
-    Hardware(PropertiesBase props)
+    public SysDevicesList(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
-	this.scripts = new Scripts(props);
 	this.props = props;
 	final File pciidsFile = props.getFileProperty("luwrain.linux.pciids");
 	if (pciidsFile != null)
 	pciIds.load(pciidsFile);
-	this.scriptsDir = props.getFileProperty("luwrain.dir.scripts").toPath();
 	this.sysBlockDir = props.getFileProperty("luwrain.linux.sysblockdir");
 	if (sysBlockDir == null)
 	    Log.warning(LOG_COMPONENT, "no \'luwrain.linux.sysblockdir\' property");
@@ -56,8 +51,10 @@ final class Hardware
     {
 	if (pciDevDir == null)
 	    return new SysDevice[0];
-	final List<SysDevice> devices = new LinkedList<SysDevice>();
+	final List<SysDevice> devices = new LinkedList();
 	final File[] pciDirs = pciDevDir.listFiles();
+	if (pciDirs == null)
+	    return new SysDevice[0];
 	for(File d: pciDirs)
 	{
 	    final String classStr = readTextFile(new File(d, "class").getAbsolutePath());
@@ -94,32 +91,26 @@ final class Hardware
 	    } else
 		model = modelStr;
 	    devices.add(new SysDevice(type,
-					  name,
-					  cls,
-					  vendor,
-					  model,
-					  "", //driver
-					  "" //module
-					  ));
+				      name,
+				      cls,
+				      vendor,
+				      model,
+				      "", //driver
+				      "" //module
+				      ));
 	}
 	return devices.toArray(new SysDevice[devices.size()]);
     }
 
     static private String     readTextFile(String fileName)
     {
-	Path path = Paths.get(fileName);
 	try {
-	    final byte[] bytes = Files.readAllBytes(path);
-final String s = new String(bytes, "US-ASCII");
-final StringBuilder b = new StringBuilder();
-for(int i = 0;i < s.length();++i)
-    if (!Character.isISOControl(s.charAt(i)))
-	b.append(s.charAt(i));
-return b.toString();
+	    final String text = FileUtils.readTextFileSingleString(new File(fileName), "UTF-8");
+	    return text.replaceAll("\n", "");
 	}
 	catch(IOException e)
 	{
-	    e.printStackTrace();
+	    Log.error(LOG_COMPONENT, "unable to read " + fileName + ":" + e.getClass().getName() + ":" + e.getMessage());
 	    return "";
 	}
     }

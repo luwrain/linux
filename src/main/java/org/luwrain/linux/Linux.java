@@ -30,7 +30,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
     private PropertiesBase props = null;
-    private Hardware hardware = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
     private String[] cpus = new String[0];
