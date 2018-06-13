@@ -61,11 +61,6 @@ public File[] mountAll(Disk disk)
 	    return new File[0];
     }
 
-public int umountAllPartitions(Disk disk)
-    {
-	return 0;
-    }
-
     private boolean mount(File dev, File mountPoint)
     {
 	NullCheck.notNull(dev, "dev");
@@ -73,9 +68,11 @@ public int umountAllPartitions(Disk disk)
 	return scripts.runSync(Scripts.ID.MOUNT, new String[]{dev.getAbsolutePath(), mountPoint.getAbsolutePath()}, true);
     }
 
-    private boolean umount(String mountPoint)
+    public boolean umount(Volume volume)
     {
-	NullCheck.notEmpty(mountPoint, "mountPoint");
-	return scripts.runSync(Scripts.ID.UMOUNT, new String[]{mountPoint}, true);
+	NullCheck.notNull(volume, "volume");
+	if (volume.type !=Volume.Type.REMOVABLE)
+	    return false;
+	return scripts.runSync(Scripts.ID.UMOUNT, new String[]{volume.file.getAbsolutePath()}, true);
     }
 }

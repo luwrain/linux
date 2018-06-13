@@ -4,7 +4,6 @@
 THIS="${0##*/}"
 
 MOUNT_POINT="$1"
-
 [ -z "$MOUNT_POINT" ] && echo "$THIS:no mount point given" >&2 && exit 1
 
 if     ! umount "$MOUNT_POINT"; then

@@ -14,8 +14,6 @@
    General Public License for more details.
 */
 
-//LWR_API 1.0
-
 package org.luwrain.popups.linux;
 
 import java.util.*;
@@ -31,7 +29,7 @@ import org.luwrain.linux.disks.*;
 public class DisksVolumesPopup extends ListPopupBase implements org.luwrain.popups.DisksVolumesPopup
 {
     static private Linux linux = null;
-protected Volume result = null;
+protected File result = null;
 
     public DisksVolumesPopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
@@ -40,7 +38,7 @@ protected Volume result = null;
 
     @Override public File result()
     {
-	return null;//FIXME:
+	return this.result;
     }
 
     @Override public boolean onKeyboardEvent(KeyboardEvent event)
@@ -50,11 +48,10 @@ protected Volume result = null;
 	    switch(event.getSpecial())
 	    {
 	    case ENTER:
-		closing.doOk();
-		return true;
+		return closing.doOk();
 	    case INSERT:
 		{
-		final File[] res = mountSelected();
+		    final File[] res = mount(selected());
 		if (res == null)
 		    return false;
 		if (res.length == 0)
@@ -62,61 +59,66 @@ protected Volume result = null;
 		    luwrain.playSound(Sounds.ERROR);
 		    return true;
 		}
-			final ListUtils.FixedModel fixedModel = (ListUtils.FixedModel)getListModel();
-	fixedModel.setItems(prepareContent());
 	refresh();
 	luwrain.playSound(Sounds.DONE);
 	return true;
 		}
-		/*
 	    case DELETE:
-		return detach();
-		*/
+		return umountSelected();
 	    }
 	return super.onKeyboardEvent(event);
     }
 
     @Override public boolean onOk()
     {
-	/*
 	final Object res = selected();
-	if (res == null || !(res instanceof Partition))
+	if (res == null)
 	    return false;
-	result = (Partition)res;
-	return true;
-	*/
+	if (res instanceof Disk)
+	{
+		    final File[] mountRes = mount(res);
+		    if (mountRes == null)
+			return false;
+		    if (mountRes.length == 0)
+			return true;
+		    this.result = mountRes[0];
+		    return true;
+	}
+	if (res instanceof Volume)
+	{
+	    final Volume volume = (Volume)res;
+	    this.result = volume.file;
+	    return true;
+	}
 	return false;
     }
 
-    protected File[] mountSelected()
+    protected File[] mount(Object obj)
     {
-	final Object selected = selected();
-	if (selected == null || !(selected instanceof Disk))
+	if (obj == null || !(obj instanceof Disk))
 	    return null;
-	final Disk disk = (Disk)selected;
+	final Disk disk = (Disk)obj;
 	final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
 return mounting.mountAll(disk);
     }
 
-    /*
-    private boolean detach()
+    protected boolean umountSelected()
     {
 	final Object selected = selected();
-	if (selected == null ||
-	    selected instanceof Partition ||
-	    selected instanceof String)
+	if (selected == null || !(selected instanceof Volume))
 	    return false;
-	final int res = control.detachStorageDevice(selected);
-	if (res < 0)
+	final Volume volume = (Volume)selected;
+	if (volume.type != Volume.Type.REMOVABLE)
+	    return false;
+	final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
+	if (mounting.umount(volume))
 	{
-	    luwrain.message("Во время попытки отключения разделов на съёмном накопителе произошла ошибка", Luwrain.MessageType.ERROR);
-	    return true;
-	}
-	luwrain.message("Отключено разделов: " + res, res > 0?Luwrain.MessageType.OK:Luwrain.MessageType.REGULAR);
-	refresh();
+	    luwrain.playSound(Sounds.DONE);
+	    refresh();
+	} else
+	    luwrain.playSound(Sounds.ERROR);
 	return true;
     }
-    */
 
     static protected Object[] prepareContent()
     {
