@@ -69,7 +69,7 @@ class PointerInputListening
 			if ((code & 1) > 0)
 			{
 			    final long currentMsec = System.currentTimeMillis();
-			    if (prevTimeMsec >= 0 && (currentMsec - prevTimeMsec >= DOUBLE_CLICK_DELAY_MSEC))
+			    if (prevTimeMsec >= 0 && (currentMsec - prevTimeMsec <= DOUBLE_CLICK_DELAY_MSEC))
 				consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
 			    prevTimeMsec = currentMsec;
 
