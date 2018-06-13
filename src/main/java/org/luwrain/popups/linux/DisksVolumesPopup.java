@@ -69,6 +69,22 @@ protected File result = null;
 	return super.onKeyboardEvent(event);
     }
 
+    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    {
+	NullCheck.notNull(event, "event");
+	if (event.getType() == EnvironmentEvent.Type.BROADCAST)
+	    switch(event.getCode())
+	    {
+	    case REFRESH:
+		if (event.getBroadcastFilterUniRef().startsWith("disksvolumes:"))
+		    refresh();
+		return true;
+	    default:
+		return super.onEnvironmentEvent(event);
+	    }
+	return super.onEnvironmentEvent(event);
+    }
+
     @Override public boolean onOk()
     {
 	final Object res = selected();
