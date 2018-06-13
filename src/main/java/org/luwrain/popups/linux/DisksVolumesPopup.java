@@ -205,22 +205,7 @@ return mounting.mountAll(disk);
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flag ");
-	    final String value;
-	    if (item instanceof Volume)
-	    {
-		final Volume vol = (Volume)item;
-		if (flags.contains(Flags.BRIEF))
-		    value = vol.name; else
-		    if (vol.type != Volume.Type.USER_HOME && vol.type != Volume.Type.ROOT)
-			value = getVolumeTypeStr(luwrain, vol) + " " + vol.name; else
-			value = getVolumeTypeStr(luwrain, vol);
-	    } else
-		if (item instanceof Disk)
-		{
-		    final Disk disk = (Disk)item;
-		    value = "Неподключенное устройство " + disk.getDevName();//FIXME:
-		} else
-		value = item.toString();
+	    final String value = getTitleStr(item, flags.contains(Flags.BRIEF));
 	    if (!value.trim().isEmpty())
 		luwrain.setEventResponse(DefaultEventResponse.text(value)); else
 		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
@@ -229,13 +214,25 @@ return mounting.mountAll(disk);
 	{
 	    NullCheck.notNull(item, "item");
 	    NullCheck.notNull(flags, "flags");
-	    /*
-	    if (item instanceof Partition)
+	    return getTitleStr(item, false);
+	}
+	protected String getTitleStr(Object item, boolean brief)
+	{
+	    NullCheck.notNull(item, "item");
+	    if (item instanceof Volume)
 	    {
-		final Partition part = (Partition)item;
-		return part.getFullTitle();
+		final Volume vol = (Volume)item;
+		if (brief)
+		    return vol.name;
+		if (vol.type != Volume.Type.USER_HOME && vol.type != Volume.Type.ROOT)
+		    return getVolumeTypeStr(luwrain, vol) + " " + vol.name;
+		return getVolumeTypeStr(luwrain, vol);
 	    }
-	    */
+	    if (item instanceof Disk)
+	    {
+		final Disk disk = (Disk)item;
+		return "Неподключенное устройство " + disk.getDevName();//FIXME:
+	    }
 	    return item.toString();
 	}
 	@Override public int getObservableLeftBound(Object item)
