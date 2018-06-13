@@ -27,7 +27,8 @@ import org.luwrain.core.*;
 class PointerInputListening
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
-
+    
+    static private final long DOUBLE_CLICK_DELAY_MSEC = 100;
     static private final int STEP_X = 30;
     static private final int STEP_Y = 30;
 
@@ -38,6 +39,7 @@ class PointerInputListening
 
     private int posX = 0;
     private int posY = 0;
+    private long prevTimeMsec = -1;
 
     PointerInputListening(EventConsumer consumer, String fileName)
     {
@@ -65,7 +67,13 @@ class PointerInputListening
 			final int x = s.readByte();
 			final int y = s.readByte();
 			if ((code & 1) > 0)
-			    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+			{
+			    final long currentMsec = System.currentTimeMillis();
+			    if (prevTimeMsec >= 0 && (currentMsec - prevTimeMsec >= DOUBLE_CLICK_DELAY_MSEC))
+				consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+			    prevTimeMsec = currentMsec;
+
+			}
 			if ((code & 2) > 0)
 			    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.CONTEXT_MENU));
 			if ((code & 8) > 0)
