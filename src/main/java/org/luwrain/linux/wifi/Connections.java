@@ -24,25 +24,25 @@ import java.nio.charset.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 
-class Connections
+public final class Connections
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
     static private final String INTERFACES_DIR = "/sys/class/net";
 
-    interface ConnectionListener
+    public interface ConnectionListener
     {
 	void onConnectionProgressLine(String line);
     }
 
     private final Scripts scripts;
 
-    Connections(org.luwrain.base.PropertiesBase props)
+    public Connections(org.luwrain.base.PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	this.scripts = new Scripts(props);
     }
 
-    synchronized boolean connect(Network connectTo, ConnectionListener listener)
+    synchronized public boolean connect(Network connectTo, ConnectionListener listener)
     {
 	NullCheck.notNull(connectTo, "connectTo");
 	NullCheck.notNull(listener, "listener");
@@ -80,7 +80,7 @@ class Connections
 	}
     }
 
-    synchronized ScanResult scan()
+    synchronized public ScanResult scan()
     {
 	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())

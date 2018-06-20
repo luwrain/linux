@@ -20,6 +20,7 @@ import java.util.*;
 
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
+import org.luwrain.linux.wifi.*;
 
 class Appearance implements ListArea.Appearance
 {
@@ -38,9 +39,9 @@ class Appearance implements ListArea.Appearance
     {
 	NullCheck.notNull(item, "item");
 	NullCheck.notNull(flags, "flags");
-	if (!(item instanceof WifiNetwork))
+	if (!(item instanceof Network))
 	    return;
-	final WifiNetwork network = (WifiNetwork)item;
+	final Network network = (Network)item;
 	luwrain.playSound(Sounds.LIST_ITEM);
 	if (network.hasPassword && flags.contains(Flags.BRIEF))
 	    luwrain.say(network.toString() + " " + strings.withPassword()); else

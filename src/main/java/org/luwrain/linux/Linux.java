@@ -32,6 +32,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 
     private PropertiesBase props = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
+    private org.luwrain.linux.wifi.Connections wifiConnections = null;
     private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
     private String[] cpus = new String[0];
     private int ramSizeKb = 0;
@@ -41,6 +42,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	NullCheck.notNull(props, "props");
 	Extension.setLinux(this);
 		    this.props = props;
+		    this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
 		    try {
 			System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
 	    readCpuInfo();
@@ -175,6 +177,11 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
     {
 	return this.newlyAvailableDisk;
+    }
+
+    public org.luwrain.linux.wifi.Connections getWifiConnections()
+    {
+	return wifiConnections;
     }
 
     void onUsbDiskAttached(Luwrain luwrain, String path)

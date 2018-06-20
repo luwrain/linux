@@ -21,32 +21,30 @@ import java.util.concurrent.*;
 import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
+import org.luwrain.linux.wifi.*;
 
 class Base
 {
-    static Connections connections = null;
-    private Luwrain luwrain;
-    private Strings strings;
+        private final App app;
+    private final Luwrain luwrain;
+    private final Strings strings;
+    private final Connections connections;
     private final ListUtils.FixedModel listModel = new ListUtils.FixedModel();
     private FutureTask scanningTask;
     private FutureTask connectionTask;
-    private final App app;
 
     private boolean scanningInProgress = false;
 
-    Base(App app)
+    Base(App app, Luwrain luwrain, Strings strings, Connections connections)
     {
 	NullCheck.notNull(app, "app");
-	this.app = app;
-    }
-
-    boolean init(Luwrain luwrain, Strings strings)
-    {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(strings, "strings");
+	NullCheck.notNull(connections, "connections");
+	this.app = app;
 	this.luwrain = luwrain;
 	this.strings = strings;
-	return true;
+	this.connections = connections;
     }
 
     ListArea.Model getListModel()
@@ -64,7 +62,7 @@ class Base
 	return true;
     }
 
-    boolean launchConnection(ProgressArea destArea, WifiNetwork connectTo)
+    boolean launchConnection(ProgressArea destArea, Network connectTo)
     {
 	if (connectionTask != null && !connectionTask.isDone())
 	    return false;
@@ -75,11 +73,11 @@ class Base
 	return true;
     }
 
-    private void acceptResult(WifiScanResult scanRes)
+    private void acceptResult(ScanResult scanRes)
     {
 	NullCheck.notNull(scanRes, "scanRes");
 	scanningInProgress = false;
-	if (scanRes.type != WifiScanResult.Type.SUCCESS)
+	if (scanRes.type != ScanResult.Type.SUCCESS)
 	{
 	    listModel.clear();
 	    app.onReady(false);
@@ -93,12 +91,12 @@ class Base
     private FutureTask createScanningTask()
     {
 	return new FutureTask(()->{
-		final WifiScanResult res = connections.scan();
+		final ScanResult res = connections.scan();
 		luwrain.runInMainThread(()->acceptResult(res));
 	}, null);
     }
 
-    private FutureTask createConnectionTask(final ProgressArea destArea, final WifiNetwork connectTo)
+    private FutureTask createConnectionTask(final ProgressArea destArea, final Network connectTo)
     {
 	return new FutureTask(()->{
 		if (connections.connect(connectTo, (line)->luwrain.runInMainThread(()->destArea.addProgressLine(line))))
@@ -112,7 +110,7 @@ class Base
 	return scanningTask != null && !scanningTask.isDone() && scanningInProgress;
     }
 
-    private boolean askForPassword(WifiNetwork network)
+    private boolean askForPassword(Network network)
     {
 	NullCheck.notNull(network, "network");
 	final org.luwrain.app.wifi.Settings.WifiNetwork settings = org.luwrain.app.wifi.Settings.createWifiNetwork(luwrain.getRegistry(), network);

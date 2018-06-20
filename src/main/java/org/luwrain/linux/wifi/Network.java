@@ -18,11 +18,11 @@ package org.luwrain.linux.wifi;
 
 import org.luwrain.core.*;
 
-class Network
+public final class Network
 {
-    final String name;
-    final boolean hasPassword;
-    private String password = "";
+    public final String name;
+    public final boolean hasPassword;
+private String password = "";
 
     Network(String name, boolean hasPassword)
     {

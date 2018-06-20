@@ -18,12 +18,12 @@ package org.luwrain.linux.wifi;
 
 import org.luwrain.core.NullCheck;
 
-class ScanResult
+public final class ScanResult
 {
-    enum Type {SUCCESS, FAILED};
+    public enum Type {SUCCESS, FAILED};
 
-    final Type type;
-    final Network[] networks;
+    public final Type type;
+    public final Network[] networks;
 
     ScanResult()
     {

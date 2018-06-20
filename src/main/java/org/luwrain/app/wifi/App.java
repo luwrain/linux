@@ -25,15 +25,24 @@ import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.Popups;
+import org.luwrain.linux.wifi.*;
 
 public class App implements Application, MonoApp
 {
     private Luwrain luwrain = null;
     private Strings strings = null;
-    private final Base base = new Base(this);
+    private Base base = null;
     private ListArea listArea = null;
     private ProgressArea progressArea = null;
     private AreaLayoutSwitch layouts;
+
+    private final Connections connections;
+
+    public App(Connections connections)
+    {
+	NullCheck.notNull(connections, "connections");
+	this.connections = connections;
+    }
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
     {
@@ -43,8 +52,7 @@ public class App implements Application, MonoApp
 	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
 	strings = (Strings)o;
 	this.luwrain = luwrain;
-	if (!base.init(luwrain, strings))
-	    return new InitResult(InitResult.Type.FAILURE);
+	this.base = new Base(this, luwrain, strings, connections);
 	createArea();
 	layouts = new AreaLayoutSwitch(luwrain);
 	layouts.add(new AreaLayout(listArea));
@@ -162,10 +170,10 @@ public class App implements Application, MonoApp
     private boolean onClick(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
-	if (!(obj instanceof WifiNetwork))
+	if (!(obj instanceof Network))
 	    return false;
 	progressArea.clear();
-	if (!base.launchConnection(progressArea, (WifiNetwork)obj))
+	if (!base.launchConnection(progressArea, (Network)obj))
 	    return false;
 	layouts.show(1);
 	goToProgress();
@@ -206,12 +214,5 @@ public class App implements Application, MonoApp
     @Override public void closeApp()
     {
 	luwrain.closeApp();
-    }
-
-    static public void initConnections(Luwrain luwrain)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	if (Base.connections == null)
-	Base.connections = new Connections(luwrain);
     }
 }

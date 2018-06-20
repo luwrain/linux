@@ -42,7 +42,7 @@ public interface Network
 	return RegistryProxy.create(registry, NETWORK_PATH, Network.class);
     }
 
-    static public WifiNetwork createWifiNetwork(Registry registry, org.luwrain.app.wifi.WifiNetwork network)
+    static public WifiNetwork createWifiNetwork(Registry registry, org.luwrain.linux.wifi.Network network)
     {
 	NullCheck.notNull(registry, "registry");
 	NullCheck.notNull(network, "network");
