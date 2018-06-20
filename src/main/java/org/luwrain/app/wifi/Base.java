@@ -24,7 +24,6 @@ import org.luwrain.popups.*;
 
 class Base
 {
-    static private final ExecutorService executor = Executors.newSingleThreadExecutor();
     static Connections connections = null;
     private Luwrain luwrain;
     private Strings strings;
@@ -61,7 +60,7 @@ class Base
 	    return false;
 	scanningTask = createScanningTask();
 	scanningInProgress = true;
-	executor.execute(scanningTask);
+	luwrain.executeBkg(scanningTask);
 	return true;
     }
 
@@ -72,7 +71,7 @@ class Base
 	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
 	connectionTask = createConnectionTask(destArea, connectTo);
-	executor.execute(connectionTask);
+	luwrain.executeBkg(connectionTask);
 	return true;
     }
 
