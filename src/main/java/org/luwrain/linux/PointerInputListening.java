@@ -33,7 +33,7 @@ class PointerInputListening
     static private final int STEP_Y = 30;
 
     private final Executor executor = Executors.newSingleThreadExecutor();
-    private final EventConsumer consumer;
+    private final Luwrain luwrain;
     private final String fileName;
     private FutureTask task = null;
 
@@ -41,11 +41,11 @@ class PointerInputListening
     private int posY = 0;
     private long prevTimeMsec = -1;
 
-    PointerInputListening(EventConsumer consumer, String fileName)
+    PointerInputListening(Luwrain luwrain, String fileName)
     {
-	NullCheck.notNull(consumer, "consumer");
+	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notEmpty(fileName, "fileName");
-	this.consumer = consumer;
+	this.luwrain = luwrain;
 	this.fileName = fileName;
     }
 
@@ -70,12 +70,12 @@ class PointerInputListening
 			{
 			    final long currentMsec = System.currentTimeMillis();
 			    if (prevTimeMsec >= 0 && (currentMsec - prevTimeMsec <= DOUBLE_CLICK_DELAY_MSEC))
-				consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+				luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
 			    prevTimeMsec = currentMsec;
 
 			}
 			if ((code & 2) > 0)
-			    consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.CONTEXT_MENU));
+			    luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.CONTEXT_MENU));
 			if ((code & 8) > 0)
 			    onOffset(x, y);
 		    } while(true);
@@ -103,25 +103,25 @@ class PointerInputListening
 	    step = false;
 	    while (posX > STEP_X)
 	    {
-		consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT));
+		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT));
 		posX -= STEP_X;
 		step = true;
 	    }
 	    while (posY > STEP_Y)
 	    {
-		consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_UP));
+		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_UP));
 		posY -= STEP_Y;
 		step = true;
 	    }
 	    while (posX < -1 * STEP_X)
 	    {
-		consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
+		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
 		posX += STEP_X;
 		step = true;
 	    }
 	    while (posY < -1 * STEP_Y)
 	    {
-		consumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN));
+		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN));
 		posY += STEP_Y;
 		step = true;
 	    }

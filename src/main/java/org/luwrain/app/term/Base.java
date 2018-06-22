@@ -55,7 +55,7 @@ class Base
 		while(terminal.isActive())
 		{
 		    if (terminal.sync())
-			luwrain.runInMainThread(()->{
+			luwrain.runUiSafely(()->{
 				actions.notify(terminal.newText(), 
 					       terminal.getHotPointX(), terminal.getHotPointY(),
 					       terminal.bell);
