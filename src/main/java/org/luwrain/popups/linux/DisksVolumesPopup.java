@@ -41,7 +41,7 @@ protected File result = null;
 	return this.result;
     }
 
-    @Override public boolean onKeyboardEvent(KeyboardEvent event)
+    @Override public boolean onInputEvent(KeyboardEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.isSpecial() || !event.isModified())
@@ -66,7 +66,7 @@ protected File result = null;
 	    case DELETE:
 		return umountSelected();
 	    }
-	return super.onKeyboardEvent(event);
+	return super.onInputEvent(event);
     }
 
     @Override public boolean onSystemEvent(EnvironmentEvent event)

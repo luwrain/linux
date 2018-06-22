@@ -58,7 +58,7 @@ public final class App implements Application, MonoApp
 	params.inputPrefix = "man>";
 	
 	searchArea = new ConsoleArea2(params){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -71,7 +71,7 @@ public final class App implements Application, MonoApp
 			    luwrain.setActiveArea(pageArea);
 			    return true;
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
@@ -105,7 +105,7 @@ public final class App implements Application, MonoApp
 	    });
 
 	pageArea = new SimpleArea(new DefaultControlEnvironment(luwrain)){
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -118,7 +118,7 @@ public final class App implements Application, MonoApp
 			    luwrain.setActiveArea(searchArea);
 			    return true;
 			}
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{

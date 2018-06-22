@@ -101,7 +101,7 @@ public class TermApp implements Application, Actions
 		    final String line = term.getLine(index);
 		    return line != null?line:"";
 		}
-		@Override public boolean onKeyboardEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    if (event.isSpecial() && !event.isModified())
 			switch(event.getSpecial())
@@ -140,7 +140,7 @@ public class TermApp implements Application, Actions
 			return true;
 		    }
 		    //FIXME:
-		    return super.onKeyboardEvent(event);
+		    return super.onInputEvent(event);
 		}
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
