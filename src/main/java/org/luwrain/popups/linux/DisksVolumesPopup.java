@@ -69,7 +69,7 @@ protected File result = null;
 	return super.onKeyboardEvent(event);
     }
 
-    @Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+    @Override public boolean onSystemEvent(EnvironmentEvent event)
     {
 	NullCheck.notNull(event, "event");
 	if (event.getType() == EnvironmentEvent.Type.BROADCAST)
@@ -80,9 +80,9 @@ protected File result = null;
 		    refresh();
 		return true;
 	    default:
-		return super.onEnvironmentEvent(event);
+		return super.onSystemEvent(event);
 	    }
-	return super.onEnvironmentEvent(event);
+	return super.onSystemEvent(event);
     }
 
     @Override public boolean onOk()

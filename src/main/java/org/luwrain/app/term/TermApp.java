@@ -142,7 +142,7 @@ public class TermApp implements Application, Actions
 		    //FIXME:
 		    return super.onKeyboardEvent(event);
 		}
-		@Override public boolean onEnvironmentEvent(EnvironmentEvent event)
+		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    switch(event.getCode())
 		    {
@@ -150,7 +150,7 @@ public class TermApp implements Application, Actions
 			actions.closeApp();
 			return true;
 		    default:
-			return super.onEnvironmentEvent(event);
+			return super.onSystemEvent(event);
 		    }
 		}
 		@Override public String getAreaName()
