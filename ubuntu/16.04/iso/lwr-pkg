@@ -1,0 +1,41 @@
+#!/bin/bash -e
+
+THIS="${0##*/}"
+
+NAMESERVER=192.168.1.1
+
+[ -z "$1" ] && echo "$THIS:no Ubuntu image given" >&2 && exit 1
+
+if ! [ -d pkg/. ]; then
+    echo "$THIS:pkg/ directory must exist" >&2
+    exit 1
+fi
+
+if ! [ -d dist/. ]; then
+    echo "$THIS:dist/ directory must exist" >&2
+    exit 1
+fi
+
+WORK="./lwrtmp-env"
+DISK="$1"
+SQUASHFSSRC="$DISK/casper/filesystem.squashfs"
+
+(
+    unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
+    echo "nameserver $NAMESERVER" > "$WORK/run/resolvconf/resolv.conf"
+
+    cat <<EOF > "$WORK/etc/apt/sources.list"
+deb http://security.ubuntu.com/ubuntu/ xenial-security main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse
+EOF
+    mkdir "$WORK/pkg" "$WORK/pkg/dist"
+    cp -r pkg/. "$WORK/pkg"
+    cp -r dist/. "$WORK/pkg/dist"
+    mount --bind /proc "$CHROOT/proc"
+    chroot "$WORK" /pkg/mkpkg
+    umount "$CHROOT/proc"
+    cp "$WORK/pkg/luwrain" luwrain.pkg
+) > /tmp/lwr-pkg.log 2>&1
+
+echo 'OK!'
