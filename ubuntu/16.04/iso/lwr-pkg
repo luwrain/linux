@@ -32,10 +32,10 @@ EOF
     mkdir "$WORK/pkg" "$WORK/pkg/dist"
     cp -r pkg/. "$WORK/pkg"
     cp -r dist/. "$WORK/pkg/dist"
-    mount --bind /proc "$CHROOT/proc"
+    mount --bind /proc "$WORK/proc"
     chroot "$WORK" /pkg/mkpkg
-    umount "$CHROOT/proc"
-    cp "$WORK/pkg/luwrain" luwrain.pkg
+    umount "$WORK/proc"
+    cp -r "$WORK/pkg/luwrain" luwrain.pkg
 ) > /tmp/lwr-pkg.log 2>&1
 
 echo 'OK!'
