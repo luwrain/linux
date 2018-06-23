@@ -1,10 +1,12 @@
 #!/bin/bash -e
-# Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-# This file is part of LUWRAIN
+# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
-rm -rf ./out ./luwrain
-ant
+apt-get update
+apt-get -y --force-yes  install openjdk-8-jdk openjfx ant
+cd /pkg
+rm -rf out luwrain
+ant -lib /usr/share/java/openjfx/lib
 cp -r out/bundles/luwrain ./luwrain
-mv luwrain/app/*.txt luwrain
-sed -i -e s'|^app.classpath=$|app.classpath=jar/luwrain.jar:jar/luwrain-base.jar|' luwrain/app/package.cfg
 rm -rf out
+mv luwrain/app/*.txt luwrain
+sed -i -e s'|^app.classpath=$|app.classpath=jar/luwrain.jar:jar/luwrain-base.jar|' luwrain/app/luwrain.cfg

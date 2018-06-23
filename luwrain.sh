@@ -1,9 +1,9 @@
 #!/bin/bash -e
-# Copyright 2012-2016 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+# The main script to launch LUWRAIN with external JRE
+# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 # This file is part of LUWRAIN.
 
 THIS="${0##*/}"
-LUWRAIN_MAIN_CLASS=org.luwrain.core.Init
 
 if [ -z "$LUWRAIN_HOME" ]; then
     if [ -e ~/luwrain/jar/luwrain.jar ]; then
@@ -16,13 +16,6 @@ if [ -z "$LUWRAIN_HOME" ]; then
     fi
 fi
 
-if [ -z "$LUWRAIN_LANG" ]; then
-    LUWRAIN_LANG="${LANG%%_*}"
-fi
-if ! [ -e "$LUWRAIN_HOME/i18n/$LUWRAIN_LANG" ]; then
-    LUWRAIN_LANG=en
-fi
-
 cd "$LUWRAIN_HOME"
 
 exec java \
@@ -30,4 +23,4 @@ exec java \
 -Djava.security.egd=file:/dev/./urandom \
 -Dprism.order=sw \
 -Djava.library.path="$LUWRAIN_HOME" \
-"$LUWRAIN_MAIN_CLASS" "$@"
+org.luwrain.core.Init "$@"
