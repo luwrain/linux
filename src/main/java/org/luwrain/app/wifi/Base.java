@@ -29,7 +29,7 @@ final class Base
     private final Strings strings;
     private final Connections connections;
     final Conversations conv;
-    private Network[] networks = new Network[0];
+    private Network[] networks = new Network[0];//null means a scanning is in progress
     private FutureTask task = null;
 
     Base(App app, Luwrain luwrain, Strings strings, Connections connections)
@@ -50,6 +50,7 @@ final class Base
 	if (isBusy())
 	    return false;
 	task = new FutureTask(()->{
+		networks = null;//to indicate a scanning is in progress
 		final ScanResult res = connections.scan();
 		luwrain.runUiSafely(()->acceptResult(listArea, res));
 	    }, null);
@@ -75,19 +76,21 @@ final class Base
 	if (scanRes.type != ScanResult.Type.SUCCESS)
 	{
 	    this.networks = new Network[0];
+	    luwrain.onAreaNewBackgroundSound(listArea);
 	    luwrain.playSound(Sounds.ERROR);
 	    listArea.refresh();
 	    return;
 	}
 this.networks = scanRes.networks;
-luwrain.playSound(Sounds.DONE);
+luwrain.onAreaNewBackgroundSound(listArea);
+luwrain.playSound(Sounds.OK);
 listArea.refresh();
     }
 
     private FutureTask createConnectionTask(final ProgressArea destArea, final Network connectTo)
     {
 	return new FutureTask(()->{
-		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line))))
+		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), this))
 		    luwrain.runUiSafely(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
 		    luwrain.runUiSafely(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
 	}, null);
@@ -97,6 +100,12 @@ listArea.refresh();
     {
 	return task != null && !task.isDone();
     }
+
+        boolean isScanning()
+    {
+	return isBusy() && networks == null;
+    }
+
 
     private boolean askForPassword(Network network)
     {
@@ -126,7 +135,7 @@ listArea.refresh();
     {
 	@Override public int getItemCount()
 	{
-	    return networks.length;
+	    return networks != null?networks.length:0;
 	}
 	@Override public Object getItem(int index)
 	{

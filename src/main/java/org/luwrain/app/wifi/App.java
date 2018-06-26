@@ -109,7 +109,7 @@ public class App implements Application, MonoApp
 		    switch(query.getQueryCode())
 		    {
 		    case AreaQuery.BACKGROUND_SOUND:
-			if (!base.isBusy())
+			if (!base.isScanning())
 			    return false;
 			((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.WIFI));
 			return true;
@@ -118,7 +118,7 @@ public class App implements Application, MonoApp
 		    }}
 		@Override protected String noContentStr()
 		{
-		    return base.isBusy()?strings.scanningInProgress():strings.noWifiNetworks();
+		    return base.isScanning()?strings.scanningInProgress():strings.noWifiNetworks();
 		}
 	    };
 

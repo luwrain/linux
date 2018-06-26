@@ -21,8 +21,10 @@ import java.util.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 
+
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
+import org.luwrain.util.*;
 
 public final class Connections
 {
@@ -35,6 +37,7 @@ public final class Connections
     }
 
     private final Scripts scripts;
+    private Object lockOwner = null;
 
     public Connections(org.luwrain.base.PropertiesBase props)
     {
@@ -42,10 +45,23 @@ public final class Connections
 	this.scripts = new Scripts(props);
     }
 
-    synchronized public boolean connect(Network connectTo, ConnectionListener listener)
+    synchronized public boolean getConnectionLock(Object owner)
+    {
+	NullCheck.notNull(owner, "owner");
+	if (lockOwner != null)
+	    return false;
+	lockOwner = owner;
+	return true;
+    }
+
+    public boolean connect(Network connectTo, ConnectionListener listener, Object lockOwner)
     {
 	NullCheck.notNull(connectTo, "connectTo");
 	NullCheck.notNull(listener, "listener");
+	NullCheck.notNull(lockOwner, "lockOwner");
+	if (this.lockOwner != lockOwner)
+	    throw new IllegalArgumentException("Illegal lock owner");
+	try {
 	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return false;
@@ -78,9 +94,13 @@ public final class Connections
 	    Log.error(LOG_COMPONENT, "unable to process wifi connection output:" + e.getClass().getName() + ":" + e.getMessage());
 	    return false;
 	}
+	}
+	finally {
+	    this.lockOwner = null;
+	}
     }
 
-    synchronized public ScanResult scan()
+public ScanResult scan()
     {
 	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
@@ -113,32 +133,30 @@ public final class Connections
 	if (dir == null || dir.trim().isEmpty())
 	    return new ScanResult();
 	final List<Network> networks = new LinkedList();
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(dir))) {
-	    for (Path p : directoryStream) 
+	final File[] files = new File(dir).listFiles();
+	if (files == null)
+	    return new ScanResult();
+	for(File p: files)
 	    {
+		if (!p.isDirectory())
+		    continue;
 		final Network n = readNetworkData(p);
 		if (n != null)
 		    networks.add(n);
 	    }
-	} 
-	catch (IOException e) 
-	{
-	    e.printStackTrace();
-	    return new ScanResult();
-	}
 	return new ScanResult(networks.toArray(new Network[networks.size()]));
     }
 
-    private Network readNetworkData(Path dir)
+    private Network readNetworkData(File dir)
     {
 	NullCheck.notNull(dir, "dir");
-	final String name = readFirstLine(dir.resolve("name"));
+	final String name = readFirstLine(new File(dir, "name"));
 	if (name == null || name.trim().isEmpty())
 	{
 	    Log.warning("network", "no name value in " + dir.toString());
 	    return null;
 	}
-	final String encryption = readFirstLine(dir.resolve("encryption"));
+	final String encryption = readFirstLine(new File(dir, "encryption"));
 	if (encryption == null || encryption.trim().isEmpty())
 	{
 	    Log.warning("network", "no encryption value in " + dir.toString());
@@ -166,16 +184,16 @@ public final class Connections
 	return null;
     }
 
-    private String readFirstLine(Path path)
+    private String readFirstLine(File file)
     {
-	NullCheck.notNull(path, "path");
+	NullCheck.notNull(file, "file");
 	try {
-	    List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-	    if (lines == null || lines.size() < 1)
+	    final String[] lines = FileUtils.readTextFileMultipleStrings(file, "UTF-8", null);
+	    if (lines.length == 0)
 		return null;
-	    return lines.get(0);
+	    return lines[0];
 	}
-	catch(Exception e)
+	catch(IOException e)
 	{e.printStackTrace();
 	    return null;
 	}
