@@ -144,7 +144,9 @@ public ScanResult scan()
 		if (n != null)
 		    networks.add(n);
 	    }
-	return new ScanResult(networks.toArray(new Network[networks.size()]));
+	final Network[] res = networks.toArray(new Network[networks.size()]);
+					       Arrays.sort(res);
+	return new ScanResult(res);
     }
 
     private Network readNetworkData(File dir)

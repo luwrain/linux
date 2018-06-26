@@ -18,7 +18,7 @@ package org.luwrain.linux.wifi;
 
 import org.luwrain.core.*;
 
-public final class Network
+public final class Network implements Comparable
 {
     public final String name;
     public final boolean hasPassword;
@@ -46,4 +46,11 @@ private String password = "";
     {
 	return name;
     }
+
+    @Override public int compareTo(Object o)
+    {
+	if (o == null || !(o instanceof Network))
+	    return 0;
+	return name.toLowerCase().trim().compareTo(((Network)o).name.toLowerCase().trim());
+	    }
 }

@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.linux.wifi.*;
 
-class Appearance implements ListArea.Appearance
+final class Appearance implements ListArea.Appearance
 {
     private final Luwrain luwrain;
     private final Strings strings;
@@ -42,11 +42,10 @@ class Appearance implements ListArea.Appearance
 	if (!(item instanceof Network))
 	    return;
 	final Network network = (Network)item;
-	luwrain.playSound(Sounds.LIST_ITEM);
-	if (network.hasPassword && flags.contains(Flags.BRIEF))
-	    luwrain.say(network.toString() + " " + strings.withPassword()); else
-	    luwrain.say(network.toString());
-    }
+		if (network.hasPassword)
+		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.PROTECTED_RESOURCE, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
+		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(network.toString(), Suggestions.CLICKABLE_LIST_ITEM));
+				        }
 
     @Override public String getScreenAppearance(Object item, Set<Flags> flags)
     {
