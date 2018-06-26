@@ -34,7 +34,7 @@ public class App implements Application, MonoApp
     private Base base = null;
     private ListArea listArea = null;
     private ProgressArea progressArea = null;
-    private AreaLayoutSwitch layouts;
+    private AreaLayoutHelper layout;
 
     private final Connections connections;
 
@@ -54,9 +54,10 @@ public class App implements Application, MonoApp
 	this.luwrain = luwrain;
 	this.base = new Base(this, luwrain, strings, connections);
 	createArea();
-	layouts = new AreaLayoutSwitch(luwrain);
-	layouts.add(new AreaLayout(listArea));
-	layouts.add(new AreaLayout(AreaLayout.TOP_BOTTOM, listArea, progressArea));
+	this.layout = new AreaLayoutHelper(()->{
+		luwrain.onNewAreaLayout();
+		luwrain.announceActiveArea();
+	    }, listArea);
 	base.launchScanning(listArea);
 	return new InitResult();
     }
@@ -78,10 +79,10 @@ public class App implements Application, MonoApp
 			switch(event.getSpecial())
 			{
 			case ESCAPE:
-			    closeApp();
-			    return true;
+			    return onCloseApp();
 			case TAB:
-			    goToProgress();
+			    if (layout.hasAdditionalArea())
+				luwrain.setActiveArea(layout.getAdditionalArea());
 			    return true;
 			}
 		    return super.onInputEvent(event);
@@ -94,8 +95,7 @@ public class App implements Application, MonoApp
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			closeApp();
-			return true;
+			return onCloseApp();
 		    case REFRESH:
 			doScanning();
 			return true;
@@ -122,7 +122,7 @@ public class App implements Application, MonoApp
 		}
 	    };
 
-	progressArea = new ProgressArea(new DefaultControlEnvironment(luwrain), "Подключение"){
+	this.progressArea = new ProgressArea(new DefaultControlEnvironment(luwrain), "Подключение"){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -130,7 +130,13 @@ public class App implements Application, MonoApp
 			switch(event.getSpecial())
 			{
 			case TAB:
-			    goToList();
+			case BACKSPACE:
+			    luwrain.setActiveArea(listArea);
+			    return true;
+			case ESCAPE:
+			    if (base.isBusy())
+				return false;
+			    layout.closeAdditionalArea();
 			    return true;
 			}
 		    return super.onInputEvent(event);
@@ -143,23 +149,13 @@ public class App implements Application, MonoApp
 		    switch(event.getCode())
 		    {
 		    case CLOSE:
-			closeApp();
-			return true;
+			return onCloseApp();
 		    default:
 			return super.onSystemEvent(event);
 		    }
 		}
 	    };
     }
-
-    /*
-    void onReady(boolean  success)
-    {
-	listArea.refresh();
-	luwrain.onAreaNewBackgroundSound(listArea);
-	luwrain.playSound(success?Sounds.DONE:Sounds.ERROR);
-    }
-    */
 
     private void doScanning()
     {
@@ -177,24 +173,16 @@ public class App implements Application, MonoApp
 	progressArea.clear();
 	if (!base.launchConnection(progressArea, (Network)obj))
 	    return false;
-	layouts.show(1);
-	goToProgress();
+	layout.openAdditionalArea(progressArea, AreaLayoutHelper.Position.BOTTOM);
 	return true;
     }
 
-    private void goToList()
+    private boolean onCloseApp()
     {
-	luwrain.setActiveArea(listArea);
-    }
-
-    private void goToProgress()
-    {
-	if (layouts.getCurrentIndex() == 0)
-	{
-	    luwrain.setActiveArea(listArea);
-	    return;
-	}
-	luwrain.setActiveArea(progressArea);
+	if (base.isBusy())
+	    return false;
+	closeApp();
+	return true;
     }
 
     @Override public String getAppName()
@@ -210,7 +198,7 @@ public class App implements Application, MonoApp
 
     @Override public AreaLayout getAreaLayout()
     {
-	return layouts.getCurrentLayout();
+	return layout.getLayout();
     }
 
     @Override public void closeApp()
