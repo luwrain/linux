@@ -3,6 +3,8 @@
 THIS="${0##*/}"
 
 [ -z "$1" ] && echo "$THIS:no Ubuntu image given" >&2 && exit 1
+[ -z "$2" ] && echo "$THIS:no version given" >&2 && exit 1
+[ -z "$3" ] && echo "$THIS:no language given" >&2 && exit 1
 
 WORK="./lwrtmp-env"
 CHROOT="$WORK/iso/chroot"
@@ -16,11 +18,9 @@ cp -r "$DISK/." "$WORK/iso/disk"
 unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
 cp -r dist install "$WORK/iso"
 cp -r scripts/. "$WORK/iso"
-
 mount --bind /proc "$CHROOT/proc"
-chroot "$WORK" /iso/lwr-prepare-chroot
+chroot "$WORK" /iso/lwr-prepare-chroot "$2" "$3"
 umount "$CHROOT/proc"
-
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
 chroot "$WORK" /iso/lwr-build-iso
 cp "$WORK/iso/luwrain.iso" luwrain.iso

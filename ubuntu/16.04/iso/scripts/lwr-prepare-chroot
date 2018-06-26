@@ -1,5 +1,12 @@
 #!/bin/bash -e
 
+THIS="${0##*/}"
+
+LWRISO_VERSION="$1"
+LWRISO_LANG="$2"
+[ -z "$LWRISO_VERSION" ] && echo "$THIS:no version given" >&2 && exit 1
+[ -z "$LWRISO_LANG" ] && echo "$THIS:no lang given" >&2 && exit 1
+
 cd /iso
 . config.sh
 . base.sh 
