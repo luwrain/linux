@@ -51,8 +51,9 @@ final class Base
 	    return false;
 	task = new FutureTask(()->{
 		final ScanResult res = connections.scan();
-		luwrain.runUiSafely(()->acceptResult(res));
-	}, null);
+		luwrain.runUiSafely(()->acceptResult(listArea, res));
+	    }, null);
+	luwrain.executeBkg(task);
 	return true;
     }
 
@@ -67,15 +68,20 @@ final class Base
 	return true;
     }
 
-    private void acceptResult(ScanResult scanRes)
+    private void acceptResult(ListArea listArea, ScanResult scanRes)
     {
+	NullCheck.notNull(listArea, "listArea");
 	NullCheck.notNull(scanRes, "scanRes");
 	if (scanRes.type != ScanResult.Type.SUCCESS)
 	{
 	    this.networks = new Network[0];
+	    luwrain.playSound(Sounds.ERROR);
+	    listArea.refresh();
 	    return;
 	}
 this.networks = scanRes.networks;
+luwrain.playSound(Sounds.DONE);
+listArea.refresh();
     }
 
     private FutureTask createConnectionTask(final ProgressArea destArea, final Network connectTo)
