@@ -62,10 +62,19 @@ final class Base
     {
 	if (isBusy())
 	    return false;
+	if (!connections.getConnectionLock(this))
+	{
+	    luwrain.message("Устанавливается фоновое соединение", Luwrain.MessageType.ERROR);
+	    return true;
+	}
 	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
-	task = createConnectionTask(destArea, connectTo);
-	luwrain.executeBkg(task);
+	task = new FutureTask(()->{
+		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
+		    luwrain.runUiSafely(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
+		    luwrain.runUiSafely(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
+	}, null);
+		luwrain.executeBkg(task);
 	return true;
     }
 
@@ -85,15 +94,6 @@ this.networks = scanRes.networks;
 luwrain.onAreaNewBackgroundSound(listArea);
 luwrain.playSound(Sounds.OK);
 listArea.refresh();
-    }
-
-    private FutureTask createConnectionTask(final ProgressArea destArea, final Network connectTo)
-    {
-	return new FutureTask(()->{
-		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), this))
-		    luwrain.runUiSafely(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
-		    luwrain.runUiSafely(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
-	}, null);
     }
 
     boolean isBusy()
