@@ -57,7 +57,7 @@ public class App implements Application, MonoApp
 	layouts = new AreaLayoutSwitch(luwrain);
 	layouts.add(new AreaLayout(listArea));
 	layouts.add(new AreaLayout(AreaLayout.TOP_BOTTOM, listArea, progressArea));
-	base.launchScanning();
+	base.launchScanning(listArea);
 	return new InitResult();
     }
 
@@ -109,7 +109,7 @@ public class App implements Application, MonoApp
 		    switch(query.getQueryCode())
 		    {
 		    case AreaQuery.BACKGROUND_SOUND:
-			if (!base.isScanning())
+			if (!base.isBusy())
 			    return false;
 			((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.WIFI));
 			return true;
@@ -118,7 +118,7 @@ public class App implements Application, MonoApp
 		    }}
 		@Override protected String noContentStr()
 		{
-		    return base.isScanning()?strings.scanningInProgress():strings.noWifiNetworks();
+		    return base.isBusy()?strings.scanningInProgress():strings.noWifiNetworks();
 		}
 	    };
 
@@ -152,16 +152,18 @@ public class App implements Application, MonoApp
 	    };
     }
 
+    /*
     void onReady(boolean  success)
     {
 	listArea.refresh();
 	luwrain.onAreaNewBackgroundSound(listArea);
 	luwrain.playSound(success?Sounds.DONE:Sounds.ERROR);
     }
+    */
 
     private void doScanning()
     {
-	if (!base.launchScanning())
+	if (!base.launchScanning(listArea))
 	    return;
 	listArea.refresh();
 	luwrain.onAreaNewBackgroundSound(listArea);

@@ -19,21 +19,18 @@ package org.luwrain.app.wifi;
 import java.util.concurrent.*;
 
 import org.luwrain.core.*;
-import org.luwrain.controls.*;
-import org.luwrain.popups.*;
 import org.luwrain.linux.wifi.*;
+import org.luwrain.controls.*;
 
-class Base
+final class Base
 {
         private final App app;
     private final Luwrain luwrain;
     private final Strings strings;
     private final Connections connections;
-    private final ListUtils.FixedModel listModel = new ListUtils.FixedModel();
-    private FutureTask scanningTask;
-    private FutureTask connectionTask;
-
-    private boolean scanningInProgress = false;
+    final Conversations conv;
+    private Network[] networks = new Network[0];
+    private FutureTask task = null;
 
     Base(App app, Luwrain luwrain, Strings strings, Connections connections)
     {
@@ -45,55 +42,40 @@ class Base
 	this.luwrain = luwrain;
 	this.strings = strings;
 	this.connections = connections;
+	this.conv = new Conversations(luwrain, strings);
     }
 
-    ListArea.Model getListModel()
+    boolean launchScanning(ListArea listArea)
     {
-	return listModel;
-    }
-
-    boolean launchScanning()
-    {
-	if (scanningTask != null && !scanningTask.isDone())
+	if (isBusy())
 	    return false;
-	scanningTask = createScanningTask();
-	scanningInProgress = true;
-	luwrain.executeBkg(scanningTask);
+	task = new FutureTask(()->{
+		final ScanResult res = connections.scan();
+		luwrain.runUiSafely(()->acceptResult(res));
+	}, null);
 	return true;
     }
 
     boolean launchConnection(ProgressArea destArea, Network connectTo)
     {
-	if (connectionTask != null && !connectionTask.isDone())
+	if (isBusy())
 	    return false;
 	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
-	connectionTask = createConnectionTask(destArea, connectTo);
-	luwrain.executeBkg(connectionTask);
+	task = createConnectionTask(destArea, connectTo);
+	luwrain.executeBkg(task);
 	return true;
     }
 
     private void acceptResult(ScanResult scanRes)
     {
 	NullCheck.notNull(scanRes, "scanRes");
-	scanningInProgress = false;
 	if (scanRes.type != ScanResult.Type.SUCCESS)
 	{
-	    listModel.clear();
-	    app.onReady(false);
-	} else
-	{
-	    listModel.setItems(scanRes.networks);
-	    app.onReady(true);
+	    this.networks = new Network[0];
+	    return;
 	}
-    }
-
-    private FutureTask createScanningTask()
-    {
-	return new FutureTask(()->{
-		final ScanResult res = connections.scan();
-		luwrain.runUiSafely(()->acceptResult(res));
-	}, null);
+this.networks = scanRes.networks;
     }
 
     private FutureTask createConnectionTask(final ProgressArea destArea, final Network connectTo)
@@ -105,27 +87,47 @@ class Base
 	}, null);
     }
 
-    boolean isScanning()
+    boolean isBusy()
     {
-	return scanningTask != null && !scanningTask.isDone() && scanningInProgress;
+	return task != null && !task.isDone();
     }
 
     private boolean askForPassword(Network network)
     {
 	NullCheck.notNull(network, "network");
-	final org.luwrain.linux.Settings.WifiNetwork settings = org.luwrain.linux.Settings.createWifiNetwork(luwrain.getRegistry(), network);
-	if (!settings.getPassword("").isEmpty() &&
-	    Popups.confirmDefaultYes(luwrain, strings.connectionPopupName(), strings.useSavedPassword()))
+	final org.luwrain.linux.Settings.WifiNetwork sett = org.luwrain.linux.Settings.createWifiNetwork(luwrain.getRegistry(), network);
+	if (!sett.getPassword("").isEmpty() &&
+	    conv.useSavedPassword())
 	{
-	    network.setPassword(settings.getPassword(""));
+	    network.setPassword(sett.getPassword(""));
 	    return true;
 	}
-	final String password = Popups.simple(luwrain, strings.connectionPopupName(), strings.enterThePassword(), "");
+	final String password = conv.askPassword();
 	if (password == null)
 	    return false;
-    if (Popups.confirmDefaultYes(luwrain, strings.connectionPopupName(), strings.saveThePassword()))
-	settings.setPassword(password);
-    network.setPassword(password);
-    return true;
+	if (conv.saveThePassword())
+	    sett.setPassword(password);
+	network.setPassword(password);
+	return true;
+    }
+
+        ListArea.Model getListModel()
+    {
+	return new Model();
+    }
+
+    private final class Model implements ListArea.Model
+    {
+	@Override public int getItemCount()
+	{
+	    return networks.length;
+	}
+	@Override public Object getItem(int index)
+	{
+	    return networks[index];
+	}
+	@Override public void refresh()
+	{
+	}
     }
 }
