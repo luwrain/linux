@@ -26,13 +26,16 @@ final class Appearance implements ListArea.Appearance
 {
     private final Luwrain luwrain;
     private final Strings strings;
+    private final Connections connections;
 
-    Appearance(Luwrain luwrain, Strings strings)
+    Appearance(Luwrain luwrain, Strings strings, Connections connections)
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(strings, "strings");
+	NullCheck.notNull(connections, "connections");
 	this.luwrain = luwrain;
 	this.strings = strings;
+	this.connections = connections;
     }
 
     @Override public void announceItem(Object item, Set<Flags> flags)
@@ -42,6 +45,8 @@ final class Appearance implements ListArea.Appearance
 	if (!(item instanceof Network))
 	    return;
 	final Network network = (Network)item;
+	if (!connections.getConnectedNetworkName().isEmpty() && connections.getConnectedNetworkName().equals(network.name))
+	    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.SELECTED, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
 		if (network.hasPassword)
 		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.PROTECTED_RESOURCE, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
 		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(network.toString(), Suggestions.CLICKABLE_LIST_ITEM));

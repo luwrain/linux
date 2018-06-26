@@ -37,6 +37,7 @@ public final class Connections
     }
 
     private final Scripts scripts;
+    private Network connectedNetwork = null;
     private Object lockOwner = null;
 
     public Connections(org.luwrain.base.PropertiesBase props)
@@ -52,6 +53,11 @@ public final class Connections
 	    return false;
 	lockOwner = owner;
 	return true;
+    }
+
+    public String getConnectedNetworkName()
+    {
+	return connectedNetwork != null?connectedNetwork.name:"";
     }
 
     public boolean connect(Network connectTo, ConnectionListener listener, Object lockOwner)
@@ -82,7 +88,12 @@ public final class Connections
 	    while( (line = r.readLine()) != null)
 		listener.onConnectionProgressLine(line);
 	    p.waitFor();
-	    return p.exitValue() == 0;
+	    if (p.exitValue() == 0)
+	    {
+		this.connectedNetwork = connectTo;
+		return true;
+	    }
+	    return false;
 	}
 	catch(InterruptedException e)
 	{

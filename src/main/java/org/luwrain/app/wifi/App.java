@@ -66,7 +66,7 @@ public class App implements Application, MonoApp
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.model = base.getListModel();
-	params.appearance = new Appearance(luwrain, strings);
+	params.appearance = new Appearance(luwrain, strings, connections);
 	params.clickHandler = (area, index, obj)->onClick(obj);
 	params.name = strings.appName();
 
