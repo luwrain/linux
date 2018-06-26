@@ -24,7 +24,7 @@ import org.luwrain.controls.*;
 
 final class Base
 {
-        private final App app;
+    private final App app;
     private final Luwrain luwrain;
     private final Strings strings;
     private final Connections connections;
@@ -73,8 +73,8 @@ final class Base
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
 		    luwrain.runUiSafely(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
 		    luwrain.runUiSafely(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
-	}, null);
-		luwrain.executeBkg(task);
+	    }, null);
+	luwrain.executeBkg(task);
 	return true;
     }
 
@@ -90,10 +90,10 @@ final class Base
 	    listArea.refresh();
 	    return;
 	}
-this.networks = scanRes.networks;
-luwrain.onAreaNewBackgroundSound(listArea);
-luwrain.playSound(Sounds.OK);
-listArea.refresh();
+	this.networks = scanRes.networks;
+	luwrain.onAreaNewBackgroundSound(listArea);
+	luwrain.playSound(Sounds.OK);
+	listArea.refresh();
     }
 
     boolean isBusy()
@@ -101,11 +101,10 @@ listArea.refresh();
 	return task != null && !task.isDone();
     }
 
-        boolean isScanning()
+    boolean isScanning()
     {
 	return isBusy() && networks == null;
     }
-
 
     private boolean askForPassword(Network network)
     {
@@ -126,7 +125,7 @@ listArea.refresh();
 	return true;
     }
 
-        ListArea.Model getListModel()
+    ListArea.Model getListModel()
     {
 	return new Model();
     }

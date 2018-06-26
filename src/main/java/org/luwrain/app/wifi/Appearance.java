@@ -46,11 +46,11 @@ final class Appearance implements ListArea.Appearance
 	    return;
 	final Network network = (Network)item;
 	if (!connections.getConnectedNetworkName().isEmpty() && connections.getConnectedNetworkName().equals(network.name))
-	    		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.SELECTED, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
-		if (network.hasPassword)
-		    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.PROTECTED_RESOURCE, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
-		    		    luwrain.setEventResponse(DefaultEventResponse.listItem(network.toString(), Suggestions.CLICKABLE_LIST_ITEM));
-				        }
+	    luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.SELECTED, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
+	    if (network.hasPassword)
+		luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.PROTECTED_RESOURCE, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
+		luwrain.setEventResponse(DefaultEventResponse.listItem(network.toString(), Suggestions.CLICKABLE_LIST_ITEM));
+    }
 
     @Override public String getScreenAppearance(Object item, Set<Flags> flags)
     {
