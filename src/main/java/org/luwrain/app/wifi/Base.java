@@ -65,7 +65,7 @@ final class Base
 	if (!connections.getConnectedNetworkName().isEmpty())
 	{
 	    if (!conv.disconnectCurrent(connections.getConnectedNetworkName()))
-	    return false;
+		return false;
 	    connections.disconnect();
 	}
 	if (!connections.getConnectionLock(this))

@@ -71,7 +71,7 @@ public class App implements Application, MonoApp
 	params.clickHandler = (area, index, obj)->onConnect(obj);
 	params.name = strings.appName();
 
-	listArea = new ListArea(params){
+	this.listArea = new ListArea(params){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -95,11 +95,11 @@ public class App implements Application, MonoApp
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-					    case ACTION:
+		    case ACTION:
 			if (ActionEvent.isAction(event, "disconnect"))
 			    return onDisconnect();
 			return false;
-					    case CLOSE:
+		    case CLOSE:
 			return onCloseApp();
 		    case REFRESH:
 			doScanning();
@@ -172,7 +172,7 @@ public class App implements Application, MonoApp
 			return super.onSystemEvent(event);
 		    }
 		}
-				@Override public Action[] getAreaActions()
+		@Override public Action[] getAreaActions()
 		{
 		    if (base.isBusy())
 			return new Action[0];
@@ -182,7 +182,7 @@ public class App implements Application, MonoApp
 			};
 		    return new Action[0];
 		}
-			    };
+	    };
     }
 
     private void doScanning()
