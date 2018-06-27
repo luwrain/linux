@@ -68,7 +68,7 @@ public class App implements Application, MonoApp
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.model = base.getListModel();
 	params.appearance = new Appearance(luwrain, strings, connections);
-	params.clickHandler = (area, index, obj)->onClick(obj);
+	params.clickHandler = (area, index, obj)->onConnect(obj);
 	params.name = strings.appName();
 
 	listArea = new ListArea(params){
@@ -94,7 +94,11 @@ public class App implements Application, MonoApp
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
-		    case CLOSE:
+					    case ACTION:
+			if (ActionEvent.isAction(event, "disconnect"))
+			    return onDisconnect();
+			return false;
+					    case CLOSE:
 			return onCloseApp();
 		    case REFRESH:
 			doScanning();
@@ -103,8 +107,7 @@ public class App implements Application, MonoApp
 			return super.onSystemEvent(event);
 		    }
 		}
-		@Override public boolean onAreaQuery(AreaQuery query)
-		{
+		@Override public boolean onAreaQuery(AreaQuery query)		{
 		    NullCheck.notNull(query, "query");
 		    switch(query.getQueryCode())
 		    {
@@ -116,6 +119,16 @@ public class App implements Application, MonoApp
 		    default:
 			return super.onAreaQuery(query);
 		    }}
+		@Override public Action[] getAreaActions()
+		{
+		    if (base.isBusy())
+			return new Action[0];
+		    if (connections.hasConnection())
+			return new Action[]{
+			    new Action("disconnect", strings.actionDisconnect()),
+			};
+		    return new Action[0];
+		}
 		@Override protected String noContentStr()
 		{
 		    return base.isScanning()?strings.scanningInProgress():strings.noWifiNetworks();
@@ -148,13 +161,27 @@ public class App implements Application, MonoApp
 			return super.onSystemEvent(event);
 		    switch(event.getCode())
 		    {
+		    case ACTION:
+			if (ActionEvent.isAction(event, "disconnect"))
+			    return onDisconnect();
+			return false;
 		    case CLOSE:
 			return onCloseApp();
 		    default:
 			return super.onSystemEvent(event);
 		    }
 		}
-	    };
+				@Override public Action[] getAreaActions()
+		{
+		    if (base.isBusy())
+			return new Action[0];
+		    if (connections.hasConnection())
+			return new Action[]{
+			    new Action("disconnect", strings.actionDisconnect()),
+			};
+		    return new Action[0];
+		}
+			    };
     }
 
     private void doScanning()
@@ -165,7 +192,7 @@ public class App implements Application, MonoApp
 	luwrain.onAreaNewBackgroundSound(listArea);
     }
 
-    private boolean onClick(Object obj)
+    private boolean onConnect(Object obj)
     {
 	NullCheck.notNull(obj, "obj");
 	if (!(obj instanceof Network))
@@ -174,6 +201,16 @@ public class App implements Application, MonoApp
 	if (!base.launchConnection(progressArea, (Network)obj))
 	    return false;
 	layout.openAdditionalArea(progressArea, AreaLayoutHelper.Position.BOTTOM);
+	return true;
+    }
+
+    public boolean onDisconnect()
+    {
+	if (base.isBusy())
+	    return false;
+	if (!connections .hasConnection())
+	    return false;
+	connections.disconnect();
 	return true;
     }
 

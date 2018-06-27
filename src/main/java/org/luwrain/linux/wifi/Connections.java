@@ -49,7 +49,7 @@ public final class Connections
     synchronized public boolean getConnectionLock(Object owner)
     {
 	NullCheck.notNull(owner, "owner");
-	if (lockOwner != null)
+	if (lockOwner != null ||hasConnection())
 	    return false;
 	lockOwner = owner;
 	return true;
@@ -67,6 +67,8 @@ public final class Connections
 	NullCheck.notNull(lockOwner, "lockOwner");
 	if (this.lockOwner != lockOwner)
 	    throw new IllegalArgumentException("Illegal lock owner");
+	if (hasConnection())
+	    throw new RuntimeException("Already connected to the network \'" + getConnectedNetworkName() + "\'");
 	try {
 	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
@@ -109,6 +111,20 @@ public final class Connections
 	finally {
 	    this.lockOwner = null;
 	}
+    }
+
+    public boolean disconnect()
+    {
+	if (connectedNetwork == null)
+	    return false;
+	connectedNetwork = null;
+	//FIXME:
+	return true;
+    }
+
+    public boolean hasConnection()
+    {
+	return connectedNetwork != null;
     }
 
 public ScanResult scan()

@@ -20,12 +20,16 @@ public interface Strings
 {
 static final String NAME = "luwrain.wifi";
 
+    String actionDisconnect();
     String appName();
-    String scanningInProgress();
-    String noWifiNetworks();
-    String withPassword();
-    String connectionPopupName();
-    String useSavedPassword();
-    String enterThePassword();
-    String saveThePassword();
+        String scanningInProgress();
+        String noWifiNetworks();
+        String connectionPopupName();
+        String useSavedPassword();
+        String enterThePassword();
+        String saveThePassword();
+
+    String noConnectionLock();
+    String connectionEstablished();
+    String connectionFailure();
 }

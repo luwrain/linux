@@ -64,15 +64,15 @@ final class Base
 	    return false;
 	if (!connections.getConnectionLock(this))
 	{
-	    luwrain.message("Устанавливается фоновое соединение", Luwrain.MessageType.ERROR);
+	    luwrain.message(strings.noConnectionLock(), Luwrain.MessageType.ERROR);
 	    return true;
 	}
 	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
 	task = new FutureTask(()->{
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
-		    luwrain.runUiSafely(()->luwrain.message("Подключение к сети установлено", Luwrain.MessageType.DONE)); else
-		    luwrain.runUiSafely(()->luwrain.message("Подключиться к сети не удалось", Luwrain.MessageType.ERROR));
+		    luwrain.runUiSafely(()->luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE)); else
+		    luwrain.runUiSafely(()->luwrain.message(strings.connectionFailure(), Luwrain.MessageType.ERROR));
 	    }, null);
 	luwrain.executeBkg(task);
 	return true;
