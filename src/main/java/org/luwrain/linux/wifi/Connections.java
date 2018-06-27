@@ -60,6 +60,16 @@ this.wlanInterface = getWlanInterface();
 	return true;
     }
 
+    public void releaseConnectionLock(Object owner)
+    {
+	NullCheck.notNull(owner, "owner");
+	if (lockOwner == null)
+	    return;
+	if (lockOwner != owner)
+	    throw new IllegalArgumentException("Illegal lock owner");
+	this.lockOwner = null;
+    }
+
     public String getConnectedNetworkName()
     {
 	return connectedNetwork != null?connectedNetwork.name:"";
@@ -118,9 +128,11 @@ this.wlanInterface = getWlanInterface();
 
     public boolean disconnect()
     {
+	if (wlanInterface == null || wlanInterface.isEmpty())
+	    return false;
 	if (connectedNetwork == null)
 	    return false;
-	if (!scripts.runSync(Scripts.ID.WIFI_DISCONNECT, true))
+	if (!scripts.runSync(Scripts.ID.WIFI_DISCONNECT, new String[]{wlanInterface}, true))
 	    return false;
 	connectedNetwork = null;
 	return true;

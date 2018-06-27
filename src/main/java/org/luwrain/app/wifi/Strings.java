@@ -32,4 +32,5 @@ static final String NAME = "luwrain.wifi";
     String connectionEstablished();
     String errorConnecting();
     String errorDisconnecting();
+    String successfullyDisconnected();
 }

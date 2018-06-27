@@ -65,14 +65,21 @@ final class Base
 	if (!connections.getConnectionLock(this))
 	{
 	    luwrain.message(strings.noConnectionLock(), Luwrain.MessageType.ERROR);
-	    return true;
-	}
-	if (connectTo.hasPassword && !askForPassword(connectTo))
 	    return false;
+	}
+	Log.debug("proba", "here1");
+	if (connectTo.hasPassword && !askForPassword(connectTo))
+	{
+	    connections.releaseConnectionLock(this);
+	    return false;
+	}
+		Log.debug("proba", "here2");
 	task = new FutureTask(()->{
+			Log.debug("proba", "here3");
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
 		    luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE); else
 		    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
+				Log.debug("proba", "here4");
 	    }, null);
 	luwrain.executeBkg(task);
 	return true;

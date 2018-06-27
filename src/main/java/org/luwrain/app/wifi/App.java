@@ -82,7 +82,8 @@ public class App implements Application, MonoApp
 			    return onCloseApp();
 			case TAB:
 			    if (layout.hasAdditionalArea())
-				luwrain.setActiveArea(layout.getAdditionalArea());
+				luwrain.setActiveArea(layout.getAdditionalArea()); else
+				return false;
 			    return true;
 			}
 		    return super.onInputEvent(event);
@@ -199,7 +200,10 @@ public class App implements Application, MonoApp
 	    return false;
 	progressArea.clear();
 	if (!base.launchConnection(progressArea, (Network)obj))
-	    return false;
+	{
+	    layout.closeAdditionalArea();
+	    return true;
+	}
 	layout.openAdditionalArea(progressArea, AreaLayoutHelper.Position.BOTTOM);
 	return true;
     }
@@ -211,7 +215,7 @@ public class App implements Application, MonoApp
 	if (!connections .hasConnection())
 	    return false;
 	if (connections.disconnect())
-	    luwrain.playSound(Sounds.OK); else
+	    luwrain.message(strings.successfullyDisconnected(), Luwrain.MessageType.OK); else
 	    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
 	return true;
     }
