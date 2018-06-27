@@ -37,6 +37,7 @@ public final class Connections
     }
 
     private final Scripts scripts;
+    private final String wlanInterface;
     private Network connectedNetwork = null;
     private Object lockOwner = null;
 
@@ -44,6 +45,10 @@ public final class Connections
     {
 	NullCheck.notNull(props, "props");
 	this.scripts = new Scripts(props);
+this.wlanInterface = getWlanInterface();
+	if (this.wlanInterface == null || this.wlanInterface.trim().isEmpty())
+	Log.debug(LOG_COMPONENT, "no wlan interfacewlan interface"); else
+	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
     }
 
     synchronized public boolean getConnectionLock(Object owner)
@@ -70,10 +75,8 @@ public final class Connections
 	if (hasConnection())
 	    throw new RuntimeException("Already connected to the network \'" + getConnectedNetworkName() + "\'");
 	try {
-	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return false;
-	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
 	try {
 	    final Process p = scripts.runAsync(Scripts.ID.WIFI_CONNECT, new String[]{
 		    wlanInterface,
@@ -129,10 +132,8 @@ public final class Connections
 
 public ScanResult scan()
     {
-	final String wlanInterface = getWlanInterface();
 	if (wlanInterface == null || wlanInterface.trim().isEmpty())
 	    return new ScanResult();
-	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
 	final String dir;
 	try {
 	    final Process p = scripts.runAsync(Scripts.ID.WIFI_SCAN, new String[]{wlanInterface}, true);
