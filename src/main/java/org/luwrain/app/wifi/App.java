@@ -225,6 +225,7 @@ public class App implements Application, MonoApp
 
     private boolean onCloseApp()
     {
+	//FIXME:cancelling active tasks
 	if (base.isBusy())
 	    return false;
 	closeApp();

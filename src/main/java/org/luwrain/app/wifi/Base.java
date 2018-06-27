@@ -62,26 +62,26 @@ final class Base
     {
 	if (isBusy())
 	    return false;
-	if (!connections.getConnectedNetworkName().isEmpty() && !conv.disconnectCurrent(connections.getConnectedNetworkName()))
+	if (!connections.getConnectedNetworkName().isEmpty())
+	{
+	    if (!conv.disconnectCurrent(connections.getConnectedNetworkName()))
 	    return false;
+	    connections.disconnect();
+	}
 	if (!connections.getConnectionLock(this))
 	{
 	    luwrain.message(strings.noConnectionLock(), Luwrain.MessageType.ERROR);
 	    return false;
 	}
-	Log.debug("proba", "here1");
 	if (connectTo.hasPassword && !askForPassword(connectTo))
 	{
 	    connections.releaseConnectionLock(this);
 	    return false;
 	}
-		Log.debug("proba", "here2");
 	task = new FutureTask(()->{
-			Log.debug("proba", "here3");
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
 		    luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE); else
-		    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
-				Log.debug("proba", "here4");
+		    luwrain.message(strings.errorConnecting(), Luwrain.MessageType.ERROR);
 	    }, null);
 	luwrain.executeBkg(task);
 	return true;
