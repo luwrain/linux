@@ -71,8 +71,8 @@ final class Base
 	    return false;
 	task = new FutureTask(()->{
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
-		    luwrain.runUiSafely(()->luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE)); else
-		    luwrain.runUiSafely(()->luwrain.message(strings.connectionFailure(), Luwrain.MessageType.ERROR));
+		    luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE); else
+		    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
 	    }, null);
 	luwrain.executeBkg(task);
 	return true;

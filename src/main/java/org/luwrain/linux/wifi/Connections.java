@@ -120,8 +120,9 @@ this.wlanInterface = getWlanInterface();
     {
 	if (connectedNetwork == null)
 	    return false;
+	if (!scripts.runSync(Scripts.ID.WIFI_DISCONNECT, true))
+	    return false;
 	connectedNetwork = null;
-	//FIXME:
 	return true;
     }
 

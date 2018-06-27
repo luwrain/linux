@@ -125,7 +125,7 @@ public class App implements Application, MonoApp
 			return new Action[0];
 		    if (connections.hasConnection())
 			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect()),
+			    new Action("disconnect", strings.actionDisconnect(), new KeyboardEvent(KeyboardEvent.Special.F5)),
 			};
 		    return new Action[0];
 		}
@@ -177,7 +177,7 @@ public class App implements Application, MonoApp
 			return new Action[0];
 		    if (connections.hasConnection())
 			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect()),
+			    new Action("disconnect", strings.actionDisconnect(), new KeyboardEvent(KeyboardEvent.Special.F5)),
 			};
 		    return new Action[0];
 		}
@@ -204,13 +204,15 @@ public class App implements Application, MonoApp
 	return true;
     }
 
-    public boolean onDisconnect()
+    private boolean onDisconnect()
     {
 	if (base.isBusy())
 	    return false;
 	if (!connections .hasConnection())
 	    return false;
-	connections.disconnect();
+	if (connections.disconnect())
+	    luwrain.playSound(Sounds.OK); else
+	    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
 	return true;
     }
 

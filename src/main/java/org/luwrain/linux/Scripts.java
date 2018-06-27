@@ -37,6 +37,7 @@ public final class Scripts
 	REBOOT,
 	SUSPEND,
 	WIFI_CONNECT,
+	WIFI_DISCONNECT,
 	WIFI_SCAN,
     };
 
