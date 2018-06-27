@@ -42,6 +42,12 @@ final class Conversations
 	return Popups.confirmDefaultYes(luwrain, strings.connectionPopupName(), strings.saveThePassword());
     }
 
+    boolean disconnectCurrent(String networkName)
+    {
+	NullCheck.notNull(networkName, "networkName");
+	return Popups.confirmDefaultYes(luwrain, strings.connectionPopupName(), strings.disconnectCurrentConnection(networkName));
+    }
+
     String askPassword()
     {
 	return Popups.simple(luwrain, strings.connectionPopupName(), strings.enterThePassword(), "");

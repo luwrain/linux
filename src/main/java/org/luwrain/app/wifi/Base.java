@@ -62,6 +62,8 @@ final class Base
     {
 	if (isBusy())
 	    return false;
+	if (!connections.getConnectedNetworkName().isEmpty() && !conv.disconnectCurrent(connections.getConnectedNetworkName()))
+	    return false;
 	if (!connections.getConnectionLock(this))
 	{
 	    luwrain.message(strings.noConnectionLock(), Luwrain.MessageType.ERROR);

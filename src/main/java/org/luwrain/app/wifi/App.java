@@ -198,8 +198,11 @@ public class App implements Application, MonoApp
 	NullCheck.notNull(obj, "obj");
 	if (!(obj instanceof Network))
 	    return false;
+	final Network network = (Network)obj;
+	if (!connections.getConnectedNetworkName().isEmpty() && connections.getConnectedNetworkName().equals(network.name))
+	    return false;
 	progressArea.clear();
-	if (!base.launchConnection(progressArea, (Network)obj))
+	if (!base.launchConnection(progressArea, network))
 	{
 	    layout.closeAdditionalArea();
 	    return true;
