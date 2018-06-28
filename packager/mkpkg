@@ -10,3 +10,7 @@ cp -r out/bundles/luwrain ./luwrain
 rm -rf out
 mv luwrain/app/*.txt luwrain
 sed -i -e s'|^app.classpath=$|app.classpath=jar/luwrain.jar:jar/luwrain-base.jar|' luwrain/app/luwrain.cfg
+
+# Fixing sound output
+sed -i -e s/'^\(java.*\)$'/'#\1'/ luwrain/runtime/lib/sound.properties
+sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ luwrain/runtime/lib/sound.properties
