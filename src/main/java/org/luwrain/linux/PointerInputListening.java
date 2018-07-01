@@ -28,7 +28,7 @@ class PointerInputListening
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
     
-    static private final long DOUBLE_CLICK_DELAY_MSEC = 100;
+    static private final long DOUBLE_CLICK_DELAY_MSEC = 500;
     static private final int STEP_X = 30;
     static private final int STEP_Y = 30;
 
