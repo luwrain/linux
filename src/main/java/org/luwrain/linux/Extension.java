@@ -123,7 +123,7 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		@Override public void onCommand(Luwrain luwrain)
 		{
 		    NullCheck.notNull(luwrain, "luwrain");
-		    final String currentDir = luwrain.getActiveAreaDir();
+		    final String currentDir = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY);
 		    if (currentDir != null && !currentDir.isEmpty())
 			luwrain.launchApp("term", new String[]{currentDir}); else
 			luwrain.launchApp("term", new String[]{luwrain.getFileProperty("luwrain.dir.userhome").getAbsolutePath()});
