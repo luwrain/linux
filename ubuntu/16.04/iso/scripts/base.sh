@@ -1,5 +1,6 @@
 
 export LWRISO_ROOT=/iso/chroot
+export LWRISO_USER=luwrain
 
 in-chroot()
 {

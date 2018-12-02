@@ -10,6 +10,21 @@ exec /usr/local/bin/luwrain
 EOF
 fi
 
+if [ "$LWRISO_LANG" == ro ]; then
+cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
+# Put here the actions you want to run on X.org start
+# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+export LANG=ru_RU.UTF-8
+
+setxkbmap -layout "us,ru"
+setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
+
+exec /usr/local/bin/luwrain
+EOF
+fi
+
+
 if [ "$LWRISO_LANG" == ru ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
 # Put here the actions you want to run on X.org start
