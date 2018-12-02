@@ -1,4 +1,12 @@
 
+
+cat <<EOF > $LWRISO_ROOT/usr/local/bin/dwm-autolaunch
+#!/bin/bash -e
+
+exec /usr/local/bin/luwrain --linux-input-pointer=/dev/input/mice
+EOF
+chmod 755 $LWRISO_ROOT/usr/local/bin/dwm-autolaunch
+
 if [ "$LWRISO_LANG" == en ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
 # Put here the actions you want to run on X.org start
@@ -6,7 +14,7 @@ cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
 
 export LANG=en_US.UTF-8
 
-exec /usr/local/bin/luwrain
+exec ~/.dwm/dwm
 EOF
 fi
 
@@ -20,10 +28,9 @@ export LANG=ru_RU.UTF-8
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
-exec /usr/local/bin/luwrain
+exec ~/.dwm/dwm
 EOF
 fi
-
 
 if [ "$LWRISO_LANG" == ru ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
@@ -35,6 +42,6 @@ export LANG=ru_RU.UTF-8
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
-exec /usr/local/bin/luwrain
+exec ~/.dwm/dwm
 EOF
 fi
