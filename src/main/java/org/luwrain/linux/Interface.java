@@ -14,30 +14,11 @@
    General Public License for more details.
 */
 
-package org.luwrain.linux.disks;
-
-import java.util.*;
-import java.io.*;
+package org.luwrain.linux;
 
 import org.luwrain.core.*;
 
-public final class DisksList
+public interface Interface extends OsInterface
 {
-    static public final File SYS_BLOCK_DIR = new File("/sys/block");
-
-    static public Disk[] getRemovableDisks()
-    {
-	final List<Disk> res = new LinkedList();
-	final File[] files = SYS_BLOCK_DIR.listFiles();
-	if (files == null)
-	    return new Disk[0];
-	for(File f: files )
-	    if (f.exists() && f.isDirectory())
-	    {
-		final Disk disk = new Disk(f);
-		if (disk.isRemovable())
-		    res.add(disk);
-	    }
-	return res.toArray(new Disk[res.size()]);
-    }
+    boolean suspend();
 }

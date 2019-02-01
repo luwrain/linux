@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -78,18 +78,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 			return;
 		    }
 		    luwrain.launchApp("commander", new String[]{res[0].getAbsolutePath()});
-		}
-	    },
-
-
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "suspend";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    scripts.runSync(Scripts.ID.SUSPEND, true);
 		}
 	    },
 

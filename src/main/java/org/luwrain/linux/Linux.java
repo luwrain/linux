@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -30,6 +30,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     static public final String LOG_COMPONENT = "linux";
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
+    private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private org.luwrain.linux.wifi.Connections wifiConnections = null;
@@ -53,6 +54,11 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	{
 	    return new InitResult(e);
 	}
+    }
+
+    @Override public OsInterface getInterface()
+    {
+	return interfaceObj;
     }
 
     public String getProperty(String propName)
@@ -199,5 +205,10 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	NullCheck.notNull(path, "path");
 	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
 	luwrain.message("Обнаружен новый носитель в приводе компакт-дисков", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
+    }
+
+    PropertiesBase getProps()
+    {
+	return props;
     }
 }
