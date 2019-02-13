@@ -46,17 +46,6 @@ final class SystemProperties
 	    NullCheck.notEmpty(propName, "propName");
 	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
 	}
-	@Override public File getFileProperty(String propName)
-	{
-	    NullCheck.notNull(propName, "propName");
-	    return null;
-	}
-	@Override public boolean setFileProperty(String propName, File value)
-	{
-	    NullCheck.notEmpty(propName, "propName");
-	    NullCheck.notNull(value, "value");
-	    return false;
-	}
 	@Override public String getProperty(String propName)
 	{
 	    NullCheck.notEmpty(propName, "propName");
