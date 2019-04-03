@@ -19,8 +19,9 @@ package org.luwrain.linux.disks;
 import java.io.File;
 
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 
-public final class Volume
+public final class Volume extends EmptyHookObject
 {
     public enum Type {
 	REGULAR,
@@ -42,5 +43,21 @@ public final class Volume
 	this.type = type;
 	this.file = file;
 	this.name = name;
+    }
+
+    @Override public Object getMember(String name)
+    {
+	NullCheck.notNull(name, "name");
+	switch(name)
+	{
+	case "type":
+	    return "volume_" + type.toString().toLowerCase();
+	case "file":
+	    return file.getAbsolutePath();
+	case "name":
+	    return this.name;
+	default:
+	    return super.getMember(name);
+	}
     }
 }

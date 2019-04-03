@@ -19,8 +19,9 @@ package org.luwrain.linux.disks;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 
-public class Base
+public class Base extends EmptyHookObject
 {
     protected final File path;
 
@@ -38,6 +39,18 @@ public class Base
     public String getDevName()
     {
 	return path.getName();
+    }
+
+    @Override public Object getMember(String name)
+    {
+	NullCheck.notNull(name, "name");
+	switch(name)
+	{
+	case "device":
+	    return getDevName();
+	default:
+	    return super.getMember(name);
+	}
     }
 
     @Override public String toString()

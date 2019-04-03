@@ -30,7 +30,21 @@ final class InterfaceObj extends EmptyHookObject implements Interface
 	NullCheck.notNull(linux, "linux");
 	this.linux = linux;
     }
-    
+
+    @Override public boolean mount(MountParams params)
+    {
+	return false;
+    }
+
+        @Override public boolean suspend()
+    {
+	final org.luwrain.base.PropertiesBase props = linux.getProps();
+	if (props == null)
+	    return false;
+	new Scripts(props).runSync(Scripts.ID.SUSPEND, true);
+	return true;
+    }
+
     @Override public Object getMember(String name)
     {
 	NullCheck.notNull(name, "name");
@@ -43,12 +57,4 @@ final class InterfaceObj extends EmptyHookObject implements Interface
 	}
     }
 
-    @Override public boolean suspend()
-    {
-	final org.luwrain.base.PropertiesBase props = linux.getProps();
-	if (props == null)
-	    return false;
-	new Scripts(props).runSync(Scripts.ID.SUSPEND, true);
-	return true;
-    }
 }

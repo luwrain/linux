@@ -56,6 +56,11 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	}
     }
 
+    Scripts getScripts()
+    {
+	return new Scripts(props);
+    }
+
     @Override public OsInterface getInterface()
     {
 	return interfaceObj;

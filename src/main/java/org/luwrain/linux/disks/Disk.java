@@ -21,6 +21,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.util.*;
+import org.luwrain.script.*;
 
 public final class Disk extends Base
 {
@@ -59,5 +60,21 @@ public final class Disk extends Base
 		res.add(part);
 	}
 	return res.toArray(new Partition[res.size()]);
+    }
+
+    @Override public Object getMember(String name)
+    {
+	NullCheck.notNull(name, "name");
+	switch(name)
+	{
+	case "type":
+	    return "disk";
+	case "removable":
+	    return new Boolean(isRemovable());
+	case "partitions":
+	    return ScriptUtils.createReadOnlyArray(getPartitions());
+	default:
+	    return super.getMember(name);
+	}
     }
 }

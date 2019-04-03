@@ -20,6 +20,7 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
+import org.luwrain.script.*;
 import org.luwrain.util.*;
 
 public final class Partition extends Base
@@ -41,6 +42,18 @@ public final class Partition extends Base
 	catch(IOException e)
 	{
 	    return false;
+	}
+    }
+
+    @Override public Object getMember(String name)
+    {
+	NullCheck.notNull(name, "name");
+	switch(name)
+	{
+	case "type":
+	    return "partition";
+	default:
+	    return super.getMember(name);
 	}
     }
 }
