@@ -1,18 +1,3 @@
-/*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.popups.linux;
 
@@ -23,15 +8,18 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.popups.*;
+import org.luwrain.script.*;
 import org.luwrain.linux.*;
 import org.luwrain.linux.disks.*;
 
-public class DisksVolumesPopup extends ListPopupBase implements org.luwrain.popups.DisksVolumesPopup
+final class DisksVolumesPopup extends ListPopupBase implements org.luwrain.popups.DisksVolumesPopup
 {
-    static private Linux linux = null;
-protected File result = null;
+    static private final String LOG_COMPONENT = "linux";
+    static private final String LIST_HOOK = "luwrain.linux.popups.disks.list";
 
-    public DisksVolumesPopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
+private File result = null;
+
+    DisksVolumesPopup(Luwrain luwrain, String name, Set<Popup.Flags> popupFlags)
     {
 	super(luwrain, constructParams(luwrain, name), popupFlags);
     }
@@ -49,22 +37,10 @@ protected File result = null;
 	    {
 	    case ENTER:
 		return closing.doOk();
+		/*
 	    case INSERT:
-		{
-		    final File[] res = mount(selected());
-		if (res == null)
-		    return false;
-		if (res.length == 0)
-		{
-		    luwrain.playSound(Sounds.ERROR);
-		    return true;
-		}
-	refresh();
-	luwrain.playSound(Sounds.DONE);
-	return true;
-		}
 	    case DELETE:
-		return umountSelected();
+		*/
 	    }
 	return super.onInputEvent(event);
     }
@@ -87,109 +63,48 @@ protected File result = null;
 
     @Override public boolean onOk()
     {
-	final Object res = selected();
-	if (res == null)
-	    return false;
-	if (res instanceof Disk)
-	{
-		    final File[] mountRes = mount(res);
-		    if (mountRes == null)
-			return false;
-		    if (mountRes.length == 0)
-			return true;
-		    this.result = mountRes[0];
-		    return true;
-	}
-	if (res instanceof Volume)
-	{
-	    final Volume volume = (Volume)res;
-	    this.result = volume.file;
-	    return true;
-	}
-	return false;
-    }
-
-    protected File[] mount(Object obj)
-    {
-	if (obj == null || !(obj instanceof Disk))
-	    return null;
-	final Disk disk = (Disk)obj;
-	final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
-return mounting.mountAll(disk);
-    }
-
-    protected boolean umountSelected()
-    {
-	final Object selected = selected();
-	if (selected == null || !(selected instanceof Volume))
-	    return false;
-	final Volume volume = (Volume)selected;
-	if (volume.type != Volume.Type.REMOVABLE)
-	    return false;
-	final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
-	if (mounting.umount(volume))
-	{
-	    luwrain.playSound(Sounds.DONE);
-	    refresh();
-	} else
-	    luwrain.playSound(Sounds.ERROR);
 	return true;
     }
 
-    static protected Object[] prepareContent()
+    static private Object[] prepareContent(Luwrain luwrain)
     {
-	final List res = new LinkedList();
+	final List<Item> res = new LinkedList();
 	final DisksList disksList = new DisksList();
 	final VolumesList volumesList = new VolumesList();
 	final Volume[] volumes = volumesList.getVolumes();
-	for(Disk d: disksList.getRemovableDisks())
+	final java.util.concurrent.atomic.AtomicReference hookRes = new java.util.concurrent.atomic.AtomicReference();
+	luwrain.xRunHooks(LIST_HOOK, (hook)->{
+		try {
+		    final Object obj = hook.run(new Object[0]);
+		    if (obj == null)
+			return Luwrain.HookResult.CONTINUE;
+		    final List objs = ScriptUtils.getArray(obj);
+		    if (objs == null)
+			return Luwrain.HookResult.CONTINUE;
+		    hookRes.set(objs.toArray(new Object[objs.size()]));
+		    return Luwrain.HookResult.BREAK;
+		}
+		catch(RuntimeException e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to run the " + LIST_HOOK + " hook:" + e.getClass().getName() + ":" + e.getMessage());
+		    return Luwrain.HookResult.CONTINUE;
+		}
+	    });
+	if (hookRes == null)
+	    return new Item[0];
+	if (!(hookRes.get() instanceof Object[]))
+	    return new Item[0];
+	final Object[] objs = (Object[])hookRes.get();
+	for(Object o: objs)
 	{
-	    {
-		int i = 0;
-		for(i = 0;i < volumes.length;++i)
-		    if (volumes[i].type == Volume.Type.REMOVABLE && volumes[i].name.equals(d.getDevName()))
-			break;
-		if (i < volumes.length)
-		    continue;
-	    }
-	    boolean found = false;
-	    for(Partition p: d.getPartitions())
-	    {
-		int k = 0;
-		for(k = 0;k < volumes.length;++k)
-		    if (volumes[k].type == Volume.Type.REMOVABLE && volumes[k].name.equals(p.getDevName()))
-			break;
-		if (k < volumes.length)
-		    found = true;
-	    }
-	    if (found)
+	    final Object titleObj = ScriptUtils.getMember(o, "title");
+	    final String title = ScriptUtils.getStringValue(titleObj);
+	    if (title == null || title.isEmpty())
 		continue;
-	    res.add(d);
+	    res.add(new Item(title, ScriptUtils.getMember(o, "obj")));
 	}
-	for(Volume v: volumes)
-	    res.add(v);
-	return res.toArray(new Object[res.size()]);
-    }
-
-    static public String getVolumeTypeStr(Luwrain luwrain, Volume volume)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(volume, "volume");
-	switch(volume.type)
-	{
-	case ROOT:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRoot");
-	case USER_HOME:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemUserHome");
-	case REGULAR:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRegular");
-	case REMOTE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemote");
-	case REMOVABLE:
-	    return luwrain.i18n().getStaticStr("PartitionsPopupItemRemovable");
-	default:
-	    return "";
-	}
+	res.add(new Item("proba", null));
+	return res.toArray(new Item[res.size()]);
     }
 
     static private ListArea.Params constructParams(Luwrain luwrain, String name)
@@ -199,65 +114,31 @@ return mounting.mountAll(disk);
 	final ListArea.Params params = new ListArea.Params();
 	params.context = new DefaultControlEnvironment(luwrain);
 	params.name = name;
-	params.model = new ListUtils.FixedModel(prepareContent()){
+	params.model = new ListUtils.FixedModel(prepareContent(luwrain)){
 		@Override public void refresh()
 		{
-		    setItems(prepareContent());
+		    setItems(prepareContent(luwrain));
 		}};
-	params.appearance = new Appearance(luwrain);
-	//	params.flags = listFlags;
+	params.appearance = new ListUtils.DefaultAppearance(new DefaultControlContext(luwrain));
 	return params;
     }
 
-    static protected class Appearance implements ListArea.Appearance
+    static private final class Item
     {
-	protected final Luwrain luwrain;
-	Appearance(Luwrain luwrain)
+	final String title;
+	final Object obj;
+
+	Item(String title, Object obj)
 	{
-	    NullCheck.notNull(luwrain, "luwrain");
-	    this.luwrain = luwrain;
+	    NullCheck.notEmpty(title, "title");
+	    this.title = title;
+	    this.obj = obj;
 	}
-	@Override public void announceItem(Object item, Set<Flags> flags)
+
+	@Override public String toString()
 	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flag ");
-	    final String value = getTitleStr(item, flags.contains(Flags.BRIEF));
-	    if (!value.trim().isEmpty())
-		luwrain.setEventResponse(DefaultEventResponse.text(value)); else
-		luwrain.setEventResponse(DefaultEventResponse.hint(Hint.EMPTY_LINE));
-	}
-	@Override public String getScreenAppearance(Object item, Set<Flags> flags)
-	{
-	    NullCheck.notNull(item, "item");
-	    NullCheck.notNull(flags, "flags");
-	    return getTitleStr(item, false);
-	}
-	protected String getTitleStr(Object item, boolean brief)
-	{
-	    NullCheck.notNull(item, "item");
-	    if (item instanceof Volume)
-	    {
-		final Volume vol = (Volume)item;
-		if (brief)
-		    return vol.name;
-		if (vol.type != Volume.Type.USER_HOME && vol.type != Volume.Type.ROOT)
-		    return getVolumeTypeStr(luwrain, vol) + " " + vol.name;
-		return getVolumeTypeStr(luwrain, vol);
-	    }
-	    if (item instanceof Disk)
-	    {
-		final Disk disk = (Disk)item;
-		return "Неподключенное устройство " + disk.getDevName();//FIXME:
-	    }
-	    return item.toString();
-	}
-	@Override public int getObservableLeftBound(Object item)
-	{
-	    return 0;
-	}
-	@Override public int getObservableRightBound(Object item)
-	{
-	    return getScreenAppearance(item, EnumSet.noneOf(Flags.class)).length();
+	    return title;
 	}
     }
+
 }
