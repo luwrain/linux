@@ -16,6 +16,7 @@ final class DisksVolumesPopup extends ListPopupBase implements org.luwrain.popup
 {
     static private final String LOG_COMPONENT = "linux";
     static private final String LIST_HOOK = "luwrain.linux.popups.disks.list";
+        static private final String CLICK_HOOK = "luwrain.linux.popups.disks.click";
 
 private File result = null;
 
@@ -68,14 +69,17 @@ private File result = null;
 
     static private Object[] prepareContent(Luwrain luwrain)
     {
-	final List<Item> res = new LinkedList();
+
 	final DisksList disksList = new DisksList();
+	final Disk[] disks = disksList.getRemovableDisks();
 	final VolumesList volumesList = new VolumesList();
 	final Volume[] volumes = volumesList.getVolumes();
+	final Object volumesObj = ScriptUtils.createReadOnlyArray(volumes);
+		final Object disksObj = ScriptUtils.createReadOnlyArray(disks);
 	final java.util.concurrent.atomic.AtomicReference hookRes = new java.util.concurrent.atomic.AtomicReference();
 	luwrain.xRunHooks(LIST_HOOK, (hook)->{
 		try {
-		    final Object obj = hook.run(new Object[0]);
+		    final Object obj = hook.run(new Object[]{volumesObj, disksObj});
 		    if (obj == null)
 			return Luwrain.HookResult.CONTINUE;
 		    final List objs = ScriptUtils.getArray(obj);
@@ -95,6 +99,7 @@ private File result = null;
 	if (!(hookRes.get() instanceof Object[]))
 	    return new Item[0];
 	final Object[] objs = (Object[])hookRes.get();
+		final List<Item> res = new LinkedList();
 	for(Object o: objs)
 	{
 	    final Object titleObj = ScriptUtils.getMember(o, "title");
@@ -103,7 +108,6 @@ private File result = null;
 		continue;
 	    res.add(new Item(title, ScriptUtils.getMember(o, "obj")));
 	}
-	res.add(new Item("proba", null));
 	return res.toArray(new Item[res.size()]);
     }
 
