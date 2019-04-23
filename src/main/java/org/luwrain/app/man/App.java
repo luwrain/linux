@@ -31,7 +31,7 @@ public final class App implements Application, MonoApp
     private Luwrain luwrain = null;
     private Strings strings = null;
     private Base base = null;
-    private ConsoleArea2 searchArea = null;
+    private ConsoleArea searchArea = null;
     private NavigationArea pageArea = null;
 
     @Override public InitResult onLaunchApp(Luwrain luwrain)
@@ -49,15 +49,15 @@ public final class App implements Application, MonoApp
 
     private void createAreas()
     {
-	final ConsoleArea2.Params params = new ConsoleArea2.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	final ConsoleArea.Params params = new ConsoleArea.Params();
+	params.context = new DefaultControlContext(luwrain);
 	params.model = base.getSearchAreaModel();
 	params.appearance = base.getSearchAreaAppearance();
 	params.areaName = strings.appName();
-	params.inputPos = ConsoleArea2.InputPos.TOP;
+	params.inputPos = ConsoleArea.InputPos.TOP;
 	params.inputPrefix = "man>";
-	
-	searchArea = new ConsoleArea2(params){
+
+	searchArea = new ConsoleArea(params){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -96,15 +96,15 @@ public final class App implements Application, MonoApp
 	searchArea.setConsoleInputHandler((area,text)->{
 		NullCheck.notNull(text, "text");
 		if (text.trim().isEmpty())
-		    return ConsoleArea2.InputHandler.Result.REJECTED;
+		    return ConsoleArea.InputHandler.Result.REJECTED;
 		if (!base.search(text.trim().toLowerCase()))
-		    		    return ConsoleArea2.InputHandler.Result.REJECTED;
+		    		    return ConsoleArea.InputHandler.Result.REJECTED;
 		area.refresh();
 		luwrain.playSound(Sounds.DONE);
-		return ConsoleArea2.InputHandler.Result.OK;
+		return ConsoleArea.InputHandler.Result.OK;
 	    });
 
-	pageArea = new SimpleArea(new DefaultControlEnvironment(luwrain)){
+	pageArea = new SimpleArea(new DefaultControlContext(luwrain)){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

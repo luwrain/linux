@@ -75,17 +75,17 @@ final class Base
 	}
     }
 
-    ConsoleArea2.Model getSearchAreaModel()
+    ConsoleArea.Model getSearchAreaModel()
     {
 	return new SearchAreaModel();
     }
 
-    ConsoleArea2.Appearance getSearchAreaAppearance()
+    ConsoleArea.Appearance getSearchAreaAppearance()
     {
 	return new SearchAreaAppearance();
     }
 
-    private class SearchAreaAppearance implements ConsoleArea2.Appearance
+    private class SearchAreaAppearance implements ConsoleArea.Appearance
     {
 	@Override public void announceItem(Object item)
 	{
@@ -99,7 +99,7 @@ final class Base
 	}
     }
 
-    private class SearchAreaModel implements ConsoleArea2.Model
+    private class SearchAreaModel implements ConsoleArea.Model
     {
         @Override public int getConsoleItemCount()
 	{

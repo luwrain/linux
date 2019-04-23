@@ -48,7 +48,7 @@ public class App implements Application, MonoApp
 
     private void createArea()
     {
-		formArea = new FormArea(new DefaultControlEnvironment(luwrain)){
+		formArea = new FormArea(new DefaultControlContext(luwrain)){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

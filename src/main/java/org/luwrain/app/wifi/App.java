@@ -65,7 +65,7 @@ public class App implements Application, MonoApp
     private void createArea()
     {
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.model = base.getListModel();
 	params.appearance = new Appearance(luwrain, strings, connections);
 	params.clickHandler = (area, index, obj)->onConnect(obj);
@@ -136,7 +136,7 @@ public class App implements Application, MonoApp
 		}
 	    };
 
-	this.progressArea = new ProgressArea(new DefaultControlEnvironment(luwrain), "Подключение"){
+	this.progressArea = new ProgressArea(new DefaultControlContext(luwrain), "Подключение"){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");

@@ -116,7 +116,7 @@ private File result = null;
 	NullCheck.notNull(luwrain, "luwrain");
 	NullCheck.notNull(name, "name");
 	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlEnvironment(luwrain);
+	params.context = new DefaultControlContext(luwrain);
 	params.name = name;
 	params.model = new ListUtils.FixedModel(prepareContent(luwrain)){
 		@Override public void refresh()

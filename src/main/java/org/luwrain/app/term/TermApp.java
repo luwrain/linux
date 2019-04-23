@@ -89,7 +89,7 @@ public class TermApp implements Application, Actions
 	final Actions actions = this;
 	final Terminal term = base.getTerm();
 	final Strings s = strings;
-	area = new NavigationArea(new DefaultControlEnvironment(luwrain)){
+	area = new NavigationArea(new DefaultControlContext(luwrain)){
 		@Override public int getLineCount()
 		{
 		    return term.getLineCount() >= 1?term.getLineCount():1;

@@ -30,7 +30,7 @@ class SysDevice extends SimpleArea implements SectionArea
 
     SysDevice(ControlPanel controlPanel, org.luwrain.cpanel.Element el)
     {
-	super(new DefaultControlEnvironment(controlPanel.getCoreInterface()), "Информация об устройстве");
+	super(new DefaultControlContext(controlPanel.getCoreInterface()), "Информация об устройстве");
 	NullCheck.notNull(controlPanel, "controlPanel");
 	NullCheck.notNull(el, "el");
 	this.controlPanel = controlPanel;
