@@ -12,7 +12,7 @@ cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
 
 export LANG=en_US.UTF-8
 
-exec ~/.dwm/dwm
+exec /usr/local/bin/dwm
 EOF
 fi
 
@@ -27,7 +27,7 @@ export LUWRAIN_LANG=ro
 setxkbmap -layout "us,ro"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
-exec ~/.dwm/dwm
+exec /usr/local/bin/dwm
 EOF
 fi
 
@@ -40,6 +40,6 @@ export LANG=ru_RU.UTF-8
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
-exec ~/.dwm/dwm
+exec /usr/local/bin/dwm
 EOF
 fi

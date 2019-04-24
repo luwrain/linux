@@ -16,5 +16,8 @@ EOF
 
 chmod 755 $LWRISO_ROOT/home/$LWRISO_USER/build-dwm
 chroot-run  /home/$LWRISO_USER/build-dwm
+cp $LWRISO_ROOT/home/$LWRISO_USER/.dwm/dwm "$LWRISO_ROOT/usr/local/bin"
 rm -f $LWRISO_ROOT/home/$LWRISO_USER/build-dwm
-chown -R 1000:1000 $LWRISO_ROOT/home/$LWRISO_USER/.dwm
+rm -rf $LWRISO_ROOT/home/$LWRISO_USER/.dwm
+
+chown -R 1000:1000 $LWRISO_ROOT/home/$LWRISO_USER/
