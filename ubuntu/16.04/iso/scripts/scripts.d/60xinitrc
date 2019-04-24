@@ -1,5 +1,4 @@
 
-
 cat <<EOF > $LWRISO_ROOT/usr/local/bin/dwm-autolaunch
 #!/bin/bash -e
 
@@ -9,8 +8,7 @@ chmod 755 $LWRISO_ROOT/usr/local/bin/dwm-autolaunch
 
 if [ "$LWRISO_LANG" == en ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
-# Put here the actions you want to run on X.org start
-# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+# Copyright 2019 Michael Pozhidaev <msp@luwrain.org>
 
 export LANG=en_US.UTF-8
 
@@ -20,12 +18,13 @@ fi
 
 if [ "$LWRISO_LANG" == ro ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
-# Put here the actions you want to run on X.org start
-# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+# Copyright 2019 Michael Pozhidaev <msp@luwrain.org>
 
-export LANG=ru_RU.UTF-8
+export LANG=ro_RO.UTF-8
+#export LANG=en_US.UTF-8
+export LUWRAIN_LANG=ro
 
-setxkbmap -layout "us,ru"
+setxkbmap -layout "us,ro"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
 exec ~/.dwm/dwm
@@ -34,8 +33,7 @@ fi
 
 if [ "$LWRISO_LANG" == ru ]; then
 cat <<EOF > $LWRISO_ROOT/home/luwrain/.xinitrc
-# Put here the actions you want to run on X.org start
-# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+# Copyright 2019 Michael Pozhidaev <msp@luwrain.org>
 
 export LANG=ru_RU.UTF-8
 
