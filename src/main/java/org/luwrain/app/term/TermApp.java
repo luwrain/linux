@@ -66,8 +66,8 @@ public class TermApp implements Application, Actions
 	if (text != null && !text.trim().isEmpty())
 	{
 	    if (text.length() == 1)
-		luwrain.sayLetter(text.charAt(0)); else
-		luwrain.say(text);
+		luwrain.speakLetter(text.charAt(0)); else
+		luwrain.speak(text);
 	}
 	if (hotPointX != oldHotPointX || hotPointY != oldHotPointY)
 	{
@@ -75,7 +75,7 @@ public class TermApp implements Application, Actions
 	    {
 		final String line = area.getLine(hotPointY);
 		if (line != null && hotPointX < line.length())
-		    luwrain.sayLetter(line.charAt(hotPointX));
+		    luwrain.speakLetter(line.charAt(hotPointX));
 	    }
 	    area.setHotPoint(hotPointX, hotPointY);
 	    oldHotPointX = hotPointX;
@@ -134,7 +134,7 @@ public class TermApp implements Application, Actions
 			{
 			    final String lastWord = TextUtils.getLastWord(getLine(getHotPointY()), getHotPointX());
 			    if (lastWord != null && !lastWord.trim().isEmpty())
-				luwrain.say(lastWord);
+				luwrain.speak(lastWord);
 			}
 			term.write(event.getChar());
 			return true;
