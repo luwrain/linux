@@ -57,30 +57,6 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	return new Command[]{
 
-	    	    new Command() {
-		@Override public String getName()
-		{
-		    return "mount-new-disk";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    final Disk disk = linux.getNewlyAvailableDisk();
-		    if (disk == null)
-		    {
-			luwrain.message("Подключение новых дисков не производилось", Luwrain.MessageType.ERROR);//FIXME:
-			return;
-		    }
-		    final Mounting mounting = new Mounting(luwrain, new DefaultMountPointConstructor());
-		    final File[] res = mounting.mountAll(disk);
-		    if (res .length == 0)
-		    {
-			luwrain.message("Невозможно подключить новый диск", Luwrain.MessageType.ERROR);
-			return;
-		    }
-		    luwrain.launchApp("commander", new String[]{res[0].getAbsolutePath()});
-		}
-	    },
-
 	    new Command() {
 		@Override public String getName()
 		{
