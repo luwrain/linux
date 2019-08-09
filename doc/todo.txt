@@ -1,2 +1,0 @@
-- Reduce delay on DHCP scanning
-- UUID using in fstab
