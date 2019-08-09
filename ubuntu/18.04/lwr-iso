@@ -19,10 +19,10 @@ unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
 cp -r dist install "$WORK/iso"
 cp -r scripts/. "$WORK/iso"
 mount --bind /proc "$CHROOT/proc"
-chroot "$WORK" /iso/lwr-prepare-chroot "$2" "$3"
+chroot "$WORK" /iso/lwr-mkchroot "$2" "$3"
 umount "$CHROOT/proc"
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
-chroot "$WORK" /iso/lwr-build-iso
+chroot "$WORK" /iso/lwr-mkiso
 cp "$WORK/iso/luwrain.iso" luwrain.iso
 ) > /tmp/lwr-iso.log 2>&1
 
