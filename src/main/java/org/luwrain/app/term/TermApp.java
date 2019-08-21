@@ -20,7 +20,7 @@ import org.luwrain.linux.term.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
-//import org.luwrain.core.Registry;
+import org.luwrain.util.*;
 
 public class TermApp implements Application, Actions
 {
