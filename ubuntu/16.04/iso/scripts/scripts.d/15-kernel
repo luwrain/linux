@@ -1,2 +1,2 @@
 
-chroot-run apt-get install --reinstall linux-image-$LWRISO_KERNEL
+chroot-run apt-get -y --force-yes install --reinstall linux-image-$LWRISO_KERNEL

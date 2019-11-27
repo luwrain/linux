@@ -30,6 +30,7 @@ umount "$WORK/iso"
 find "$WORK" -type b -delete
 find "$WORK" -type c -delete
 find "$WORK" -type l -delete
+rm -rf "$WORK"
 ) > /tmp/lwr-iso.log 2>&1
 
 echo 'OK!'
