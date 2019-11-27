@@ -12,18 +12,24 @@ DISK="$1"
 SQUASHFSSRC="$1/casper/filesystem.squashfs"
 
 (
-unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
-mkdir -p "$WORK/iso/disk"
-cp -r "$DISK/." "$WORK/iso/disk"
-unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
-cp -r dist install "$WORK/iso"
-cp -r scripts/. "$WORK/iso"
+    unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
+    mkdir -p "$WORK/iso"
+    mount -o size=6G -t tmpfs tmpfs "$WORK/iso"
+    mkdir -p "$WORK/iso/disk"
+    cp -r "$DISK/." "$WORK/iso/disk"
+    rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
+    unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
+    cp -r dist install "$WORK/iso"
+    cp -r scripts/. "$WORK/iso"
 mount --bind /proc "$CHROOT/proc"
 chroot "$WORK" /iso/lwr-prepare-chroot "$2" "$3"
 umount "$CHROOT/proc"
-rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
 chroot "$WORK" /iso/lwr-build-iso
 cp "$WORK/iso/luwrain.iso" luwrain.iso
+umount "$WORK/iso"
+find "$WORK" -type b -delete
+find "$WORK" -type c -delete
+find "$WORK" -type l -delete
 ) > /tmp/lwr-iso.log 2>&1
 
 echo 'OK!'
