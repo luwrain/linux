@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -30,59 +30,36 @@ import org.luwrain.linux.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    private String[] pages = new String[0];
+    private MainLayout mainLayout = null;
 
     public App()
     {
 	super(Strings.NAME, Strings.class);
     }
 
-    boolean search(String query)
-    {
-	NullCheck.notEmpty(query, "query");
-	final List<String> res = new LinkedList();
-	final Scripts scripts = new Scripts(getLuwrain());
-	final Process p = scripts.runAsync(Scripts.ID.MAN_SEARCH, new String[]{query}, false);
-	if (p == null)
-	    return false;
-	try {
-	    try {
-		p.getOutputStream().close();
-		final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line = r.readLine();
-		while (line != null)
-		{
-		    res.add(line);
-		    line = r.readLine();
-		}
-		p.waitFor();
-		pages = res.toArray(new String[res.size()]);
-		return true;
-	    }
-	    finally {
-		p.getInputStream().close();
-	    }
-	}
-	catch(InterruptedException e)
-	{
-	    Thread.currentThread().interrupt();
-	    return false;
-	}
-	catch(IOException e)
-	{
-	    getLuwrain().crash(e);
-	    return false;
-	}
-    }
-
     @Override protected boolean onAppInit()
     {
+	this.mainLayout = new MainLayout(this);
 	return true;
+    }
+
+    @Override public boolean onInputEvent(Area area, KeyboardEvent event)
+    {
+	NullCheck.notNull(area, "area");
+	NullCheck.notNull(event, "event");
+	if (event.isSpecial())
+	    switch(event.getSpecial())
+	{
+	case ESCAPE:
+	    closeApp();
+	    return true;
+	}
+	return super.onInputEvent(area, event);
     }
 
     @Override protected AreaLayout getDefaultAreaLayout()
     {
-	return null;
+	return this.mainLayout.getLayout();
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
