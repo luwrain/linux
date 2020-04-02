@@ -22,139 +22,72 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
+import org.luwrain.template.*;
 import org.luwrain.controls.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.Popups;
+import org.luwrain.linux.*;
 
-public final class App implements Application, MonoApp
+public final class App extends AppBase<Strings> implements MonoApp
 {
-    private Luwrain luwrain = null;
-    private Strings strings = null;
-    private Base base = null;
-    private ConsoleArea searchArea = null;
-    private NavigationArea pageArea = null;
+    private String[] pages = new String[0];
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+    public App()
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.i18n().getStrings(Strings.NAME);
-	if (o == null || !(o instanceof Strings))
-	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
-	strings = (Strings)o;
-	this.luwrain = luwrain;
-	this.base = new Base(luwrain, strings);
-	createAreas();
-	return new InitResult();
+	super(Strings.NAME, Strings.class);
     }
 
-    private void createAreas()
+    boolean search(String query)
     {
-	final ConsoleArea.Params params = new ConsoleArea.Params();
-	params.context = new DefaultControlContext(luwrain);
-	params.model = base.getSearchAreaModel();
-	params.appearance = base.getSearchAreaAppearance();
-	params.areaName = strings.appName();
-	params.inputPos = ConsoleArea.InputPos.TOP;
-	params.inputPrefix = "man>";
-
-	searchArea = new ConsoleArea(params){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+	NullCheck.notEmpty(query, "query");
+	final List<String> res = new LinkedList();
+	final Scripts scripts = new Scripts(getLuwrain());
+	final Process p = scripts.runAsync(Scripts.ID.MAN_SEARCH, new String[]{query}, false);
+	if (p == null)
+	    return false;
+	try {
+	    try {
+		p.getOutputStream().close();
+		final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+		String line = r.readLine();
+		while (line != null)
 		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case ESCAPE:
-			    closeApp();
-			    return true;
-			case TAB:
-			    luwrain.setActiveArea(pageArea);
-			    return true;
-			}
-		    return super.onInputEvent(event);
+		    res.add(line);
+		    line = r.readLine();
 		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR)
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case CLOSE:
-			closeApp();
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-	    };
-	
-	searchArea.setConsoleClickHandler((area,index,obj)->{
-		    return false;
-	    });
-	
-	searchArea.setConsoleInputHandler((area,text)->{
-		NullCheck.notNull(text, "text");
-		if (text.trim().isEmpty())
-		    return ConsoleArea.InputHandler.Result.REJECTED;
-		if (!base.search(text.trim().toLowerCase()))
-		    		    return ConsoleArea.InputHandler.Result.REJECTED;
-		area.refresh();
-		luwrain.playSound(Sounds.DONE);
-		return ConsoleArea.InputHandler.Result.OK;
-	    });
-
-	pageArea = new SimpleArea(new DefaultControlContext(luwrain)){
-		@Override public boolean onInputEvent(KeyboardEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case ESCAPE:
-			    closeApp();
-			    return true;
-			case TAB:
-			    luwrain.setActiveArea(searchArea);
-			    return true;
-			}
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(EnvironmentEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != EnvironmentEvent.Type.REGULAR )
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case CLOSE:
-			closeApp();
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-	    };
+		p.waitFor();
+		pages = res.toArray(new String[res.size()]);
+		return true;
+	    }
+	    finally {
+		p.getInputStream().close();
+	    }
+	}
+	catch(InterruptedException e)
+	{
+	    Thread.currentThread().interrupt();
+	    return false;
+	}
+	catch(IOException e)
+	{
+	    getLuwrain().crash(e);
+	    return false;
+	}
     }
 
-    @Override public String getAppName()
+    @Override protected boolean onAppInit()
     {
-	return strings.appName();
+	return true;
+    }
+
+    @Override protected AreaLayout getDefaultAreaLayout()
+    {
+	return null;
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
 	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
-    }
-
-    @Override public AreaLayout getAreaLayout()
-    {
-	return new AreaLayout(AreaLayout.TOP_BOTTOM, searchArea, pageArea);
-    }
-
-    @Override public void closeApp()
-    {
-	luwrain.closeApp();
     }
 }
