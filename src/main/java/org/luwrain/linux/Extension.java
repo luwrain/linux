@@ -79,45 +79,13 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 	    },
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "term";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    final String currentDir = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY);
-		    if (currentDir != null && !currentDir.isEmpty())
-			luwrain.launchApp("term", new String[]{currentDir}); else
-			luwrain.launchApp("term", new String[]{luwrain.getFileProperty("luwrain.dir.userhome").getAbsolutePath()});
-		}
-	    },
+	    new SimpleShortcutCommand("term"),
+	    	    new SimpleShortcutCommand("term2"),
+	    	    	    new SimpleShortcutCommand("man"),
+	    	    	    	    new SimpleShortcutCommand("wifi"),
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "man";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    luwrain.launchApp("man");
-		}
-	    },
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "wifi";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    luwrain.launchApp("wifi");
-		}
-	    },
-
+	    
 	    new Command() {
 		@Override public String getName()
 		{
@@ -179,6 +147,21 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 		    return new Application[]{new org.luwrain.app.term.TermApp("/")};
 		}
 	    });
+
+		res.add(new Shortcut(){
+		@Override public String getExtObjName()
+		{
+		    return "term2";
+		}
+		@Override public Application[] prepareApp(String[] args)
+		{
+		    NullCheck.notNull(args, "args");
+		    if (args.length == 1)
+			return new Application[]{new org.luwrain.app.term2.TermApp(args[0])};
+		    return new Application[]{new org.luwrain.app.term2.TermApp("/")};
+		}
+	    });
+
 
 	res.add(new Shortcut(){
 		@Override public String getExtObjName()
