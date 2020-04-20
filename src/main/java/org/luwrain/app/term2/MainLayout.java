@@ -92,8 +92,12 @@ final class MainLayout extends LayoutBase
 	    };
     }
 
-    void update()
+    void update(int ch)
     {
+	if (lines.isEmpty())
+	    lines.add("");
+	lines.set(lines.size() - 1, lines.get(lines.size() - 1) + (char)ch);
+	app.getLuwrain().onAreaNewContent(termArea);
 		    /*
 				 boolean bell)
     {
