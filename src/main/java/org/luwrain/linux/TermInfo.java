@@ -1,6 +1,4 @@
 
-package org.luwrain.linux;
-
 import java.io.*;
 import java.util.*;
 
@@ -39,10 +37,51 @@ final String text;
 	this.text = new String(b);
     }
 
+    public void read()
+    {
+	StringBuilder b = new StringBuilder();
+	try {
+	final StringReader r = new StringReader(text);
+	try {
+	    for(int n = r.read();n >= 0;n = r.read())
+	    {
+		final char c = (char)n;
+		switch(c)
+		{
+		case ' ':
+		    if (b.length() > 0)
+			b.append(' ');
+		    continue;
+		case '\t':
+		    continue;
+		case ',':
+		    processItem(new String(b));
+		    b = new StringBuilder();
+		    continue;
+		default:
+		    b.append(c);
+		}
+	    }
+	}
+	finally {
+	    r.close();
+	}
+	}
+	catch(IOException e)
+	{
+	    throw new RuntimeException(e);
+	}
+    }
+
+    private void processItem(String text)
+    {
+	System.out.println(text);
+    }
+
 
     static public void main(String[] args) throws Exception
     {
 	TermInfo t = 	new TermInfo();
-	System.out.println(t.text);
+	t.read();
     }
 }
