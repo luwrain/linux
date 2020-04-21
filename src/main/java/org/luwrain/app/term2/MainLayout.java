@@ -36,6 +36,11 @@ final class MainLayout extends LayoutBase
 			    app.sendByte((byte)'\n');
 			    return true;
 			}
+		    if (!event.isSpecial() && !event.isModified())
+		    {
+			app.sendByte((byte)event.getChar());
+			return true;
+		    }
 		    		    if (app.onInputEvent(this, event))
 			return true;
 		    return super.onInputEvent(event);

@@ -32,7 +32,7 @@ public final class App extends AppBase<Strings>
     @Override public boolean onAppInit()
     {
 	String[] cmd = { "/bin/bash"};
-	String[] env = { "TERM=xterm" };
+	String[] env = { "TERM=linux" };
 	Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
 	this.pty = JPty.execInPTY( cmd[0], cmd, env );
 	TaskId taskId = newTaskId();
@@ -60,10 +60,6 @@ while(b != null)
 		}
 		if (r.ready())
 		    		{
-		    /*
-		int b = is.read();
-		Log.debug("term2", "get " + (char)b);
-		    */
 		    final char c = (char)r.read();
 		    getLuwrain().runUiSafely(()->{
 			    		if (this.layout != null)
