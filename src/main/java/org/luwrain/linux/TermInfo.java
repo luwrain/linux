@@ -5,10 +5,12 @@ import java.util.*;
 class TermInfo
 {
 final String text;
+    private String termName = null;
+    private Set<String> values = new HashSet();
 
     TermInfo() throws IOException
     {
-	final Process p = new ProcessBuilder("infocmp").start();
+	final Process p = new ProcessBuilder("infocmp", "linux").start();
 	p.getOutputStream().close();
 		    	final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				final StringBuilder b = new StringBuilder();
@@ -43,9 +45,22 @@ final String text;
 	try {
 	final StringReader r = new StringReader(text);
 	try {
+	    //This builder being created indicates that we are in the char code reading mode
+	    StringBuilder codeBuilder = null;
 	    for(int n = r.read();n >= 0;n = r.read())
 	    {
 		final char c = (char)n;
+		if (codeBuilder != null)
+		{
+		    if (c >= '0' && c <= '0')
+		    {
+			codeBuilder.append(c);
+			continue;
+		    }
+		    //The char code sequence ends here, constructing the char and continuing as usual
+		    b.append(buildChar(new String(codeBuilder)));
+		    codeBuilder = null;
+		}
 		switch(c)
 		{
 		case ' ':
@@ -58,6 +73,25 @@ final String text;
 		    processItem(new String(b));
 		    b = new StringBuilder();
 		    continue;
+		case '\\':
+		    {
+			int nn = r.read();
+			if (nn < 0)
+			{
+			    b.append('\\');
+			    return;
+			}
+			final char cc = (char)nn;
+			if (cc < '0' || cc > '9')
+			{
+			    b.append(cc);
+			    continue;
+			}
+			//Activating the mode of reading the char code
+			codeBuilder = new StringBuilder();
+			codeBuilder.append(cc);
+			continue;
+		    }
 		default:
 		    b.append(c);
 		}
@@ -65,6 +99,8 @@ final String text;
 	}
 	finally {
 	    r.close();
+	    if (b.length() > 0)
+		processItem(new String(b));
 	}
 	}
 	catch(IOException e)
@@ -73,9 +109,31 @@ final String text;
 	}
     }
 
+    private String buildChar(String code)
+    {
+	try {
+	    return Character.toString((char)Integer.parseInt(code));
+	}
+	catch(NumberFormatException e)
+	{
+	    return "";
+	}
+    }
+
     private void processItem(String text)
     {
-	System.out.println(text);
+	final int pos = text.indexOf("=");
+	if (pos > 0 && pos < text.length() - 1)
+	{
+	    System.out.println(text.substring(0, pos) + ": " + text.substring(pos + 1));
+	    return;
+	}
+	if (termName == null)
+	{
+	    termName = text;
+	    return;
+	}
+	values.add(text);
     }
 
 
