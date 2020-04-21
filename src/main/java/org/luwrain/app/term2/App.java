@@ -16,6 +16,7 @@ public final class App extends AppBase<Strings>
     static final String LOG_COMPONENT = "term";
 
     private Pty pty = null;
+    private final LinkedList<byte[]> input = new LinkedList();
     private MainLayout layout = null;
 
     public App()
@@ -27,28 +28,50 @@ public final class App extends AppBase<Strings>
     {
 	String[] cmd = { "/bin/bash"};
 	String[] env = { "TERM=xterm" };
-		Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
+	Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
 	this.pty = JPty.execInPTY( cmd[0], cmd, env );
 	TaskId taskId = newTaskId();
 	runTask(taskId, ()->work());
 	this.layout = new MainLayout(this);
 	Log.debug(LOG_COMPONENT, "terminal launched");
 	return true;
-	}
+    }
 
     private void work()
     {
 	try {
-	InputStream is = pty.getInputStream();
+	    final InputStream is = pty.getInputStream();
+	    final OutputStream os = pty.getOutputStream();
+	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
 	    while(true)
 	    {
+		synchronized (App.this){
+byte[] b = input.pollFirst();
+while(b != null)
+{
+		    os.write(b);
+		    b = input.pollFirst();
+}
+		}
+		if (r.ready())
+		    		{
+		    /*
 		int b = is.read();
 		Log.debug("term2", "get " + (char)b);
-
+		    */
+		    final char c = (char)r.read();
 		    getLuwrain().runUiSafely(()->{
 			    		if (this.layout != null)
-			    this.layout.update(b);
+			    this.layout.update(c);
 			});
+		}
+		    try {
+			Thread.sleep(10);
+		    } 
+		    catch (InterruptedException e) 
+		    {
+			return;
+		    }
 	    }
 	}
 	catch(Exception e)
@@ -57,15 +80,10 @@ public final class App extends AppBase<Strings>
 	}
     }
 
-    /*
-		    try {
-			Thread.sleep(STEP_DELAY);
-		    } 
-		    catch (InterruptedException e) 
-		    {
-			Thread.currentThread().interrupt();
-		    }
-    */
+    synchronized void sendByte(byte b)
+    {
+	input.add(new byte[]{b});
+    }
 
         @Override public AreaLayout getDefaultAreaLayout()
     {

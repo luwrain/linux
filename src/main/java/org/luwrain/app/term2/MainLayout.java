@@ -24,26 +24,21 @@ final class MainLayout extends LayoutBase
     {
 	this.app = app;
 	this.termArea = new NavigationArea(new DefaultControlContext(app.getLuwrain())){
-		@Override public int getLineCount()
-		{
-		    return lines.size() >= 1?lines.size():1;
-		}
-		@Override public String getLine(int index)
-		{
-		    if (index >= lines.size())
-			return "";
-		    return lines.get(index);
-		}
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
 		    NullCheck.notNull(event, "event");
-		    if (app.onInputEvent(this, event))
+		    if (event.isSpecial() && !event.isModified())
+			switch(event.getSpecial())
+			{
+			case ENTER:
+			    app.sendByte((byte)'\n');
+			    return true;
+			}
+		    		    if (app.onInputEvent(this, event))
 			return true;
 		    return super.onInputEvent(event);
 		    /*
 			case ENTER:
-			    term.write(new byte[]{(byte)'\n'});
-			    return true;
 			case BACKSPACE:
 			    term.write(new byte[]{(byte)'\b'});
 			    return true;
@@ -85,6 +80,16 @@ final class MainLayout extends LayoutBase
 			return true;
 			return super.onSystemEvent(event);
 		}
+				@Override public int getLineCount()
+		{
+		    return lines.size() >= 1?lines.size():1;
+		}
+		@Override public String getLine(int index)
+		{
+		    if (index >= lines.size())
+			return "";
+		    return lines.get(index);
+		}
 		@Override public String getAreaName()
 		{
 		    return app.getStrings().areaName();
@@ -92,7 +97,7 @@ final class MainLayout extends LayoutBase
 	    };
     }
 
-    void update(int ch)
+    void update(char ch)
     {
 	if (lines.isEmpty())
 	    lines.add("");
