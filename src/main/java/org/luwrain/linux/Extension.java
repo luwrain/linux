@@ -161,7 +161,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		    if (args.length == 1)
 			return new Application[]{new org.luwrain.app.term2.TermApp(args[0])};
 		    */
-		    return new Application[]{new org.luwrain.app.term2.App()};
+		    return new Application[]{new org.luwrain.app.term2.App(termInfo)};
 		}
 	    });
 

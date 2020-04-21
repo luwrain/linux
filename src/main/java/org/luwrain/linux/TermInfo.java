@@ -19,11 +19,14 @@ package org.luwrain.linux;
 import java.io.*;
 import java.util.*;
 
+import org.luwrain.core.*;
+
 public final class TermInfo
 {
 final String text;
     private String termName = null;
     private Set<String> values = new HashSet();
+    private Map<Character, Map<String, String> > seqs = new HashMap();
 
     TermInfo() throws IOException
     {
@@ -149,7 +152,14 @@ final String text;
 	final int pos = text.indexOf("=");
 	if (pos > 0 && pos < text.length() - 1)
 	{
-	    System.out.println(text.substring(0, pos) + ": " + text.substring(pos + 1));
+	    final String name = text.substring(0, pos);
+	    final String value = text.substring(pos + 1);
+	    final Character c = new Character(value.charAt(0));
+	    Map<String, String> m = seqs.get(c);
+	    if (m == null)
+		m = new HashMap();
+	    seqs.put(c, m);
+	    m.put(value, name);
 	    return;
 	}
 	if (termName == null)
@@ -159,6 +169,21 @@ final String text;
 	}
 	values.add(text);
     }
+
+    public String find(String seq)
+    {
+	NullCheck.notEmpty(seq, "seq");
+	final Map<String, String> m = seqs.get(new Character(seq.charAt(0)));
+	if (m == null)
+	    return null;
+	final String s = m.get(seq);
+	if (s != null)
+	    return s;
+	for(Map.Entry<String, String> e: m.entrySet())
+	    if (e.getKey().startsWith(seq))
+		return "";
+	return null;
+	    }
 
     String getTermName()
     {

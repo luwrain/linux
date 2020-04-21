@@ -15,6 +15,7 @@ import org.luwrain.app.term.Strings;
 final class MainLayout extends LayoutBase
 {
     private final App app;
+    private final Terminal term ;
     private final NavigationArea termArea;
     private Vector<String> lines = new Vector();
     private int oldHotPointX = -1;
@@ -23,6 +24,7 @@ final class MainLayout extends LayoutBase
     MainLayout(App app)
     {
 	this.app = app;
+	this.term = new Terminal(app.termInfo);
 	this.termArea = new NavigationArea(new DefaultControlContext(app.getLuwrain())){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
@@ -82,13 +84,12 @@ final class MainLayout extends LayoutBase
 		}
 				@Override public int getLineCount()
 		{
-		    return lines.size() >= 1?lines.size():1;
-		}
+		    final int count = term.getLineCount();
+		    return count > 0?count:1;
+		    		}
 		@Override public String getLine(int index)
 		{
-		    if (index >= lines.size())
-			return "";
-		    return lines.get(index);
+		    return term.getLine(index);
 		}
 		@Override public String getAreaName()
 		{
@@ -99,9 +100,7 @@ final class MainLayout extends LayoutBase
 
     void update(char ch)
     {
-	if (lines.isEmpty())
-	    lines.add("");
-	lines.set(lines.size() - 1, lines.get(lines.size() - 1) + (char)ch);
+	term.newCh(ch);
 	app.getLuwrain().onAreaNewContent(termArea);
 		    /*
 				 boolean bell)

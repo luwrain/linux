@@ -7,6 +7,7 @@ import java.io.*;
 import jpty.*;
 
 import org.luwrain.core.*;
+import org.luwrain.linux.*;
 import org.luwrain.template.*;
 
 import org.luwrain.app.term.Strings;
@@ -15,13 +16,17 @@ public final class App extends AppBase<Strings>
 {
     static final String LOG_COMPONENT = "term";
 
+    final TermInfo termInfo;
     private Pty pty = null;
     private final LinkedList<byte[]> input = new LinkedList();
     private MainLayout layout = null;
 
-    public App()
+    public App(TermInfo termInfo)
     {
 	super(Strings.NAME, Strings.class);
+		NullCheck.notNull(termInfo, "termInfo");
+
+	this.termInfo = termInfo;
     }
 
     @Override public boolean onAppInit()
