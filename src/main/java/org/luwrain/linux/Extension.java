@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -23,12 +23,16 @@ import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.disks.*;
 
-public class Extension extends org.luwrain.core.extensions.EmptyExtension
+public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
+    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+
     static private final String PREFIX_INPUT_POINTER = "--linux-input-pointer=";
     static private final String PREFIX_INPUT_FIFO = "--linux-input-fifo=";
 
     static private Linux linux = null;
+
+    private TermInfo termInfo = null;
     private Scripts scripts = null;
     private PointerInputListening[] pointerInputs = null;
     private FifoInputListening[] fifoInputs = null;
@@ -38,6 +42,16 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	this.scripts = new Scripts(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
+	try {
+	    this.termInfo = new TermInfo();
+	    this.termInfo.read();
+	    Log.debug(LOG_COMPONENT, "terminfo loaded for '" + termInfo.getTermName() + "'");
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to load terminfo: " + e.getClass().getName() + ":" + e.getMessage());
+	    this.termInfo = null;
+	}
 	final List<PointerInputListening> inputs = new LinkedList();
 	final List<FifoInputListening> fifos = new LinkedList();
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
@@ -57,48 +71,35 @@ public class Extension extends org.luwrain.core.extensions.EmptyExtension
     {
 	return new Command[]{
 
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "reboot";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    scripts.runSync(Scripts.ID.REBOOT, true);
-		}
-	    },
-
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "shutdown";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    scripts.runSync(Scripts.ID.SHUTDOWN, true);
-		}
-	    },
-
-	    new SimpleShortcutCommand("term"),
+	    	    new SimpleShortcutCommand("term"),
 	    	    new SimpleShortcutCommand("term2"),
 	    	    	    new SimpleShortcutCommand("man"),
 	    	    	    	    new SimpleShortcutCommand("wifi"),
+	    	    	    	    	    new SimpleShortcutCommand("install"),
 
+		    new Command() {
+			@Override public String getName()
+			{
+			    return "reboot";
+			}
+			@Override public void onCommand(Luwrain luwrain)
+			{
+			    scripts.runSync(Scripts.ID.REBOOT, true);
+			}
+		    },
 
-	    
-	    new Command() {
-		@Override public String getName()
-		{
-		    return "install";
-		}
-		@Override public void onCommand(Luwrain luwrain)
-		{
-		    NullCheck.notNull(luwrain, "luwrain");
-		    luwrain.launchApp("install");
-		}
-	    },
+		    new Command() {
+			@Override public String getName()
+			{
+			    return "shutdown";
+			}
+			@Override public void onCommand(Luwrain luwrain)
+			{
+			    scripts.runSync(Scripts.ID.SHUTDOWN, true);
+			}
+		    },
 
-	};
+	    	};
     }
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
