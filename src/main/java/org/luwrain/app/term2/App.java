@@ -4,7 +4,8 @@ package org.luwrain.app.term2;
 import java.util.*;
 import java.io.*;
 
-import jpty.*;
+import com.pty4j.*;
+import com.pty4j.unix.*;
 
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
@@ -17,7 +18,7 @@ public final class App extends AppBase<Strings>
     static final String LOG_COMPONENT = "term";
 
     final TermInfo termInfo;
-    private Pty pty = null;
+
     private final LinkedList<byte[]> input = new LinkedList();
     private boolean closing = false;
     private MainLayout layout = null;
@@ -40,16 +41,31 @@ public final class App extends AppBase<Strings>
 
     private void work()
     {
-	String[] cmd = { "/bin/bash"};
-	String[] env = { "TERM=linux" };
-	this.pty = JPty.execInPTY( cmd[0], cmd, env );
-		Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
 	try {
+	try {
+
+	    //	    	String[] cmd = { "/tmp/p"};
+	    final Map<String, String> env = new HashMap();
+	    env.put("TERM", "linux");
+	    //	String[] env = { "TERM=linux" };
+	    final UnixPtyProcess pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"/bin/bash"})
+							.setEnvironment(env)
+							.start());
+	    Log.debug(LOG_COMPONENT, "pty created, running=" + pty.isRunning());
 	    final InputStream is = pty.getInputStream();
+	    	    final InputStream es = pty.getErrorStream();
 	    final OutputStream os = pty.getOutputStream();
 	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
+	    	    final InputStreamReader er = new InputStreamReader(es, "UTF-8");
 	    while(!closing)
 	    {
+		if (!pty.isRunning())
+		{
+		    Log.warning(LOG_COMPONENT, "PTY not running, closing");
+		    break;
+		}
+
+		
 		synchronized (App.this){
 byte[] b = input.pollFirst();
 while(b != null)
@@ -58,14 +74,29 @@ while(b != null)
 		    b = input.pollFirst();
 }
 		}
+		
 		if (r.ready())
 		    		{
 		    final char c = (char)r.read();
+		    Log.debug(LOG_COMPONENT, "get char '" + c + "'");
+		    if (c < 0)
+			break;
 		    getLuwrain().runUiSafely(()->{
 			    		if (this.layout != null)
 			    this.layout.update(c);
 			});
 				}
+
+				if (er.ready())
+		    		{
+		    final char c = (char)er.read();
+		    getLuwrain().runUiSafely(()->{
+			    		if (this.layout != null)
+			    this.layout.update(c);
+			});
+				}
+
+				
 		    try {
 			Thread.sleep(10);
 		    } 
@@ -76,13 +107,27 @@ while(b != null)
 	    }
 	    Log.debug(LOG_COMPONENT, "closing the terminal");
 	    r.close();
+	    er.close();
 	    is.close();
+	    es.close();
 	    os.close();
-	    pty.close();
+	    try {
+		pty.waitFor();
+	    }
+	    catch(InterruptedException e)
+	    {
+		Thread.currentThread().interrupt();
+	    }
+	    Log.debug(LOG_COMPONENT, "exit value is " + pty.exitValue());
 	}
 	catch(Exception e)
 	{
 	    getLuwrain().crash(e);
+	}
+	}
+	catch(Throwable t)
+	{
+	    Log.error(LOG_COMPONENT, "pty: " + t.getClass().getName() + ":" + t.getMessage());
 	}
     }
 
