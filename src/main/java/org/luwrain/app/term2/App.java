@@ -18,6 +18,7 @@ public final class App extends AppBase<Strings>
     static final String LOG_COMPONENT = "term";
 
     final TermInfo termInfo;
+    private UnixPtyProcess  pty = null;
 
     private final LinkedList<byte[]> input = new LinkedList();
     private boolean closing = false;
@@ -31,32 +32,30 @@ public final class App extends AppBase<Strings>
 	this.termInfo = termInfo;
     }
 
-    @Override public boolean onAppInit()
+    @Override public boolean onAppInit() throws IOException
     {
-	TaskId taskId = newTaskId();
-	runTask(taskId, ()->work());
-	this.layout = new MainLayout(this);
-	return true;
+			final Map<String, String> env = new HashMap();
+		env.put("TERM", "linux");
+		this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"//bin/bash", "-l"})
+							.setEnvironment(env)
+					    							    .setConsole(false)
+							.start());
+Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
+TaskId taskId = newTaskId();
+runTask(taskId, ()->work());
+this.layout = new MainLayout(this);
+return true;
     }
 
     private void work()
     {
 	try {
-	try {
-
-	    //	    	String[] cmd = { "/tmp/p"};
-	    final Map<String, String> env = new HashMap();
-	    env.put("TERM", "linux");
-	    //	String[] env = { "TERM=linux" };
-	    final UnixPtyProcess pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"/bin/bash"})
-							.setEnvironment(env)
-							.start());
-	    Log.debug(LOG_COMPONENT, "pty created, running=" + pty.isRunning());
+	    try {
 	    final InputStream is = pty.getInputStream();
-	    	    final InputStream es = pty.getErrorStream();
-	    final OutputStream os = pty.getOutputStream();
+	    //	    	    final InputStream es = pty.getErrorStream();
+	    //	    final OutputStream os = pty.getOutputStream();
 	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
-	    	    final InputStreamReader er = new InputStreamReader(es, "UTF-8");
+	    //	    	    final InputStreamReader er = new InputStreamReader(es, "UTF-8");
 	    while(!closing)
 	    {
 		if (!pty.isRunning())
@@ -64,19 +63,6 @@ public final class App extends AppBase<Strings>
 		    Log.warning(LOG_COMPONENT, "PTY not running, closing");
 		    break;
 		}
-
-		
-		synchronized (App.this){
-byte[] b = input.pollFirst();
-while(b != null)
-{
-		    os.write(b);
-		    b = input.pollFirst();
-}
-		}
-		
-		if (r.ready())
-		    		{
 		    final char c = (char)r.read();
 		    Log.debug(LOG_COMPONENT, "get char '" + c + "'");
 		    if (c < 0)
@@ -85,16 +71,17 @@ while(b != null)
 			    		if (this.layout != null)
 			    this.layout.update(c);
 			});
-				}
 
-				if (er.ready())
-		    		{
-		    final char c = (char)er.read();
-		    getLuwrain().runUiSafely(()->{
-			    		if (this.layout != null)
-			    this.layout.update(c);
-			});
-				}
+		    /*
+		while (true)
+		{
+		    Log.debug(LOG_COMPONENT, "reading the char");
+		    int b = is.read();
+		    if (b < 0)
+			break;
+		    Log.debug(LOG_COMPONENT, "read byte " + (char)b);
+		}
+		    */
 
 				
 		    try {
@@ -107,10 +94,10 @@ while(b != null)
 	    }
 	    Log.debug(LOG_COMPONENT, "closing the terminal");
 	    r.close();
-	    er.close();
+	    //	    er.close();
 	    is.close();
-	    es.close();
-	    os.close();
+	    //	    es.close();
+	    //	    os.close();
 	    try {
 		pty.waitFor();
 	    }
@@ -131,10 +118,17 @@ while(b != null)
 	}
     }
 
-    synchronized void sendByte(byte b)
+void sendByte(byte b)
     {
-	input.add(new byte[]{b});
-    }
+	try {
+pty.getOutputStream().write(b);
+	pty.getOutputStream().flush();
+	}
+	catch(IOException e)
+	{
+	    getLuwrain().crash(e);
+	}
+	    }
 
         @Override public AreaLayout getDefaultAreaLayout()
     {
