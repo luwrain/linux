@@ -24,7 +24,7 @@ final class MainLayout extends LayoutBase
     MainLayout(App app)
     {
 	this.app = app;
-	this.term = new Terminal(app.termInfo);
+	this.term = new Terminal(app.getLuwrain(), app.termInfo);
 	this.termArea = new NavigationArea(new DefaultControlContext(app.getLuwrain())){
 		@Override public boolean onInputEvent(KeyboardEvent event)
 		{
@@ -35,6 +35,9 @@ final class MainLayout extends LayoutBase
 			case ENTER:
 			    app.sendByte((byte)'\n');
 			    return true;
+			    			case BACKSPACE:
+						    app.sendByte((byte)'\b');
+						    return true;
 			}
 		    if (!event.isSpecial() && !event.isModified())
 		    {
@@ -45,10 +48,6 @@ final class MainLayout extends LayoutBase
 			return true;
 		    return super.onInputEvent(event);
 		    /*
-			case ENTER:
-			case BACKSPACE:
-			    term.write(new byte[]{(byte)'\b'});
-			    return true;
 			case TAB:
 			    term.write(new byte[]{(byte)'\t'});
 			    return true;

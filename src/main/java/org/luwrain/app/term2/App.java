@@ -19,6 +19,7 @@ public final class App extends AppBase<Strings>
     final TermInfo termInfo;
     private Pty pty = null;
     private final LinkedList<byte[]> input = new LinkedList();
+    private boolean closing = false;
     private MainLayout layout = null;
 
     public App(TermInfo termInfo)
@@ -31,24 +32,23 @@ public final class App extends AppBase<Strings>
 
     @Override public boolean onAppInit()
     {
-	String[] cmd = { "/bin/bash"};
-	String[] env = { "TERM=linux" };
-	Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
-	this.pty = JPty.execInPTY( cmd[0], cmd, env );
 	TaskId taskId = newTaskId();
 	runTask(taskId, ()->work());
 	this.layout = new MainLayout(this);
-	Log.debug(LOG_COMPONENT, "terminal launched");
 	return true;
     }
 
     private void work()
     {
+	String[] cmd = { "/bin/bash"};
+	String[] env = { "TERM=linux" };
+	this.pty = JPty.execInPTY( cmd[0], cmd, env );
+		Log.debug(LOG_COMPONENT, "pty created, starting the dispatching task");
 	try {
 	    final InputStream is = pty.getInputStream();
 	    final OutputStream os = pty.getOutputStream();
 	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
-	    while(true)
+	    while(!closing)
 	    {
 		synchronized (App.this){
 byte[] b = input.pollFirst();
@@ -65,7 +65,7 @@ while(b != null)
 			    		if (this.layout != null)
 			    this.layout.update(c);
 			});
-		}
+				}
 		    try {
 			Thread.sleep(10);
 		    } 
@@ -74,6 +74,11 @@ while(b != null)
 			return;
 		    }
 	    }
+	    Log.debug(LOG_COMPONENT, "closing the terminal");
+	    r.close();
+	    is.close();
+	    os.close();
+	    pty.close();
 	}
 	catch(Exception e)
 	{
@@ -89,5 +94,11 @@ while(b != null)
         @Override public AreaLayout getDefaultAreaLayout()
     {
 	return this.layout.getLayout();
+    }
+
+    @Override public void closeApp()
+    {
+	closing = true;
+	super.closeApp();
     }
 }
