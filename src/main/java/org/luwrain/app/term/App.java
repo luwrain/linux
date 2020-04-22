@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2020 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.app.term;
 
@@ -30,10 +45,12 @@ public final class App extends AppBase<Strings>
 
     @Override public boolean onAppInit() throws IOException
     {
-	final Map<String, String> env = new HashMap();
+	final Map<String, String> env = new HashMap(System.getenv());
 	env.put("TERM", "linux");
-	this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"//bin/bash", "-l"})
+	//	env.put("HOME", "/home/msp");
+	this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"/bin/bash", "-l"})
 				    .setEnvironment(env)
+				    .setDirectory(getLuwrain().getProperty("luwrain.dir.userhome"))
 				    .setConsole(false)
 				    .start());
 	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
@@ -48,18 +65,15 @@ public final class App extends AppBase<Strings>
     {
 	try {
 	    try {
-	    final InputStream is = pty.getInputStream();
-	    //	    	    final InputStream es = pty.getErrorStream();
-	    //	    final OutputStream os = pty.getOutputStream();
-	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
-	    //	    	    final InputStreamReader er = new InputStreamReader(es, "UTF-8");
-	    while(true)
-	    {
-		if (!pty.isRunning())
+		final InputStream is = pty.getInputStream();
+		final InputStreamReader r = new InputStreamReader(is, "UTF-8");
+		while(true)
 		{
-		    Log.warning(LOG_COMPONENT, "PTY not running, closing");
-		    break;
-		}
+		    if (!pty.isRunning())
+		    {
+			Log.warning(LOG_COMPONENT, "PTY not running, closing");
+			break;
+		    }
 		    final char c = (char)r.read();
 		    if (c < 0)
 		    {
@@ -67,49 +81,26 @@ public final class App extends AppBase<Strings>
 			break;
 		    }
 		    getLuwrain().runUiSafely(()->{
-			    		if (this.layout != null)
-			    this.layout.update(c);
+			    if (this.layout != null)
+				this.layout.update(c);
 			});
-
-		    /*
-		while (true)
-		{
-		    Log.debug(LOG_COMPONENT, "reading the char");
-		    int b = is.read();
-		    if (b < 0)
-			break;
-		    Log.debug(LOG_COMPONENT, "read byte " + (char)b);
 		}
-		    */
-
-				
-		    try {
-			Thread.sleep(10);
-		    } 
-		    catch (InterruptedException e) 
-		    {
-			return;
-		    }
+		Log.debug(LOG_COMPONENT, "closing the terminal");
+		r.close();
+		is.close();
+		try {
+		    pty.waitFor();
+		}
+		catch(InterruptedException e)
+		{
+		    Thread.currentThread().interrupt();
+		}
+		Log.debug(LOG_COMPONENT, "exit value is " + pty.exitValue());
 	    }
-	    Log.debug(LOG_COMPONENT, "closing the terminal");
-	    r.close();
-	    //	    er.close();
-	    is.close();
-	    //	    es.close();
-	    //	    os.close();
-	    try {
-		pty.waitFor();
-	    }
-	    catch(InterruptedException e)
+	    catch(Exception e)
 	    {
-		Thread.currentThread().interrupt();
+		getLuwrain().crash(e);
 	    }
-	    Log.debug(LOG_COMPONENT, "exit value is " + pty.exitValue());
-	}
-	catch(Exception e)
-	{
-	    getLuwrain().crash(e);
-	}
 	}
 	catch(Throwable t)
 	{
