@@ -19,32 +19,29 @@ public final class App extends AppBase<Strings>
 
     final TermInfo termInfo;
     private UnixPtyProcess  pty = null;
-
-    private final LinkedList<byte[]> input = new LinkedList();
-    private boolean closing = false;
     private MainLayout layout = null;
 
     public App(TermInfo termInfo)
     {
 	super(Strings.NAME, Strings.class);
-		NullCheck.notNull(termInfo, "termInfo");
-
+	NullCheck.notNull(termInfo, "termInfo");
 	this.termInfo = termInfo;
     }
 
     @Override public boolean onAppInit() throws IOException
     {
-			final Map<String, String> env = new HashMap();
-		env.put("TERM", "linux");
-		this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"//bin/bash", "-l"})
-							.setEnvironment(env)
-					    							    .setConsole(false)
-							.start());
-Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
-TaskId taskId = newTaskId();
-runTask(taskId, ()->work());
-this.layout = new MainLayout(this);
-return true;
+	final Map<String, String> env = new HashMap();
+	env.put("TERM", "linux");
+	this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"//bin/bash", "-l"})
+				    .setEnvironment(env)
+				    .setConsole(false)
+				    .start());
+	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
+	TaskId taskId = newTaskId();
+	runTask(taskId, ()->work());
+	setAppName(getStrings().appName());
+	this.layout = new MainLayout(this);
+	return true;
     }
 
     private void work()
@@ -56,7 +53,7 @@ return true;
 	    //	    final OutputStream os = pty.getOutputStream();
 	    final InputStreamReader r = new InputStreamReader(is, "UTF-8");
 	    //	    	    final InputStreamReader er = new InputStreamReader(es, "UTF-8");
-	    while(!closing)
+	    while(true)
 	    {
 		if (!pty.isRunning())
 		{

@@ -85,6 +85,13 @@ final class MainLayout extends LayoutBase
 		@Override public boolean onSystemEvent(EnvironmentEvent event)
 		{
 		    NullCheck.notNull(event, "event");
+		    if (event.getType() == EnvironmentEvent.Type.REGULAR)
+			switch(event.getCode())
+			{
+			case CLOSE:
+			    			    app.closeApp();
+			    return true;
+			}
 		    if (app.onSystemEvent(this, event))
 			return true;
 			return super.onSystemEvent(event);
