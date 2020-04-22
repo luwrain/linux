@@ -1,9 +1,8 @@
 
-package org.luwrain.app.term2;
+package org.luwrain.app.term;
 
 import java.util.*;
 
-import org.luwrain.linux.term.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;

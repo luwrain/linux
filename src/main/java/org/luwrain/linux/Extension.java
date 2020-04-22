@@ -72,7 +72,6 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	return new Command[]{
 
 	    	    new SimpleShortcutCommand("term"),
-	    	    new SimpleShortcutCommand("term2"),
 	    	    	    new SimpleShortcutCommand("man"),
 	    	    	    	    new SimpleShortcutCommand("wifi"),
 	    	    	    	    	    new SimpleShortcutCommand("install"),
@@ -143,28 +142,13 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		@Override public Application[] prepareApp(String[] args)
 		{
 		    NullCheck.notNull(args, "args");
-		    if (args.length == 1)
-			return new Application[]{new org.luwrain.app.term.TermApp(args[0])};
-		    return new Application[]{new org.luwrain.app.term.TermApp("/")};
-		}
-	    });
-
-		res.add(new Shortcut(){
-		@Override public String getExtObjName()
-		{
-		    return "term2";
-		}
-		@Override public Application[] prepareApp(String[] args)
-		{
-		    NullCheck.notNull(args, "args");
 		    /*
 		    if (args.length == 1)
-			return new Application[]{new org.luwrain.app.term2.TermApp(args[0])};
+			return new Application[]{new org.luwrain.app.term.TermApp(args[0])};
 		    */
-		    return new Application[]{new org.luwrain.app.term2.App(termInfo)};
+		    return new Application[]{new org.luwrain.app.term.App(termInfo)};
 		}
 	    });
-
 
 	res.add(new Shortcut(){
 		@Override public String getExtObjName()

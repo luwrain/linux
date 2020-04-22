@@ -1,5 +1,5 @@
 
-package org.luwrain.app.term2;
+package org.luwrain.app.term;
 
 import java.util.*;
 
