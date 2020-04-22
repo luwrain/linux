@@ -38,6 +38,9 @@ final class MainLayout extends LayoutBase
 			    			case BACKSPACE:
 						    app.sendByte((byte)'\b');
 						    return true;
+			case ESCAPE:
+			    app.closeApp();
+			    return true;
 			}
 		    if (!event.isSpecial() && !event.isModified())
 		    {

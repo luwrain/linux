@@ -64,9 +64,11 @@ return true;
 		    break;
 		}
 		    final char c = (char)r.read();
-		    Log.debug(LOG_COMPONENT, "get char '" + c + "'");
 		    if (c < 0)
+		    {
+			Log.debug(LOG_COMPONENT, "negative character from the terminal: " + c);
 			break;
+		    }
 		    getLuwrain().runUiSafely(()->{
 			    		if (this.layout != null)
 			    this.layout.update(c);
@@ -137,7 +139,8 @@ pty.getOutputStream().write(b);
 
     @Override public void closeApp()
     {
-	closing = true;
+	pty.hangup();
+	pty.terminate();
 	super.closeApp();
     }
 }
