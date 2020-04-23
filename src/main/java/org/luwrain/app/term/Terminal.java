@@ -67,38 +67,59 @@ final class Terminal implements Lines
 	    {
 		final char ch = text.charAt(i);
 		this.seq.append(ch);
-				    final String seqStr = new String(this.seq);
+		final String seqStr = new String(this.seq);
 		final String res = termInfo.find(seqStr);
 		if (res == null)
 		{
 		    speaking.append(seqStr);
 		    this.seq = new StringBuilder();
-		    	    switch(seqStr)
-	    {
-	    case "\n":
-		lines.add("");
-		continue;
-			    default:
-		lines.set(lines.size() - 1, lines.get(lines.size() - 1) + seqStr);
-		continue;
-	    }
+		    switch(seqStr)
+		    {
+		    case "\n":
+			lines.add("");
+			continue;
+		    default:
+			lines.set(lines.size() - 1, lines.get(lines.size() - 1) + seqStr);
+			continue;
+		    }
 		}
-	if (res.isEmpty())
-continue;
-	this.seq = new StringBuilder();
-	switch(res)
-	{
-	case "color":
-	    continue;
-	default:
-	    Log.warning(LOG_COMPONENT, "unknown command: '" + res + "'");
-	    continue;
-	}
+		if (res.isEmpty())
+		    continue;
+		this.seq = new StringBuilder();
+		switch(res)
+		{
+		case "color":
+		    continue;
+		default:
+		    Log.warning(LOG_COMPONENT, "unknown command: '" + res + "'");
+		    continue;
+		}
 	    }
 	}
 	finally {
-	    final String str = new String(speaking);
-	    luwrain.speak(luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.PROGRAMMING));
+	    speak(new String(speaking));
 	}
+    }
+
+    private void speak(String text)
+    {
+	NullCheck.notNull(text, "text");
+	final StringBuilder str = new StringBuilder();
+	for(int i = 0;i < text.length();i++)
+	{
+	    final char ch = text.charAt(i);
+					if (ch == 7)
+					{
+					    luwrain.playSound(Sounds.TERM_BELL);
+					    continue;
+					}
+					if (ch < 32)
+					{
+					    str.append(" ");
+					    continue;
+					}
+					str.append(ch);
+	}
+	    luwrain.speak(luwrain.getSpeakableText(new String(str), Luwrain.SpeakableTextType.PROGRAMMING));
     }
 }
