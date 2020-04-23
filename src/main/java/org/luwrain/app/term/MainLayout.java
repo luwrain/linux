@@ -132,8 +132,6 @@ final class MainLayout extends LayoutBase
 
     void update(char ch)
     {
-	term.newCh(ch);
-	app.getLuwrain().onAreaNewContent(termArea);
 		    /*
 				 boolean bell)
     {
@@ -160,6 +158,12 @@ final class MainLayout extends LayoutBase
 	luwrain.onAreaNewContent(area);
 	    */
 	    }
+
+    void termText(String text)
+    {
+	NullCheck.notNull(text, "text");
+	term.termText(text);
+    }
 
 
     AreaLayout getLayout()

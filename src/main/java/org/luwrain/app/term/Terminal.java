@@ -32,8 +32,7 @@ final class Terminal implements Lines
     private Vector<String> lines = new Vector();
     private int hotPointX = 0;
     private int hotPointY = -1;
-    private String seq = "";
-    private StringBuilder speaking = new StringBuilder();
+    private StringBuilder seq = new StringBuilder();
 
     Terminal(Luwrain luwrain, TermInfo termInfo)
     {
@@ -55,44 +54,51 @@ final class Terminal implements Lines
 	return lines.get(index);
     }
 
-    void newCh(char ch)
+    void termText(String text)
     {
+	NullCheck.notNull(text, "text");
+	if (text.isEmpty())
+	    return;
 	if (lines.isEmpty())
 	    lines.add("");
-	this.seq += ch;
-	final String res = termInfo.find(seq);
-	if (res == null)
-	{
-	    if (seq.equals(BELL))
+	final StringBuilder speaking = new StringBuilder();
+	try {
+	    for(int i = 0;i < text.length();i++)
 	    {
-		luwrain.playSound(Sounds.TERM_BELL);
-	    } else
-	    switch(seq)
+		final char ch = text.charAt(i);
+		this.seq.append(ch);
+				    final String seqStr = new String(this.seq);
+		final String res = termInfo.find(seqStr);
+		if (res == null)
+		{
+		    speaking.append(seqStr);
+		    this.seq = new StringBuilder();
+		    	    switch(seqStr)
 	    {
 	    case "\n":
 		lines.add("");
-		if (speaking.length() > 0)
-		{
-		    luwrain.speak(luwrain.getSpeakableText(new String(speaking), Luwrain.SpeakableTextType.PROGRAMMING));
-		    speaking = new StringBuilder();
-		}
-		break;
-	    default:
-		speaking.append(seq);
-		lines.set(lines.size() - 1, lines.get(lines.size() - 1) + seq);
+		continue;
+			    default:
+		lines.set(lines.size() - 1, lines.get(lines.size() - 1) + seqStr);
+		continue;
 	    }
-	    seq = "";
-	    return;
-	}
+		}
 	if (res.isEmpty())
-	    return;
-	seq = "";
+continue;
+	this.seq = new StringBuilder();
 	switch(res)
 	{
 	case "color":
-	    return;
+	    continue;
 	default:
 	    Log.warning(LOG_COMPONENT, "unknown command: '" + res + "'");
+	    continue;
+	}
+	    }
+	}
+	finally {
+	    final String str = new String(speaking);
+	    luwrain.speak(luwrain.getSpeakableText(str, Luwrain.SpeakableTextType.PROGRAMMING));
 	}
     }
 }
