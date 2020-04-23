@@ -47,10 +47,10 @@ final class MainLayout extends LayoutBase
 			switch(event.getSpecial())
 			{
 			case ENTER:
-			    app.sendByte((byte)'\n');
+			    app.sendChar('\n');
 			    return true;
-			    			case BACKSPACE:
-						    app.sendByte((byte)'\b');
+			case BACKSPACE:
+			    app.sendChar('\b');
 						    return true;
 			case ESCAPE:
 			    app.closeApp();
@@ -58,7 +58,7 @@ final class MainLayout extends LayoutBase
 			}
 		    if (!event.isSpecial() && !event.isModified())
 		    {
-			app.sendByte((byte)event.getChar());
+			app.sendChar(event.getChar());
 			return true;
 		    }
 		    		    if (app.onInputEvent(this, event))

@@ -151,12 +151,13 @@ public final class App extends AppBase<Strings>
 	}
     }
 
-void sendByte(byte b)
+void sendChar(char ch)
     {
 	try {
-pty.getOutputStream().write(b);
-	pty.getOutputStream().flush();
-	}
+	    final OutputStreamWriter w = new OutputStreamWriter(pty.getOutputStream(), "UTF-8");
+	    w.write(ch);
+	    w.flush();
+	    	}
 	catch(IOException e)
 	{
 	    getLuwrain().crash(e);

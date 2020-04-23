@@ -25,8 +25,6 @@ final class Terminal implements Lines
 {
     static private final String LOG_COMPONENT = App.LOG_COMPONENT;
 
-    static private final String BELL = Character.toString((char)7);
-
     private final Luwrain luwrain;
     private final TermInfo termInfo;
     private Vector<String> lines = new Vector();
@@ -108,18 +106,18 @@ final class Terminal implements Lines
 	for(int i = 0;i < text.length();i++)
 	{
 	    final char ch = text.charAt(i);
-					if (ch == 7)
-					{
-					    luwrain.playSound(Sounds.TERM_BELL);
-					    continue;
-					}
-					if (ch < 32)
-					{
-					    str.append(" ");
-					    continue;
-					}
-					str.append(ch);
+	    if (ch == 7)
+	    {
+		luwrain.playSound(Sounds.TERM_BELL);
+		continue;
+	    }
+	    if (ch < 32)
+	    {
+		str.append(" ");
+		continue;
+	    }
+	    str.append(ch);
 	}
-	    luwrain.speak(luwrain.getSpeakableText(new String(str), Luwrain.SpeakableTextType.PROGRAMMING));
+	luwrain.speak(luwrain.getSpeakableText(new String(str), Luwrain.SpeakableTextType.PROGRAMMING));
     }
 }
