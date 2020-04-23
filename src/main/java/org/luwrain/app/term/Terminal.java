@@ -118,6 +118,11 @@ final class Terminal implements Lines
 	    }
 	    str.append(ch);
 	}
-	luwrain.speak(luwrain.getSpeakableText(new String(str), Luwrain.SpeakableTextType.PROGRAMMING));
+	final String toSpeak = new String(str).trim();
+	if (toSpeak.isEmpty())
+	    return;
+	if (toSpeak.length() == 1)
+	    luwrain.speakLetter(toSpeak.charAt(0)); else
+	    luwrain.speak(luwrain.getSpeakableText(toSpeak, Luwrain.SpeakableTextType.PROGRAMMING));
     }
 }

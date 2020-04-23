@@ -56,7 +56,7 @@ final class MainLayout extends LayoutBase
 			    app.closeApp();
 			    return true;
 			}
-		    if (!event.isSpecial() && !event.isModified())
+		    if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
 		    {
 			app.sendChar(event.getChar());
 			return true;
