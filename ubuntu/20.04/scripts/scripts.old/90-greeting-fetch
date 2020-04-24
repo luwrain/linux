@@ -1,0 +1,4 @@
+
+pushd "$LWRISO_ROOT/opt/greeter"
+wget "http://download.luwrain.org/media/greeting/dist/$LWRISO_LANG/greeting.ogg"
+popd
