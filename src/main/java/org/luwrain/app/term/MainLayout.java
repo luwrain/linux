@@ -49,7 +49,10 @@ final class MainLayout extends LayoutBase
 			case ENTER:
 			    app.sendChar('\n');
 			    return true;
-			case BACKSPACE:
+			    			case TAB:
+app.sendChar('\t');
+			    return true;
+			    			case BACKSPACE:
 			    app.sendChar('\b');
 						    return true;
 			case ESCAPE:
@@ -60,8 +63,7 @@ final class MainLayout extends LayoutBase
 			switch(event.getChar())
 			{
 			case 'd':
-			    app.sendChar('\u001a');
-			    app.getLuwrain().playSound(Sounds.MESSAGE);
+			    app.sendChar('\u0004');
 			    return true;
 			}
 			
@@ -74,9 +76,6 @@ final class MainLayout extends LayoutBase
 			return true;
 		    return super.onInputEvent(event);
 		    /*
-			case TAB:
-			    term.write(new byte[]{(byte)'\t'});
-			    return true;
 			case 			    ALTERNATIVE_ARROW_LEFT:
 			    term.writeCode(Terminal.Codes.ARROW_LEFT);
 			    return true;
@@ -172,8 +171,8 @@ final class MainLayout extends LayoutBase
     {
 	NullCheck.notNull(text, "text");
 	term.termText(text);
+	termArea.setHotPoint(term.getHotPointX(), term.getHotPointY());
     }
-
 
     AreaLayout getLayout()
     {

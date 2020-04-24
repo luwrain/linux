@@ -154,6 +154,12 @@ public final class App extends AppBase<Strings>
 void sendChar(char ch)
     {
 	try {
+
+	    	if (ch < 32)
+	{
+	    pty.getOutputStream().write((byte)ch);
+	    return;
+	}
 	    final OutputStreamWriter w = new OutputStreamWriter(pty.getOutputStream(), "UTF-8");
 	    w.write(ch);
 	    w.flush();

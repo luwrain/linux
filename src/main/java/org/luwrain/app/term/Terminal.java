@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 
-final class Terminal implements Lines
+final class Terminal implements Lines, HotPoint
 {
     static private final String LOG_COMPONENT = App.LOG_COMPONENT;
 
@@ -29,7 +29,7 @@ final class Terminal implements Lines
     private final TermInfo termInfo;
     private Vector<String> lines = new Vector();
     private int hotPointX = 0;
-    private int hotPointY = -1;
+    private int hotPointY = 0;
     private StringBuilder seq = new StringBuilder();
 
     Terminal(Luwrain luwrain, TermInfo termInfo)
@@ -38,18 +38,6 @@ final class Terminal implements Lines
 	NullCheck.notNull(termInfo, "termInfo");
 	this .luwrain = luwrain;
 	this.termInfo = termInfo;
-    }
-
-    @Override public int getLineCount()
-    {
-	return lines.size();
-    }
-
-    @Override public String getLine(int index)
-    {
-	if (index >= lines.size())
-	    return "";
-	return lines.get(index);
     }
 
     void termText(String text)
@@ -73,14 +61,20 @@ final class Terminal implements Lines
 		    this.seq = new StringBuilder();
 		    switch(seqStr)
 		    {
+		    case "\r":
+			continue;
 		    case "\n":
 			lines.add("");
+			hotPointY++;
+			hotPointX = 0;
 			continue;
 		    default:
 			lines.set(lines.size() - 1, lines.get(lines.size() - 1) + seqStr);
+			hotPointX += seqStr.length();
 			continue;
 		    }
 		}
+		//if seq contains beginning of a some known command, we have to try more characters
 		if (res.isEmpty())
 		    continue;
 		this.seq = new StringBuilder();
@@ -124,5 +118,27 @@ final class Terminal implements Lines
 	if (toSpeak.length() == 1)
 	    luwrain.speakLetter(toSpeak.charAt(0)); else
 	    luwrain.speak(luwrain.getSpeakableText(toSpeak, Luwrain.SpeakableTextType.PROGRAMMING));
+    }
+
+    @Override public int getHotPointX()
+    {
+	return this.hotPointX;
+    }
+
+    @Override public int getHotPointY()
+    {
+	return this.hotPointY;
+    }
+
+        @Override public int getLineCount()
+    {
+	return lines.size();
+    }
+
+    @Override public String getLine(int index)
+    {
+	if (index >= lines.size())
+	    return "";
+	return lines.get(index);
     }
 }
