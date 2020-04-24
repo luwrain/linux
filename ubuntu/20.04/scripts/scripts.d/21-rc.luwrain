@@ -20,6 +20,7 @@ chmod 777 /dev/input/mice
 #/bin/su - luwrain -c /usr/bin/startx
 
 while /bin/true; do
+/usr/bin/aplay /usr/share/sounds/speech-dispatcher/test.wav
 echo proba
 sleep 5
 done
