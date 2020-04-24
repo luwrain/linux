@@ -56,6 +56,15 @@ final class MainLayout extends LayoutBase
 			    app.closeApp();
 			    return true;
 			}
+		    if (!event.isSpecial() && event.withControlOnly())
+			switch(event.getChar())
+			{
+			case 'd':
+			    app.sendChar('\u001a');
+			    app.getLuwrain().playSound(Sounds.MESSAGE);
+			    return true;
+			}
+			
 		    if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
 		    {
 			app.sendChar(event.getChar());
