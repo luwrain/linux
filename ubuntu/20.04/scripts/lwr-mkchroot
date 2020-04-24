@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash -evx
+# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN project, licensed under the terms of GPL v.3
 
 THIS="${0##*/}"
 
@@ -9,16 +11,15 @@ LWRISO_LANG="$2"
 
 cd /iso
 . config.sh
-. base.sh 
-
-# Locale
-#echo 'LANG="ru_RU.UTF-8"' > ./chroot/etc/default/locale
-# For proper Russian characters in console
-#sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/system/systemd-vconsole-setup.service
+. base.sh
 
 find scripts.d -type f -executable | sort | while read l ; do
     echo Launching $l
     source "$l"
 done
 
-echo ISO chroot prepared!
+# Locale
+#echo 'LANG="ru_RU.UTF-8"' > ./chroot/etc/default/locale
+# For proper Russian characters in console
+#sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/system/systemd-vconsole-setup.service
+

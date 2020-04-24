@@ -1,3 +1,5 @@
+# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN project, licensed under the terms of GPL v.3
 
 export LWRISO_ROOT=/iso/chroot
 export LWRISO_USER=luwrain
@@ -14,12 +16,10 @@ chroot-run()
 
 install-pkg()
 {
-chroot-run apt-get -y --force-yes install $@
+    chroot-run apt-get --yes install $@
 }
 
 remove-pkg()
 {
-chroot-run apt-get -y remove $@
+    chroot-run apt-get --yes remove $@
 }
-
-

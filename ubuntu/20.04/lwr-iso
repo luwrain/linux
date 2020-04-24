@@ -27,7 +27,7 @@ cp -r dist install "$WORK/iso"
 cp -r scripts/. "$WORK/iso"
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
 mount --bind /proc "$CHROOT/proc"
-#chroot "$WORK" /iso/lwr-mkchroot "$2" "$3" > /tmp/lwr-iso.out 2>&1
+chroot "$WORK" /iso/lwr-mkchroot "$2" "$3" > /tmp/lwr-iso.out 2>&1
 umount "$CHROOT/proc"
 chroot "$WORK" /iso/lwr-mkiso
 cp "$WORK/iso/luwrain.iso" luwrain.iso
