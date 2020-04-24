@@ -1,0 +1,38 @@
+#!/bin/bash -e
+# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN project, licensed under the terms of GPL v.3
+
+cd /iso
+. config.sh
+
+echo Preparing the environment for ISO compilation
+
+cat <<EOF > /etc/apt/sources.list
+#deb http://download.luwrain.org/ubuntu/ trusty main
+deb http://security.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+deb http://ru.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+EOF
+
+echo "nameserver $LWRISO_NAMESERVER" > /etc/resolv.conf
+apt-get update
+apt-get --yes install syslinux syslinux-common syslinux-utils squashfs-tools genisoimage
+
+echo Compressing the filesystem image
+mksquashfs chroot disk/casper/filesystem.squashfs -comp xz > /dev/null
+
+rm -rf disk/casper/filesystem.squashfs.gpg disk/md5sum.txt disk/pool disk/ubuntu 
+echo "LUWRAIN $LWRISO_VERSION ($LWRISO_LANG) - Release $LWRISO_ARCH ($LWRISO_DATE)" > disk/.disk/info
+
+echo Calculating MD5
+pushd disk
+find -type f | while read l; do
+md5sum "$l"
+done > ../md5sum.txt
+popd 
+mv md5sum.txt disk
+
+echo Building the final image
+mkisofs -r -V "LUWRAIN" -cache-inodes -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o luwrain.iso disk/ 2> /dev/null 
+isohybrid luwrain.iso
+echo luwrain.iso written

@@ -1,0 +1,37 @@
+#!/bin/bash -e
+# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN project, licensed under the terms of GPL v.3
+#
+# Compiles the LUWRAIN ISO image
+# Usage: lwr-iso PATH_TO_UBUNTU_IMAGE_DIR VERSION LANGUAGE
+
+THIS="${0##*/}"
+
+[ -z "$1" ] && echo "$THIS: No path to the Ubuntu image" >&2 && exit 1
+[ -z "$2" ] && echo "$THIS: No version" >&2 && exit 1
+[ -z "$3" ] && echo "$THIS: No language" >&2 && exit 1
+
+WORK="./lwrtmp-env"
+CHROOT="$WORK/iso/chroot"
+DISK="$1"
+SQUASHFSSRC="$1/casper/filesystem.squashfs"
+
+(
+    echo Unpacking the Ubuntu image
+    unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
+    mkdir -p "$WORK/iso/disk"
+    echo Copying the Ubuntu image to the unpacked environment
+    cp -r "$DISK/." "$WORK/iso/disk"
+    echo Unpacking the Ubuntu image again for customizing
+    unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
+    cp -r dist install "$WORK/iso"
+    cp -r scripts/. "$WORK/iso"
+    rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
+    mount --bind /proc "$CHROOT/proc"
+    #chroot "$WORK" /iso/lwr-mkchroot "$2" "$3"
+    umount "$CHROOT/proc"
+    chroot "$WORK" /iso/lwr-mkiso
+    cp "$WORK/iso/luwrain.iso" luwrain.iso
+) > /tmp/lwr-iso.out 2>&1
+
+echo 'OK!'

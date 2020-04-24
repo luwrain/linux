@@ -1,0 +1,24 @@
+
+cat <<EOF > $LWRISO_ROOT/etc/rc.livecd
+#!/bin/bash
+# LLUWRAIN live CD autolaunch script (executed in loop from /etc/systemd/system/getty@tty1.service.d/override.conf)
+# Michael Pozhidaev <michael.pozhidaev@gmail.com>
+
+for i in Master PCM Speaker; do
+    /usr/bin/amixer set  \$i 100% unmute
+done &> /dev/null
+
+killall brltty
+/sbin/brltty -t ru
+
+export VOICEMAN_LIBAO_DRIVER=alsa
+if ! [ -e /tmp/voiceman.socket ]; then
+    /usr/bin/voicemand -d
+fi
+
+chmod 777 /dev/input/mice
+/opt/greeter/greeter.sh
+/bin/su - luwrain -c /usr/bin/startx
+EOF
+
+chmod 755 $LWRISO_ROOT/etc/rc.livecd
