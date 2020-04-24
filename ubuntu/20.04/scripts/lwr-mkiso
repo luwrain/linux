@@ -26,7 +26,9 @@ echo "LUWRAIN $LWRISO_VERSION ($LWRISO_LANG) - Release $LWRISO_ARCH ($LWRISO_DAT
 echo Calculating MD5
 pushd disk > /dev/null
 find -type f | while read l; do
-md5sum "$l"
+    if [ "$l" != ./isolinux/isolinux.bin ] && [ "$l" != ./isolinux/boot.cat ]; then
+	md5sum "$l"
+    fi
 done > ../md5sum.txt
 popd > /dev/null
 mv md5sum.txt disk
