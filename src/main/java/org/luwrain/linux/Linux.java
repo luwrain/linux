@@ -45,7 +45,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 		    this.props = props;
 		    this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
 		    try {
-			System.loadLibrary(LUWRAIN_LINUX_LIBRARY_NAME + "-" + System.getProperty("sun.arch.data.model"));
 	    readCpuInfo();
 	    readMemInfo();
 	    return new InitResult();
