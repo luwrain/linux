@@ -2,5 +2,9 @@
 
 remove-pkg pulseaudio
 remove-pkg libreoffice-core libreoffice-common
-remove-pkg thunderbird firefox 
+remove-pkg thunderbird firefox
+remove-pkg libmysqlclient21 nautilus update-manager
+#remove-pkg libatspi2.0-0:amd64
 #remove-pkg libgtk2.0  libgtk2.0-common libgtk-3-common
+
+chroot-run apt-get -y autoremove
