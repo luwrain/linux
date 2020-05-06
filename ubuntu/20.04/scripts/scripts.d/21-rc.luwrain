@@ -17,11 +17,10 @@ cat <<EOF > $LWRISO_ROOT/etc/rc.luwrain
 
 chmod 777 /dev/input/mice
 #/opt/greeter/greeter.sh
-#/bin/su - luwrain -c /usr/bin/startx
+/bin/su - luwrain -c /usr/bin/startx
 
 while /bin/true; do
-/usr/bin/aplay /usr/share/sounds/speech-dispatcher/test.wav
-echo proba
+
 sleep 5
 done
 
