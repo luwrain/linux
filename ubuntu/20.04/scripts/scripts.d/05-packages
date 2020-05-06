@@ -1,3 +1,6 @@
 
 
 remove-pkg pulseaudio
+remove-pkg libreoffice-core libreoffice-common
+remove-pkg thunderbird firefox 
+#remove-pkg libgtk2.0  libgtk2.0-common libgtk-3-common
