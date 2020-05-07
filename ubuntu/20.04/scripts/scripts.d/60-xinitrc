@@ -40,6 +40,6 @@ export LANG=ru_RU.UTF-8
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:alt_shift_toggle,grp_led:scroll"
 
-exec /usr/local/bin/luwrain
+exec /usr/local/bin/luwrain-dwm
 EOF
 #fi
