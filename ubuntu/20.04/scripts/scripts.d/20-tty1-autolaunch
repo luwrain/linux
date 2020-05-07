@@ -6,7 +6,7 @@ cat <<EOF > "$LWRISO_ROOT/etc/systemd/system/getty@tty1.service.d/override.conf"
 [Service]
 Environment="LANG=en_US.UTF-8"
 ExecStart=
-ExecStart=-/bin/openvt -c 1 -w -s -f /etc/rc.luwrain
+ExecStart=-/bin/openvt -c 1 -w -s -f /etc/luwrain/system-start
 Type=idle
 EOF
 

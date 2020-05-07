@@ -1,5 +1,6 @@
 
-cat <<EOF > $LWRISO_ROOT/etc/rc.luwrain
+mkdir $LWRISO_ROOT/etc/luwrain
+cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 #!/bin/bash
 # Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
 
@@ -18,12 +19,6 @@ cat <<EOF > $LWRISO_ROOT/etc/rc.luwrain
 chmod 777 /dev/input/mice
 #/opt/greeter/greeter.sh
 /bin/su - luwrain -c /usr/bin/startx
-
-while /bin/true; do
-
-sleep 5
-done
-
 EOF
 
-chmod 755 $LWRISO_ROOT/etc/rc.luwrain
+chmod 755 $LWRISO_ROOT/etc/luwrain/system-start
