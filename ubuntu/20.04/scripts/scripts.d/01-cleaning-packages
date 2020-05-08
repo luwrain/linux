@@ -16,6 +16,7 @@ remove-pkg $(apt-cache search ubiquity | grep ^ubiquity | cut -f1 -d' ')
 remove-pkg $(apt-cache search mythes | grep ^mythes | cut -f1 -d' ')
 remove-pkg $(apt-cache search ubuntu-wallpaper  | grep ^ubuntu-wallpaper | cut -f1 -d' ')
 remove-pkg $(apt-cache search language-pack | grep ^language-pack | cut -f1 -d' ')
+remove-pkg-prefix hunspell
 
 #remove-pkg $(apt-cache search printer-driver | grep ^printer-driver | cut -f1 -d' ')
 

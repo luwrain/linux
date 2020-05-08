@@ -17,8 +17,10 @@ done &> /dev/null
 #fi
 
 chmod 777 /dev/input/mice
-#/opt/greeter/greeter.sh
+#/opt/greeter/greeter
 /bin/su - luwrain -c /usr/bin/startx
+while /bin/true; do
+done
 EOF
 
 chmod 755 $LWRISO_ROOT/etc/luwrain/system-start

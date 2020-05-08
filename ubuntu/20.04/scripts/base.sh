@@ -23,3 +23,8 @@ remove-pkg()
 {
     chroot-run apt-get --yes remove $@
 }
+
+remove-pkg-prefix()
+{
+    remove-pkg $(apt-cache search "$1" | grep "^$1" | cut -f1 -d' ')
+}

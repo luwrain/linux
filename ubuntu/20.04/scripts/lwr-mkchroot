@@ -13,6 +13,8 @@ cd /iso
 . config.sh
 . base.sh
 
+echo "nameserver $LWRISO_NAMESERVER" > /etc/resolv.conf
+
 find scripts.d -type f -executable | sort | while read l ; do
     echo Launching $l
     source "$l"
