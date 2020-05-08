@@ -17,7 +17,7 @@ done &> /dev/null
 #fi
 
 chmod 777 /dev/input/mice
-#/opt/greeter/greeter
+/bin/su - luwrain -c /opt/greeter/greeter
 /bin/su - luwrain -c /usr/bin/startx
 while /bin/true; do
 done
