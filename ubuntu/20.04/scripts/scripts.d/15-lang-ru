@@ -23,5 +23,7 @@ console-cyrillic	console-cyrillic/abusing_debconf	note
 console-cyrillic	console-cyrillic/bootsetup	boolean	false
 console-cyrillic	console-cyrillic/fontsize	select	16
 EOF
-install-pkg 	    console-cyrillic 
+install-pkg 	    console-cyrillic
+
+#removing voices azamat Leticia-F123 natia nazgul spomenka talgat
 fi	    

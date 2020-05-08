@@ -3,9 +3,11 @@
 remove-pkg pulseaudio
 remove-pkg libreoffice-core libreoffice-common
 remove-pkg thunderbird firefox
+remove-pkg-prefix firefox-locale
 remove-pkg libmysqlclient21 nautilus update-manager
 
 remove-pkg $(apt-cache search libgnome | grep ^libgnome | cut -f1 -d' ')
+remove-pkg gvfs-common gedit-common libwebkit2gtk-4.0-37:amd64 yelp
 #remove-pkg-prefix gnome
 #Breaks enter and escape
 #remove-pkg libatspi2.0-0:amd64
@@ -13,15 +15,20 @@ remove-pkg $(apt-cache search libgnome | grep ^libgnome | cut -f1 -d' ')
 
 remove-pkg   fonts-noto-cjk
 remove-pkg $(apt-cache search fonts | egrep '^fonts-(tlwg|tibetan|takao|sil|nanum|lohit|lao|khmeros|guru|arphic)' | cut -f1 -d' ')
-remove-pkg $(apt-cache search ubiquity | grep ^ubiquity | cut -f1 -d' ')
 remove-pkg $(apt-cache search mythes | grep ^mythes | cut -f1 -d' ')
-remove-pkg $(apt-cache search ubuntu-wallpaper  | grep ^ubuntu-wallpaper | cut -f1 -d' ')
+remove-pkg aspell dictionaries-common
 remove-pkg $(apt-cache search language-pack | grep ^language-pack | cut -f1 -d' ')
 remove-pkg-prefix hunspell
 
+remove-pkg-prefix ubiquity
+remove-pkg-prefix ubuntu-wallpaper
+
 remove-pkg transmission-common shotwell                                   seahorse                                   rhythmbox remmina reiserfsprogs                            language-selector-common ibus
-remove-pkg gvfs-common gedit-common libwebkit2gtk-4.0-37:amd64
+
 
 #remove-pkg $(apt-cache search printer-driver | grep ^printer-driver | cut -f1 -d' ')
+
+remove-pkg snapd
+rm -rf $LWRISO_ROOT/var/lib/snapd
 
 chroot-run apt-get -y autoremove

@@ -1,3 +1,9 @@
 
+remove-pkg gcc-9 make git
 chroot-run apt-get -y autoremove
+du -s -m $LWRISO_ROOT/var
 chroot-run  apt-get clean
+du -s -m $LWRISO_ROOT/var
+chroot-run  apt-get clean
+du -s -m $LWRISO_ROOT/var
+
