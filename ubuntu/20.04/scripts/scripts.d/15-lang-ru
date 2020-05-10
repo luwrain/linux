@@ -25,5 +25,7 @@ console-cyrillic	console-cyrillic/fontsize	select	16
 EOF
 install-pkg 	    console-cyrillic
 
-#removing voices azamat Leticia-F123 natia nazgul spomenka talgat
+pushd $LWRISO_ROOT/opt/luwrain/lib/app/rhvoice/data/voices
+rm -rf azamat Leticia-F123 natalia nazgul spomenka talgat
+popd
 fi	    
