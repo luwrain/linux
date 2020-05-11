@@ -35,7 +35,6 @@ final String text;
 		    	final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 				final StringBuilder b = new StringBuilder();
 	try {
-
 	String line = r.readLine();
 	while(line != null)
 	{
@@ -72,7 +71,7 @@ final String text;
 		final char c = (char)n;
 		if (codeBuilder != null)
 		{
-		    if (c >= '0' && c <= '0')
+		    if (c >= '0' && c <= '9')
 		    {
 			codeBuilder.append(c);
 			continue;
@@ -107,6 +106,18 @@ final String text;
 			case 'e':
 			case 'E':
 			    b.append((char)27);
+			    continue;
+			case 'n':
+			case 'N':
+			    b.append('\n');
+			    continue;
+			case 'r':
+			case 'R':
+			    b.append('\r');
+			    continue;
+			case 't':
+			case 'T':
+			    b.append('\r');
 			    continue;
 			}
 			if (cc < '0' || cc > '9')

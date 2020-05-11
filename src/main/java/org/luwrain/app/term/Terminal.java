@@ -82,6 +82,11 @@ final class Terminal implements Lines, HotPoint
 		{
 		case "color":
 		    continue;
+		    		    case "cr":
+			lines.add("");
+			hotPointY++;
+			hotPointX = 0;
+			continue;
 		default:
 		    Log.warning(LOG_COMPONENT, "unknown command: '" + res + "'");
 		    continue;
