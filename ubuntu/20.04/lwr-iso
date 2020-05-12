@@ -26,6 +26,7 @@ unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
 cp -r dist install "$WORK/iso"
 cp -r scripts/. "$WORK/iso"
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
+echo Customizing the image
 mount --bind /proc "$CHROOT/proc"
 chroot "$WORK" /iso/lwr-mkchroot "$2" "$3" > /tmp/lwr-iso.out 2>&1
 umount "$CHROOT/proc"
