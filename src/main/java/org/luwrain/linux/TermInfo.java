@@ -188,25 +188,28 @@ final String text;
     {
 	NullCheck.notEmpty(seq, "seq");
 	if (seq.length() == 1 && seq.charAt(0) == 27)
-	    return "";
+	    return "";//Needs more characters
+	//Manually stripping color codes
 	if (seq.length() >= 2 && seq.charAt(0) == 27 && seq.charAt(1) == '[')
 	{
 	    if (seq.length() == 2)
 		return "";
-	    return seq.charAt(seq.length() - 1) == 'm'?"color":"";
+	    if (seq.substring(2).matches("^[0-9;]+$"))
+		return "";
+	    if (seq.endsWith("m"))
+		return "color";
 	}
 	final Map<String, String> m = seqs.get(new Character(seq.charAt(0)));
 	if (m == null)
 	    return null;
 	final String s = m.get(seq);
 	if (s != null)
-
-	    	    return s;
+	    return s;
 	for(Map.Entry<String, String> e: m.entrySet())
 	    if (e.getKey().startsWith(seq))
 		return "";
 	return null;
-	    }
+    }
 
     String getTermName()
     {

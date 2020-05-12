@@ -55,12 +55,21 @@ final class Terminal implements Lines, HotPoint
 		this.seq.append(ch);
 		final String seqStr = new String(this.seq);
 		final String res = termInfo.find(seqStr);
+				//if seq contains the beginning of a some known command, we have to try more characters
+		if (res != null && res.isEmpty())
+		    continue;
+		    this.seq = new StringBuilder();
 		if (res == null)
 		{
 		    speaking.append(seqStr);
-		    this.seq = new StringBuilder();
 		    switch(seqStr)
 		    {
+		    case "\u0007":
+			//Doing nothing, sound will be played through speaking
+			continue;
+		    case "\b":
+			backspace();
+			continue;
 		    case "\r":
 			continue;
 		    case "\n":
@@ -74,13 +83,10 @@ final class Terminal implements Lines, HotPoint
 			continue;
 		    }
 		}
-		//if seq contains beginning of a some known command, we have to try more characters
-		if (res.isEmpty())
-		    continue;
-		this.seq = new StringBuilder();
 		switch(res)
 		{
 		case "color":
+		case "el"://unknown sequence on backspaces
 		    continue;
 		    		    case "cr":
 			lines.add("");
@@ -145,5 +151,18 @@ final class Terminal implements Lines, HotPoint
 	if (index >= lines.size())
 	    return "";
 	return lines.get(index);
+    }
+
+    private void backspace()
+    {
+	if (hotPointY >= lines.size())
+	    return;
+	final String line = lines.get(hotPointY);
+	if (hotPointX == 0 || hotPointX > line.length())
+	    return;
+	final char ch = line.charAt(hotPointX - 1);
+	lines.set(hotPointY, line.substring(0, hotPointX -1) + line.substring(hotPointX));
+	hotPointX--;
+	luwrain.setEventResponse(DefaultEventResponse.letter(ch));
     }
 }
