@@ -35,6 +35,7 @@ public final class App extends AppBase<Strings>
     static private final long LISTENING_DELAY = 10;
 
     final TermInfo termInfo;
+    final String startingDir;
     private UnixPtyProcess  pty = null;
     private MainLayout layout = null;
 
@@ -46,6 +47,15 @@ public final class App extends AppBase<Strings>
 	super(Strings.NAME, Strings.class);
 	NullCheck.notNull(termInfo, "termInfo");
 	this.termInfo = termInfo;
+	this.startingDir = null;
+    }
+
+    public App(TermInfo termInfo, String startingDir)
+    {
+	super(Strings.NAME, Strings.class);
+	NullCheck.notNull(termInfo, "termInfo");
+	this.termInfo = termInfo;
+	this.startingDir = startingDir;
     }
 
     @Override public boolean onAppInit() throws IOException
@@ -54,7 +64,7 @@ public final class App extends AppBase<Strings>
 	env.put("TERM", "linux");
 	this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"/bin/bash", "-l"})
 				    .setEnvironment(env)
-				    .setDirectory(getLuwrain().getProperty("luwrain.dir.userhome"))
+				    .setDirectory((this.startingDir != null && !startingDir.isEmpty())?startingDir:getLuwrain().getProperty("luwrain.dir.userhome"))
 				    .setConsole(false)
 				    .start());
 	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());

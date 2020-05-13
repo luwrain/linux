@@ -141,12 +141,13 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		}
 		@Override public Application[] prepareApp(String[] args)
 		{
-		    NullCheck.notNull(args, "args");
-		    /*
-		    if (args.length == 1)
-			return new Application[]{new org.luwrain.app.term.TermApp(args[0])};
-		    */
-		    return new Application[]{new org.luwrain.app.term.App(termInfo)};
+		    NullCheck.notNullItems(args, "args");
+		    if (args.length == 1 && !args[0].isEmpty())
+			return new Application[]{new org.luwrain.app.term.App(termInfo, args[0])};
+		    final String dir = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY);
+		    if (dir != null && !dir.isEmpty())
+			return new Application[]{new org.luwrain.app.term.App(termInfo, dir)};
+		    			return new Application[]{new org.luwrain.app.term.App(termInfo)};
 		}
 	    });
 
