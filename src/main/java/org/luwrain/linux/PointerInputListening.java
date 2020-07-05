@@ -70,12 +70,12 @@ class PointerInputListening
 			{
 			    final long currentMsec = System.currentTimeMillis();
 			    if (prevTimeMsec >= 0 && (currentMsec - prevTimeMsec <= DOUBLE_CLICK_DELAY_MSEC))
-				luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+				luwrain.sendInputEvent(new InputEvent(InputEvent.Special.ENTER));
 			    prevTimeMsec = currentMsec;
 
 			}
 			if ((code & 2) > 0)
-			    luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.CONTEXT_MENU));
+			    luwrain.sendInputEvent(new InputEvent(InputEvent.Special.CONTEXT_MENU));
 			if ((code & 8) > 0)
 			    onOffset(x, y);
 		    } while(true);
@@ -103,25 +103,25 @@ class PointerInputListening
 	    step = false;
 	    while (posX > STEP_X)
 	    {
-		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT));
+		luwrain.sendInputEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT));
 		posX -= STEP_X;
 		step = true;
 	    }
 	    while (posY > STEP_Y)
 	    {
-		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_UP));
+		luwrain.sendInputEvent(new InputEvent(InputEvent.Special.ARROW_UP));
 		posY -= STEP_Y;
 		step = true;
 	    }
 	    while (posX < -1 * STEP_X)
 	    {
-		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
+		luwrain.sendInputEvent(new InputEvent(InputEvent.Special.ARROW_LEFT));
 		posX += STEP_X;
 		step = true;
 	    }
 	    while (posY < -1 * STEP_Y)
 	    {
-		luwrain.sendInputEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN));
+		luwrain.sendInputEvent(new InputEvent(InputEvent.Special.ARROW_DOWN));
 		posY += STEP_Y;
 		step = true;
 	    }

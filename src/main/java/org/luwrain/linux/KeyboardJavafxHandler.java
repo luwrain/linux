@@ -21,7 +21,7 @@ import javafx.scene.input.KeyEvent;
 
 import org.luwrain.core.*;
 import org.luwrain.base.*;
-import org.luwrain.core.events.KeyboardEvent;
+import org.luwrain.core.events.InputEvent;
 import org.luwrain.interaction.KeyboardHandler;
 
 class KeyboardJavafxHandler implements KeyboardHandler
@@ -46,95 +46,95 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	controlPressed=event.isControlDown();
 	shiftPressed=event.isShiftDown();
 	leftAltPressed=event.isAltDown();
-	KeyboardEvent.Special code = null;
+	InputEvent.Special code = null;
 	switch(event.getCode())
 	{
 	    // Functions keys
 	case F1:
-	    code=KeyboardEvent.Special.F1;
+	    code=InputEvent.Special.F1;
 	    break;
 	case F2:
-	    code=KeyboardEvent.Special.F2;
+	    code=InputEvent.Special.F2;
 	    break;
 	case F3:
-	    code=KeyboardEvent.Special.F3;
+	    code=InputEvent.Special.F3;
 	    break;
 	case F4:
-	    code=KeyboardEvent.Special.F4;
+	    code=InputEvent.Special.F4;
 	    break;
 	case F5:
-	    code=KeyboardEvent.Special.F5;
+	    code=InputEvent.Special.F5;
 	    break;
 	case F6:
-	    code=KeyboardEvent.Special.F6;
+	    code=InputEvent.Special.F6;
 	    break;
 	case F7:
-	    code=KeyboardEvent.Special.F7;
+	    code=InputEvent.Special.F7;
 	    break;
 	case F8:
-	    code=KeyboardEvent.Special.F8;
+	    code=InputEvent.Special.F8;
 	    break;
 	case F9:
-	    code=KeyboardEvent.Special.F9;
+	    code=InputEvent.Special.F9;
 	    break;
 	case F10:
-	    code=KeyboardEvent.Special.F10;
+	    code=InputEvent.Special.F10;
 	    break;
 	case F11:
-	    code=KeyboardEvent.Special.F11;
+	    code=InputEvent.Special.F11;
 	    break;
 	case F12:
-	    code=KeyboardEvent.Special.F12;
+	    code=InputEvent.Special.F12;
 	    break;
 	case LEFT:
-	    code=KeyboardEvent.Special.ARROW_LEFT;
+	    code=InputEvent.Special.ARROW_LEFT;
 	    break;
 	case RIGHT:
-	    code=KeyboardEvent.Special.ARROW_RIGHT;
+	    code=InputEvent.Special.ARROW_RIGHT;
 	    break;
 	case UP:
-	    code=KeyboardEvent.Special.ARROW_UP;
+	    code=InputEvent.Special.ARROW_UP;
 	    break;
 	case DOWN:
-	    code=KeyboardEvent.Special.ARROW_DOWN;
+	    code=InputEvent.Special.ARROW_DOWN;
 	    break;
 	case HOME:
-	    code=KeyboardEvent.Special.HOME;
+	    code=InputEvent.Special.HOME;
 	    break;
 	case END:
-	    code=KeyboardEvent.Special.END;
+	    code=InputEvent.Special.END;
 	    break;
 	case INSERT:
-	    code=KeyboardEvent.Special.INSERT;
+	    code=InputEvent.Special.INSERT;
 	    break;
 	case PAGE_DOWN:
-	    code=KeyboardEvent.Special.PAGE_DOWN;
+	    code=InputEvent.Special.PAGE_DOWN;
 	    break;
 	case PAGE_UP:
-	    code=KeyboardEvent.Special.PAGE_UP;
+	    code=InputEvent.Special.PAGE_UP;
 	    break;
 	case WINDOWS:
-	    code=KeyboardEvent.Special.WINDOWS;
+	    code=InputEvent.Special.WINDOWS;
 	    break;
 	case CONTEXT_MENU:
-	    code=KeyboardEvent.Special.CONTEXT_MENU;
+	    code=InputEvent.Special.CONTEXT_MENU;
 	    break;
 	case CONTROL:
-	    code=KeyboardEvent.Special.CONTROL;
+	    code=InputEvent.Special.CONTROL;
 	    break;
 	case SHIFT:
-	    code=KeyboardEvent.Special.SHIFT;
+	    code=InputEvent.Special.SHIFT;
 	    break;
 	case ALT:
-	    code=KeyboardEvent.Special.LEFT_ALT;
+	    code=InputEvent.Special.LEFT_ALT;
 	    break;
 	case ALT_GRAPH:
-	    code=KeyboardEvent.Special.RIGHT_ALT;
+	    code=InputEvent.Special.RIGHT_ALT;
 	    break;
 	default:
 	    return;
 	}
-	consumer.enqueueEvent(new KeyboardEvent(code, shiftPressed, controlPressed, leftAltPressed));
+	consumer.enqueueEvent(new InputEvent(code, shiftPressed, controlPressed, leftAltPressed));
     }
 
     @Override public void onKeyReleased(Object obj)
@@ -156,26 +156,26 @@ class KeyboardJavafxHandler implements KeyboardHandler
 	shiftPressed=event.isShiftDown();
 	leftAltPressed=event.isAltDown();
 	final String keychar=event.getCharacter();
-	KeyboardEvent.Special code = null;
+	InputEvent.Special code = null;
 	if(keychar.equals("\b"))
-	    code=KeyboardEvent.Special.BACKSPACE; else
+	    code=InputEvent.Special.BACKSPACE; else
 	    if(keychar.equals("\n")||keychar.equals("\r")) 
-		code=KeyboardEvent.Special.ENTER; else 
+		code=InputEvent.Special.ENTER; else 
 		if(keychar.equals("\u001b")) 
-		    code=KeyboardEvent.Special.ESCAPE; else
+		    code=InputEvent.Special.ESCAPE; else
 		    if(keychar.equals("\u007f"))
-			code=KeyboardEvent.Special.DELETE; else
+			code=InputEvent.Special.DELETE; else
 			if(keychar.equals("\t")) 
-			    code=KeyboardEvent.Special.TAB; else
+			    code=InputEvent.Special.TAB; else
 			{
 			    // FIXME: javafx characters return as String type we need a char (now return first symbol)
 			    char c = event.getCharacter().charAt(0);
-			    final KeyboardEvent emulated=new KeyboardEvent(c, shiftPressed,controlPressed,leftAltPressed);
+			    final InputEvent emulated=new InputEvent(c, shiftPressed,controlPressed,leftAltPressed);
 			    consumer.enqueueEvent(emulated);
 			    return;
 			}
 	//	final int _code=code;
-	consumer.enqueueEvent(new KeyboardEvent(code, 
+	consumer.enqueueEvent(new InputEvent(code, 
 						shiftPressed,controlPressed,leftAltPressed));
     }
 }

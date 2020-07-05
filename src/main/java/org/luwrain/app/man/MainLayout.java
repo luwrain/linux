@@ -36,7 +36,7 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
     {
 	this.app = app;
 	this.searchArea = new ConsoleArea(getSearchAreaParams()){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (app.onInputEvent(this, event))
@@ -52,7 +52,7 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 		}
 	    };
 	this.pageArea = new SimpleArea(new DefaultControlContext(app.getLuwrain())){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (app.onInputEvent(this, event))
@@ -94,7 +94,7 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 	params.context = new DefaultControlContext(app.getLuwrain());
 	params.model = new SearchAreaModel();
 	params.appearance = new SearchAreaAppearance();
-	params.areaName = app.getStrings().appName();
+	params.name = app.getStrings().appName();
 	params.inputPos = ConsoleArea.InputPos.TOP;
 	params.inputPrefix = "man>";
 	return params;
@@ -159,11 +159,11 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 
     private final class SearchAreaModel implements ConsoleArea.Model
     {
-        @Override public int getConsoleItemCount()
+        @Override public int getItemCount()
 	{
 	    return pages.length;
 	}
-	@Override public Object getConsoleItem(int index)
+	@Override public Object getItem(int index)
 	{
 	    if (index < 0 || index >= pages.length)
 		throw new IllegalArgumentException("index (" + index + ") must be greater or equal to zero and less than " + pages.length);

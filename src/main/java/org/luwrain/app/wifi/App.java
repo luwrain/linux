@@ -72,7 +72,7 @@ public class App implements Application, MonoApp
 	params.name = strings.appName();
 
 	this.listArea = new ListArea(params){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -126,7 +126,7 @@ public class App implements Application, MonoApp
 			return new Action[0];
 		    if (connections.hasConnection())
 			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect(), new KeyboardEvent(KeyboardEvent.Special.F5)),
+			    new Action("disconnect", strings.actionDisconnect(), new InputEvent(InputEvent.Special.F5)),
 			};
 		    return new Action[0];
 		}
@@ -137,7 +137,7 @@ public class App implements Application, MonoApp
 	    };
 
 	this.progressArea = new ProgressArea(new DefaultControlContext(luwrain), "Подключение"){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())
@@ -178,7 +178,7 @@ public class App implements Application, MonoApp
 			return new Action[0];
 		    if (connections.hasConnection())
 			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect(), new KeyboardEvent(KeyboardEvent.Special.F5)),
+			    new Action("disconnect", strings.actionDisconnect(), new InputEvent(InputEvent.Special.F5)),
 			};
 		    return new Action[0];
 		}

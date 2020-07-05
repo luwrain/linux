@@ -43,7 +43,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	return true;
     }
 
-    @Override public boolean onInputEvent(Area area, KeyboardEvent event)
+    @Override public boolean onInputEvent(Area area, InputEvent event)
     {
 	NullCheck.notNull(area, "area");
 	NullCheck.notNull(event, "event");

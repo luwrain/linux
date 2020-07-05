@@ -40,7 +40,7 @@ final class MainLayout extends LayoutBase
 	this.app = app;
 	this.term = new Terminal(app.getLuwrain(), app.termInfo);
 	this.termArea = new NavigationArea(new DefaultControlContext(app.getLuwrain())){
-		@Override public boolean onInputEvent(KeyboardEvent event)
+		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
 		    if (event.isSpecial() && !event.isModified())

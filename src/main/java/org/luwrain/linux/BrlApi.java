@@ -107,7 +107,7 @@ Log.info("linux", "braille supported successfully initialized");
 		onKey(new Key(key));
 	    /*
 	    {
-		eventConsumer.enqueueEvent(new KeyboardEvent('a'));
+		eventConsumer.enqueueEvent(new InputEvent('a'));
 	    }
 	    */
 	}
@@ -149,22 +149,22 @@ Log.info("linux", "braille supported successfully initialized");
 			switch (key.getArgument())
 			    {
 			    case 32:
-					    eventConsumer.enqueueEvent(new KeyboardEvent(' '));
+					    eventConsumer.enqueueEvent(new InputEvent(' '));
 					    break;
 
 
 			    case 13:
-					    eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ENTER));
+					    eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ENTER));
 					    break;
 
 			    case 8:					    
-					    eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.BACKSPACE));
+					    eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.BACKSPACE));
 					    break;
 
 			    default:
 				if ((key.getFlags() & 4) > 0)
-				    eventConsumer.enqueueEvent(new KeyboardEvent(Character.toUpperCase((char)key.getArgument()))); else
-		    eventConsumer.enqueueEvent(new KeyboardEvent((char)key.getArgument()));
+				    eventConsumer.enqueueEvent(new InputEvent(Character.toUpperCase((char)key.getArgument()))); else
+		    eventConsumer.enqueueEvent(new InputEvent((char)key.getArgument()));
 			    }
 		    return;
 		    }
@@ -173,41 +173,41 @@ Log.info("linux", "braille supported successfully initialized");
 		switch(key.getCommand())
 		    {
 		    case 30:
-			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ESCAPE));
+			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ESCAPE));
 break;
 
 		    case 29:
-			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.WINDOWS));
+			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.WINDOWS));
 break;
 
 
 		    case Constants.KEY_CMD_CHRLT:
-						eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
+						eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_LEFT));
 			break;
 		    case Constants.KEY_CMD_CHRRT:
-									eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT));
+									eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT));
 			break;
 					    case Constants.KEY_CMD_LNEND:
-						 			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.END));
+						 			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.END));
 									break;
 		    case Constants.KEY_CMD_LNBEG:
- 			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.HOME));
+ 			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.HOME));
 			break;
 			
 			/*
 					    case Constants.KEY_CMD_CHRRT:
-									eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_RIGHT));
+									eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_RIGHT));
 			break;
 			
 		    case Constants.KEY_CMD_LNBEG:
- 			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.END));
+ 			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.END));
 			*/
 		    case Constants.KEY_CMD_LNDN:
-			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_DOWN));
+			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_DOWN));
 			break;
 
 					    case Constants.KEY_CMD_LNUP:
-			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_UP));
+			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_UP));
 			break;
 
 			
@@ -296,12 +296,12 @@ break;
 		    case Constants.KEY_SYM_F9:
 			break;
 		    case Constants.KEY_SYM_HOME:
-			eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.HOME));
+			eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.HOME));
 			break;
 		    case Constants.KEY_SYM_INSERT:
 			break;
 		    case Constants.KEY_SYM_LEFT:
-						eventConsumer.enqueueEvent(new KeyboardEvent(KeyboardEvent.Special.ARROW_LEFT));
+						eventConsumer.enqueueEvent(new InputEvent(InputEvent.Special.ARROW_LEFT));
 			break;
 		    case Constants.KEY_SYM_LINEFEED:
 			break;
