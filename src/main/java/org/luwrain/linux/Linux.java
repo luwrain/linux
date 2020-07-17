@@ -200,7 +200,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	NullCheck.notNull(path, "path");
 	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
 	luwrain.message("Подключён новый съёмный диск", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
-	luwrain.sendBroadcastEvent(new EnvironmentEvent(EnvironmentEvent.Type.BROADCAST, EnvironmentEvent.Code.REFRESH, "", "disksvolumes:"));
+	luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "disksvolumes:"));
     }
 
     void onCdromChanged(Luwrain luwrain, String path)
