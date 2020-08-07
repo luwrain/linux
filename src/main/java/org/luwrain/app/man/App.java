@@ -22,7 +22,7 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 import org.luwrain.controls.*;
 import org.luwrain.core.queries.*;
 import org.luwrain.popups.Popups;
@@ -34,7 +34,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     public App()
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.linux.man");
     }
 
     @Override protected boolean onAppInit()

@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.util.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 
 import org.luwrain.app.term.Strings;
 

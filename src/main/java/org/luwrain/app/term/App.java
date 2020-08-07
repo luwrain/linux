@@ -25,7 +25,7 @@ import com.pty4j.unix.*;
 
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
-import org.luwrain.template.*;
+import org.luwrain.app.base.*;
 
 import org.luwrain.app.term.Strings;
 
@@ -44,7 +44,7 @@ public final class App extends AppBase<Strings>
 
     public App(TermInfo termInfo)
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.linux.term");
 	NullCheck.notNull(termInfo, "termInfo");
 	this.termInfo = termInfo;
 	this.startingDir = null;
@@ -52,7 +52,7 @@ public final class App extends AppBase<Strings>
 
     public App(TermInfo termInfo, String startingDir)
     {
-	super(Strings.NAME, Strings.class);
+	super(Strings.NAME, Strings.class, "luwrain.linux.term");
 	NullCheck.notNull(termInfo, "termInfo");
 	this.termInfo = termInfo;
 	this.startingDir = startingDir;
