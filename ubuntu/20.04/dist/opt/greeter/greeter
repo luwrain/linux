@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# https://docs.python.org/3/howto/curses.html
+
+import curses
+import os
+import signal
+
+player_pid = 0
+
+def play_intro():
+    n = os.fork()
+    if n == 0:
+        os.system("exec ogg123 -d alsa /opt/greeter/greeting.ogg > /dev/null 2>&1")
+        return
+    player_pid = n
+
+def main(stdscr):
+    stdscr.clear()
+    stdscr.refresh()
+    stdscr.addstr(5, 5, "Добро пожаловать!")
+    stdscr.refresh()
+    stdscr.getkey()
+
+stdscr = curses.initscr()
+curses.noecho()
+curses.cbreak()
+stdscr.keypad(True)
+#print(curses.LINES, curses.COLS)
+
+play_intro()
+main(stdscr)
+os.kill(player_pid, signal.SIGINT)
+os.wait()
+
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()
