@@ -131,7 +131,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final List<ExtensionObject> res = new LinkedList();
+	final List<ExtensionObject> res = new ArrayList();
 	if (scripts.exists("webcam-take"))
 	res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 
@@ -148,7 +148,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		    return new Application[]{new org.luwrain.app.man.App()};
 		}
 	    });
-	
+
 	res.add(new Shortcut(){
 		@Override public String getExtObjName()
 		{
@@ -202,6 +202,3 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	linux = newLinux;
 	    }
 }
-
-
-

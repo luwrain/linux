@@ -32,7 +32,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 
     private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
-    private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private org.luwrain.linux.wifi.Connections wifiConnections = null;
     private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
 
@@ -97,7 +96,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 
     @Override public FilesOperations getFilesOperations()
     {
-	return filesOperations;
+	return null;
     }
 
     org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
