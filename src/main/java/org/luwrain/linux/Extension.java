@@ -133,33 +133,10 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	final List<ExtensionObject> res = new ArrayList();
 	if (scripts.exists("webcam-take"))
-	res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
-
+	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 	res.add(new SystemProperties.Battery(luwrain));
-
-	res.add(new Shortcut(){
-		@Override public String getExtObjName()
-		{
-		    return "man";
-		}
-		@Override public Application[] prepareApp(String[] args)
-		{
-		    NullCheck.notNull(args, "args");
-		    return new Application[]{new org.luwrain.app.man.App()};
-		}
-	    });
-
-	res.add(new Shortcut(){
-		@Override public String getExtObjName()
-		{
-		    return "install";
-		}
-		@Override public Application[] prepareApp(String[] args)
-		{
-		    NullCheck.notNull(args, "args");
-		    return new Application[]{new org.luwrain.app.install.App()};
-		}
-	    });
+	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
+	res.add(new SimpleShortcut("install", org.luwrain.app.install.App.class));
 
 	res.add(new Shortcut(){
 		@Override public String getExtObjName()
@@ -174,7 +151,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 		    final String dir = luwrain.getActiveAreaAttr(Luwrain.AreaAttr.DIRECTORY);
 		    if (dir != null && !dir.isEmpty())
 			return new Application[]{new org.luwrain.app.term.App(termInfo, dir)};
-		    			return new Application[]{new org.luwrain.app.term.App(termInfo)};
+		    return new Application[]{new org.luwrain.app.term.App(termInfo)};
 		}
 	    });
 
@@ -200,5 +177,5 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	if (linux != null)
 	    throw new RuntimeException("linux object instance is already set");
 	linux = newLinux;
-	    }
+    }
 }

@@ -94,11 +94,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	return new OsCommand(output, listener, arg, dir);
     }
 
-    @Override public FilesOperations getFilesOperations()
-    {
-	return null;
-    }
-
     org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
     {
 	return this.newlyAvailableDisk;
