@@ -35,24 +35,14 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     private final org.luwrain.linux.fileops.Operations filesOperations = new org.luwrain.linux.fileops.Operations();
     private org.luwrain.linux.wifi.Connections wifiConnections = null;
     private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
-    private String[] cpus = new String[0];
-    private int ramSizeKb = 0;
 
     @Override public InitResult init(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	Extension.setLinux(this);
-		    this.props = props;
-		    this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
-		    try {
-	    readCpuInfo();
-	    readMemInfo();
-	    return new InitResult();
-	}
-	catch(Throwable e)
-	{
-	    return new InitResult(e);
-	}
+	this.props = props;
+	this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
+	return new InitResult();
     }
 
     Scripts getScripts()
@@ -68,28 +58,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     public String getProperty(String propName)
     {
 	NullCheck.notNull(propName, "propName");
-	if (propName.startsWith("luwrain.hardware.cpu."))
-	{
-	    final String numStr = propName.substring("luwrain.hardware.cpu.".length());
-	    try {
-		final int n = Integer.parseInt(numStr);
-		return n < cpus.length?cpus[n]:"";
-	    }
-	    catch(NumberFormatException e)
-	    {
-		e.printStackTrace();
-		return "";
-	    }
-	}
-	switch(propName)
-	{
-	case "luwrain.hardware.ramsizekb":
-	    return "" + ramSizeKb; 
-	case "luwrain.hardware.ramsizemb":
-	    return "" + (ramSizeKb / 1024); 
-	default:
-	    return "";
-	}
+	return "";
     }
 
     @Override public org.luwrain.base.Braille getBraille()
@@ -111,59 +80,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	    return new KeyboardJavafxHandler();
 	default:
 	    return null;
-	}
-    }
-
-    private void readCpuInfo()
-    {
-	final File cpuInfoFile = props.getFileProperty("luwrain.linux.cpuinfo");
-	if (cpuInfoFile == null)
-	{
-	    Log.warning(LOG_COMPONENT, "no luwrain.linux.cpuinfo property, skipping reading CPU information");
-	    return;
-	}
-	try {
-	    final List<String> res = new LinkedList<String>();
-	    for(String s: Files.readAllLines(cpuInfoFile.toPath()))
-		if (s.matches("model\\s*name\\s*:.*"))
-		    res.add(s.substring(s.indexOf(":") + 1).trim());
-	    cpus = res.toArray(new String[res.size()]);
-	}
-	catch(IOException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to read CPU info:" + e.getClass().getName() + ":" + e.getMessage());
-	}
-    }
-
-    private void readMemInfo()
-    {
-	final File memInfoFile = props.getFileProperty("luwrain.linux.meminfo");
-	if (memInfoFile == null)
-	{
-	    Log.warning(LOG_COMPONENT, "no luwrain.linux.meminfo property, skipping reading memory information");
-	    return;
-	}
-	try {
-	    String totalStr = "";
-	    String swapStr = "";
-	    for(String s: Files.readAllLines(memInfoFile.toPath()))
-	    {
-		if (s.matches("MemTotal\\s*:.* kB"))
-		    totalStr = s.substring(s.indexOf(":") + 1).trim();
-		if (s.matches("SwapTotal\\s*:.* kB"))
-		    swapStr = s.substring(s.indexOf(":") + 1).trim();
-	    }
-	    if (totalStr.endsWith("kB"))
-		totalStr = totalStr.substring(0, totalStr.length() - 2).trim();
-	    if (swapStr.endsWith("kB"))
-		swapStr = swapStr.substring(0, swapStr.length() - 2).trim();
-	    final int total = Integer.parseInt(totalStr);
-	    final int swap = Integer.parseInt(swapStr);
-	    ramSizeKb = total - swap;
-	}
-	catch(IOException | NumberFormatException e)
-	{
-	    Log.error(LOG_COMPONENT, "unable to read memory information:" + e.getClass().getName() + ":" + e.getMessage());
 	}
     }
 
