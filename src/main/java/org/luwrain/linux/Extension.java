@@ -22,6 +22,8 @@ import java.io.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.disks.*;
+import org.luwrain.core.script2.*;
+import org.luwrain .script2.*;
 
 public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 {
@@ -32,6 +34,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 
     static private Linux linux = null;
 
+    private ScriptCore scriptCore = null;
     private TermInfo termInfo = null;
     private Scripts scripts = null;
     private PointerInputListening[] pointerInputs = null;
@@ -40,6 +43,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
     @Override public String init(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
+	loadScriptCore(luwrain);
 	this.scripts = new Scripts(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	try {
@@ -66,6 +70,29 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	this.fifoInputs = fifos.toArray(new FifoInputListening[fifos.size()]);
 	return null;
     }
+
+    private void loadScriptCore(Luwrain luwrain)
+    {
+	NullCheck.notNull(luwrain, "luwrain");
+	scriptCore = new ScriptCore(luwrain);
+	try {
+		final File scriptsDir = new File(new File(luwrain.getFileProperty("luwrain.dir.data"), "linux"), "js");
+	final File[] scripts = scriptsDir.listFiles();
+	if (scripts == null)
+	    return;
+	for(File f: scripts)
+	    if (f != null)
+	    {
+		Log.debug(LOG_COMPONENT, "loading " + f.getAbsolutePath());
+		scriptCore.load(f);
+	    }
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "error loading linux scripts: " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	}
+	    }
 
     @Override public Command[] getCommands(Luwrain luwrain)
     {
