@@ -21,7 +21,7 @@ import java.util.*;
 import org.luwrain.base.*;
 import org.luwrain.core.*;
 
-final class ScriptsCommandLineTool implements CommandLineTool
+final class ScriptsCommandLineTool implements Job
 {
     private final Scripts scripts;
     private final String name;
@@ -50,7 +50,7 @@ final class ScriptsCommandLineTool implements CommandLineTool
 	return null;
     }
 
-    static private class Instance implements org.luwrain.base.CommandLineTool.Instance
+    static private class Instance implements org.luwrain.base.Job.Instance
     {
 	private final String name;
 	private final Listener listener;
