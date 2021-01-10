@@ -27,7 +27,7 @@ import com.sun.jna.Native;
 import com.sun.jna.ptr.IntByReference;
 //import jtermios.JTermios;
 
-public final class OsFacade
+public final class Syscalls
 {
     private interface C_lib extends Library
     {
@@ -58,24 +58,6 @@ public final class OsFacade
 
     private static final C_lib m_Clib = Native.loadLibrary("c", C_lib.class);
   private static final Linux_Util_lib m_Utillib = Native.loadLibrary("util", Linux_Util_lib.class);
-
-    /*
-  public OsFacade()
-    {
-    PtyHelpers.ONLCR = 0x04;
-
-    PtyHelpers.VINTR = 0;
-    PtyHelpers.VQUIT = 1;
-    PtyHelpers.VERASE = 2;
-    PtyHelpers.VKILL = 3;
-    PtyHelpers.VSUSP = 10;
-    PtyHelpers.VREPRINT = 12;
-    PtyHelpers.VWERASE = 14;
-
-    PtyHelpers.ECHOKE = 0x01;
-    PtyHelpers.ECHOCTL = 0x40;
-  }
-    */
 
   public int kill(int pid, int signal)
     {
