@@ -74,8 +74,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
     private void loadScriptCore(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	scriptCore = new ScriptCore(luwrain);
-	try {
+	scriptCore = new ScriptCore(luwrain, new org.luwrain.linux.script.Bindings(luwrain));
 		final File scriptsDir = new File(new File(luwrain.getFileProperty("luwrain.dir.data"), "linux"), "js");
 	final File[] scripts = scriptsDir.listFiles();
 	if (scripts == null)
@@ -84,14 +83,15 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	    if (f != null)
 	    {
 		Log.debug(LOG_COMPONENT, "loading " + f.getAbsolutePath());
-		scriptCore.load(f);
+		try {
+		    scriptCore.load(f);
+		}
+		catch(Throwable e)
+		{
+		    Log.error(LOG_COMPONENT, "unable to load " + f.getAbsolutePath() + ": " + e.getClass().getName() + ": " + e.getMessage());
+		    e.printStackTrace();
+		}
 	    }
-	}
-	catch(IOException e)
-	{
-	    Log.error(LOG_COMPONENT, "error loading linux scripts: " + e.getClass().getName() + ": " + e.getMessage());
-	    e.printStackTrace();
-	}
 	    }
 
     @Override public Command[] getCommands(Luwrain luwrain)

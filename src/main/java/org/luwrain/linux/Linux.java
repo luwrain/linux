@@ -30,6 +30,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     static public final String LOG_COMPONENT = "linux";
     static private final String LUWRAIN_LINUX_LIBRARY_NAME = "luwrainlinux";
 
+    final OsFacade osFacade = new OsFacade();
     private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
     private org.luwrain.linux.wifi.Connections wifiConnections = null;
@@ -41,6 +42,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	Extension.setLinux(this);
 	this.props = props;
 	this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
+	Log.debug(LOG_COMPONENT, "LUWRAIN pid is " + String.valueOf(osFacade.getpid()));
 	return new InitResult();
     }
 
