@@ -33,6 +33,6 @@ public final class Bindings implements org.luwrain.core.script2.Bindings
     @Override public void onBindings(Value value)
     {
 	NullCheck.notNull(value, "value");
-	value.putMember("linux", new LinuxObj(luwrain));
+	value.putMember("Linux", new LinuxObj(luwrain));
     }
 }

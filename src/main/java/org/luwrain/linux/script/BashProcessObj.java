@@ -61,6 +61,7 @@ final class BashProcessObj implements ProxyObject
 	case "output":
 	case "errors":
 	case "waitFor":
+	    return true;
 	    	default:
 	    return false;
 	}

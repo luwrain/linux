@@ -29,11 +29,13 @@ public final class BashProcess
     private final String command;
     private final Set<Flags> flags;
     private Process p = null;
-    private final AtomicBoolean done = new AtomicBoolean(false);
     private int pid = -1;
     private int exitCode = -1;
     private final ArrayList<String> output = new ArrayList();
     private final ArrayList<String> errors = new ArrayList();
+    private final AtomicBoolean done = new AtomicBoolean(false);
+    private final AtomicBoolean doneOutput = new AtomicBoolean(false);
+    private final AtomicBoolean doneErrors = new AtomicBoolean(false);
 
     public BashProcess(String command, Set<Flags> flags)
     {
@@ -50,31 +52,36 @@ public final class BashProcess
 
     public void run() throws IOException
     {
-this.p = new ProcessBuilder(prepareCmd()).start();
-p.getOutputStream().close();
-final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-final String pidStr = r.readLine();
-if (pidStr == null)
-    throw new IOException("Bash process didn't return its pid");
-try {
-    this.pid = Integer.parseInt(pidStr);
-}
-catch(NumberFormatException e)
-{
-    throw new IOException("'" + pidStr + "' is not a valid pid");
-}
-readOutput(r);
-readErrors(new BufferedReader(new InputStreamReader(p.getErrorStream())));
-new Thread(()->{
+	this.p = new ProcessBuilder(prepareCmd()).start();
+	p.getOutputStream().close();
+	final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	final String pidStr = r.readLine();
+	if (pidStr == null)
+	    throw new IOException("Bash process didn't return its pid");
 	try {
-	    p.waitFor();
-	    this.exitCode = p.exitValue();
+	    this.pid = Integer.parseInt(pidStr);
+	    Log.debug("proba", "pid=" + pid);
 	}
-	catch(InterruptedException e)
+	catch(NumberFormatException e)
 	{
-	    Thread.currentThread().interrupt();
+	    throw new IOException("'" + pidStr + "' is not a valid pid");
 	}
-}).start();
+	readOutput(r);
+	readErrors(new BufferedReader(new InputStreamReader(p.getErrorStream())));
+	new Thread(()->{
+		try {
+		    p.waitFor();
+		    this.exitCode = p.exitValue();
+		    synchronized(done){
+			done.set(true);
+			done.notifyAll();
+		    }
+		}
+		catch(InterruptedException e)
+		{
+		    Thread.currentThread().interrupt();
+		}
+	}).start();
     }
 
     public int waitFor()
@@ -83,6 +90,14 @@ new Thread(()->{
 	    synchronized(done) {
 		while(!done.get())
 		    done.wait();
+	    }
+	    synchronized(doneOutput) {
+		while (!doneOutput.get())
+		    doneOutput.wait();
+	    }
+	    synchronized(doneErrors) {
+		while (!doneErrors.get())
+		    doneErrors.wait();
 	    }
 	    return exitCode;
 	}
@@ -93,21 +108,42 @@ new Thread(()->{
 	}
     }
 
+    private String[] prepareCmd()
+    {
+	if (flags.contains(Flags.ROOT))
+	    return new String[]{
+		"sudo",
+		"setsid",
+		"/bin/bash",
+		"-c",
+		"echo $$; " + this.command
+	    };
+	return new String[]{
+	    "/bin/bash",
+	    "-c",
+	    "echo $$; " + this.command
+	};
+    }
+
     private void readOutput(BufferedReader r)
     {
 	new Thread(()->{
 		try {
-	try {
-	    String line = r.readLine();
-	    while (line != null)
-	    {
-		output.add(line);
-		line = r.readLine();
-	    }
-	}
-	finally {
-	    r.close();
-	}
+		    try {
+			String line = r.readLine();
+			while (line != null)
+			{
+			    output.add(line);
+			    line = r.readLine();
+			}
+		    }
+		    finally {
+			r.close();
+			synchronized(doneOutput) {
+			    doneOutput.set(true);
+			    doneOutput.notifyAll();
+			}
+		    }
 		}
 		catch(IOException e)
 		{
@@ -117,31 +153,30 @@ new Thread(()->{
 	}).start();
     }
 
-    private String[] prepareCmd()
+    public String[] getOutput()
     {
-	return new String[0];
+	return output.toArray(new String[output.size()]);
     }
 
-    							   public String[] getOutput()
-							   {
-							       return output.toArray(new String[output.size()]);
-							   }
-
-        private void readErrors(BufferedReader r)
+    private void readErrors(BufferedReader r)
     {
 	new Thread(()->{
 		try {
-	try {
-	    String line = r.readLine();
-	    while (line != null)
-	    {
-		errors.add(line);
-		line = r.readLine();
-	    }
-	}
-	finally {
-	    r.close();
-	}
+		    try {
+			String line = r.readLine();
+			while (line != null)
+			{
+			    errors.add(line);
+			    line = r.readLine();
+			}
+		    }
+		    finally {
+			r.close();
+			synchronized(doneErrors) {
+			    doneErrors.set(true);
+			    doneErrors.notifyAll();
+			}
+		    }
 		}
 		catch(IOException e)
 		{
