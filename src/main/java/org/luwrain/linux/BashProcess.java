@@ -122,7 +122,7 @@ new Thread(()->{
 	return new String[0];
     }
 
-    							   public String[] getOUtput()
+    							   public String[] getOutput()
 							   {
 							       return output.toArray(new String[output.size()]);
 							   }
@@ -151,10 +151,8 @@ new Thread(()->{
 	}).start();
     }
 
-
-
-							   public String[] getErrors()
-							   {
-							       return errors.toArray(new String[errors.size()]);
-							   }
+    public String[] getErrors()
+    {
+	return errors.toArray(new String[errors.size()]);
+    }
 }
