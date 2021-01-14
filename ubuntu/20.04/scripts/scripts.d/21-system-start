@@ -2,7 +2,7 @@
 mkdir $LWRISO_ROOT/etc/luwrain
 cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 #!/bin/bash
-# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
+# Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
 
 for i in Master PCM Speaker; do
     /usr/bin/amixer set  \$i 100% unmute

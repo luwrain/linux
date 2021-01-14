@@ -23,7 +23,7 @@ echo Copying the Ubuntu image to the unpacked environment
 cp -r "$DISK/." "$WORK/iso/disk"
 echo Unpacking the Ubuntu image again for customizing
 unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
-cp -r dist install "$WORK/iso"
+cp -r dist "$WORK/iso"
 cp -r scripts/. "$WORK/iso"
 rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
 echo Customizing the image
