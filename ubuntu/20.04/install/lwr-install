@@ -1,13 +1,24 @@
 #!/bin/bash -e
+# Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
 # Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
-# Copyright 2012-2015 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-. /etc/lwr-install.conf
-. /sbin/lwr-install-utils.sh
 
 THIS="${0##*/}"
 
-#For safety reasons we clean here a couple of variables
+# The log location
+LOG=/tmp/lwr-install.log
+
+# Where we want to get the root filesystem mounted
+TARGET_MOUNT=/tmp/target
+
+# Where we want to get squashfs image mounted
+SQUASH_MOUNT=/tmp/squashfs
+
+# Where we expecting the live CD squashfs image to be
+SQUASH_SRC=/cdrom/casper/filesystem.squashfs
+
+. /sbin/lwr-install-utils.sh
+
+# Where we want the newly installed system to be, values are taken from the command line
 TARGET_GRUB_DEVICE=''
 TARGET_ROOT_DEV=''
 
@@ -24,43 +35,42 @@ while [ -n "$1" ]; do
 	shift
 	shift
     else
-	echo "$THIS:unknown command line option:$1:" >&2
+	echo "$THIS: unknown command line option: $1:" >&2
 	exit 1
     fi
 done
 
-[ -z "$TARGET_ROOT_DEV" ] && echo "$THIS:no root partition given" >&2 && exit 1
-[ -z "$TARGET_GRUB_DEVICE" ] && echo "$THIS:no grub destination device given" >&2 && exit 1
+[ -z "$TARGET_ROOT_DEV" ] && echo "$THIS: No root partition" >&2 && exit 1
+[ -z "$TARGET_GRUB_DEVICE" ] && echo "$THIS: No grub destination device" >&2 && exit 1
 
 if ! [ -e "$TARGET_ROOT_DEV" ]; then
-    echo "$THIS:root device $TARGET_ROOT_DEV does not exist" >&2
+    echo "$THIS: The root device $TARGET_ROOT_DEV does not exist" >&2
     exit 1
 fi
 
 if ! [ -e "$TARGET_GRUB_DEVICE" ]; then
-    echo "$THIS:grub destination device $TARGET_GRUB_DEVICE does not exist" >&2
+    echo "$THIS: The grub destination device $TARGET_GRUB_DEVICE does not exist" >&2
     exit 1
 fi
 
 umount $TARGET_ROOT_DEV &> /dev/null ||:
 rm -f $LOG
 
-msg 'Formatting root filesystem'
+echo Formatting the root filesystem "($TARGET_ROOT_DEV)"
 mkfs.ext4 "$TARGET_ROOT_DEV"  &>> $LOG
 
-msg 'Mounting the root partition of the future system'
 mkdir -p $TARGET_MOUNT &>> $LOG
 mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
-msg 'Mounting squashfs image'
+echo The root filesystem is ready and monted
+
 mkdir $SQUASH_MOUNT &>> $LOG
 mount $SQUASH_SRC $SQUASH_MOUNT &>> $LOG
-msg 'Mount points prepared'
+echo Squashfs image is ready
 
-msg "Extracting the root filesystem archive to $TARGET_MOUNT"
+echo Copying files
 cp -afd $SQUASH_MOUNT/. $TARGET_MOUNT/ &>> $LOG
-msg 'Basic  content copied'
 
-msg 'Installing grub'
+echo Installing grub
 for a in dev sys proc; do
     mount --bind /$a $TARGET_MOUNT/$a &>> $LOG
 done

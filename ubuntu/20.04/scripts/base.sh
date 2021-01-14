@@ -1,5 +1,5 @@
-# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
-# The LUWRAIN project, licensed under the terms of GPL v.3
+# Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, licensed under the terms of GPL v.3
 
 export LWRISO_ROOT=/iso/chroot
 export LWRISO_USER=luwrain
