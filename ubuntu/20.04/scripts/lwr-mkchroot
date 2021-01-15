@@ -1,6 +1,6 @@
 #!/bin/bash -evx
-# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
-# The LUWRAIN project, licensed under the terms of GPL v.3
+# Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, licensed under the terms of GPL v.3
 
 THIS="${0##*/}"
 
@@ -10,7 +10,6 @@ LWRISO_LANG="$2"
 [ -z "$LWRISO_LANG" ] && echo "$THIS:no lang given" >&2 && exit 1
 
 cd /iso
-. config.sh
 . base.sh
 
 echo "nameserver $LWRISO_NAMESERVER" > /etc/resolv.conf

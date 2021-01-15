@@ -1,4 +1,0 @@
-
-LWRISO_ARCH=amd64
-LWRISO_DATE="$(date +%Y%m%d)"
-LWRISO_NAMESERVER=8.8.8.8

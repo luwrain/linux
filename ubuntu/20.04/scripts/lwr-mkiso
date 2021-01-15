@@ -1,9 +1,9 @@
 #!/bin/bash -e
-# Copyright 2020 Michael Pozhidaev <msp@luwrain.org>
-# The LUWRAIN project, licensed under the terms of GPL v.3
+# Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, licensed under the terms of GPL v.3
 
 cd /iso
-. config.sh
+. base.sh
 
 echo Preparing the environment for ISO compilation
 
