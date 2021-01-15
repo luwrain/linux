@@ -1,3 +1,0 @@
-
-#sed -i -e s/'80%'/'100%'/ $LWRISO_ROOT/usr/share/alsa/utils.sh
-rm -f $LWRISO_ROOT/lib/udev/rules.d/90-alsa-restore.rules

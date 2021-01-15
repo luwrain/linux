@@ -1,8 +1,0 @@
-
-in-chroot apt-get -y --force-yes install openjdk-8-jre openjfx
-
-in-chroot update-ca-certificates -f
-
-# Disabling pulseaudio
-sed -i -e s/'^\(java.*\)$'/'#\1'/ ./chroot/etc/java-8-openjdk/sound.properties
-sed -i -e s/'^#\(javax.sound.sampled.*=com.sun.*\)$'/'\1'/ ./chroot/etc/java-8-openjdk/sound.properties

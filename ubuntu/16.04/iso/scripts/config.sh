@@ -1,6 +1,0 @@
-
-
-LWRISO_ARCH=amd64
-LWRISO_DATE="$(date +%Y%m%d)"
-LWRISO_KERNEL=4.15.0-45-generic
-LWRISO_NAMESERVER=8.8.8.8
