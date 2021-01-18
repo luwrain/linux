@@ -16,17 +16,9 @@
 
 package org.luwrain.app.man;
 
-import java.net.*;
-import java.util.*;
-import java.io.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
-import org.luwrain.controls.*;
-import org.luwrain.core.queries.*;
-import org.luwrain.popups.Popups;
-import org.luwrain.linux.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
@@ -40,21 +32,14 @@ public final class App extends AppBase<Strings> implements MonoApp
     @Override protected boolean onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
+	setAppName(getStrings().appName());
 	return true;
     }
 
-    @Override public boolean onInputEvent(Area area, InputEvent event)
+    @Override public boolean onEscape(InputEvent event)
     {
-	NullCheck.notNull(area, "area");
-	NullCheck.notNull(event, "event");
-	if (event.isSpecial())
-	    switch(event.getSpecial())
-	{
-	case ESCAPE:
-	    closeApp();
-	    return true;
-	}
-	return super.onInputEvent(area, event);
+	closeApp();
+	return true;
     }
 
     @Override protected AreaLayout getDefaultAreaLayout()

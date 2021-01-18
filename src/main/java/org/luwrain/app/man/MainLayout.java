@@ -50,6 +50,13 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 			return true;
 		    return super.onSystemEvent(event);
 		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    if (app.onAreaQuery(this, query))
+			return true;
+		    return super.onAreaQuery(query);
+		}
 	    };
 	this.pageArea = new SimpleArea(new DefaultControlContext(app.getLuwrain())){
 		@Override public boolean onInputEvent(InputEvent event)
@@ -66,9 +73,16 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 			return true;
 		    return super.onSystemEvent(event);
 		}
+		@Override public boolean onAreaQuery(AreaQuery query)
+		{
+		    NullCheck.notNull(query, "query");
+		    if (!app.onAreaQuery(this, query))
+			return true;
+		    return super.onAreaQuery(query);
+		}
 	    };
 		searchArea.setConsoleInputHandler(this);
-		searchArea.setConsoleInputHandler(this);
+				searchArea.setConsoleClickHandler(this);
     }
 
 @Override public boolean onConsoleClick(ConsoleArea area, int index, Object obj)
@@ -92,7 +106,7 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
     {
 	final ConsoleArea.Params params = new ConsoleArea.Params();
 	params.context = new DefaultControlContext(app.getLuwrain());
-	params.model = new SearchAreaModel();
+	params.model = new ConsoleUtils.ArrayModel(()->{return pages;});
 	params.appearance = new SearchAreaAppearance();
 	params.name = app.getStrings().appName();
 	params.inputPos = ConsoleArea.InputPos.TOP;
@@ -103,39 +117,19 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
     boolean search(String query)
     {
 	NullCheck.notEmpty(query, "query");
-	final List<String> res = new LinkedList();
-	final Scripts scripts = new Scripts(app.getLuwrain());
-	final Process p = scripts.runAsync(Scripts.ID.MAN_SEARCH, new String[]{query}, false);
-	if (p == null)
-	    return false;
+	final List<String> res = new ArrayList();
+	final BashProcess p = new BashProcess("man -k " + BashProcess.escape(query.trim()));
 	try {
-	    try {
-		p.getOutputStream().close();
-		final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-		String line = r.readLine();
-		while (line != null)
-		{
-		    res.add(line);
-		    line = r.readLine();
-		}
-		p.waitFor();
-		pages = res.toArray(new String[res.size()]);
-		return true;
-	    }
-	    finally {
-		p.getInputStream().close();
-	    }
-	}
-	catch(InterruptedException e)
-	{
-	    Thread.currentThread().interrupt();
-	    return false;
+	    p.run();
 	}
 	catch(IOException e)
 	{
 	    app.getLuwrain().crash(e);
-	    return false;
+	    return true;
 	}
+	p.waitFor();
+	pages = p.getOutput();
+	return true;
     }
 
     AreaLayout getLayout()
@@ -148,26 +142,12 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 	@Override public void announceItem(Object item)
 	{
 	    NullCheck.notNull(item, "item");
-	    app.getLuwrain().setEventResponse(DefaultEventResponse.text(item.toString()));
+	    app.getLuwrain().setEventResponse(DefaultEventResponse.text(app.getLuwrain().getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
 	@Override public String getTextAppearance(Object item)
 	{
 	    NullCheck.notNull(item, "item");
 	    return item.toString();
-	}
-    }
-
-    private final class SearchAreaModel implements ConsoleArea.Model
-    {
-        @Override public int getItemCount()
-	{
-	    return pages.length;
-	}
-	@Override public Object getItem(int index)
-	{
-	    if (index < 0 || index >= pages.length)
-		throw new IllegalArgumentException("index (" + index + ") must be greater or equal to zero and less than " + pages.length);
-	    return pages[index];
 	}
     }
 }

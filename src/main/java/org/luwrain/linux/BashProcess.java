@@ -190,4 +190,9 @@ public final class BashProcess
     {
 	return errors.toArray(new String[errors.size()]);
     }
+
+    static public String escape(String value)
+    {
+	return "'" + value + "'";
+    }
 }
