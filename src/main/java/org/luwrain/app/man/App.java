@@ -22,6 +22,8 @@ import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
+    static final String LOG_COMPONENT = "man";
+
     private MainLayout mainLayout = null;
 
     public App()

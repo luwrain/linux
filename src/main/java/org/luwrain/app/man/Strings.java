@@ -21,4 +21,6 @@ public interface Strings
 static final String NAME = "luwrain.man";
 
     String appName();
+    String pageAreaName();
+    String searchAreaName();
 }

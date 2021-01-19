@@ -17,6 +17,7 @@
 package org.luwrain.app.man;
 
 import java.util.*;
+import java.util.regex.*;
 import java.io.*;
 
 import org.luwrain.core.*;
@@ -26,9 +27,11 @@ import org.luwrain.linux.*;
 
 final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHandler
 {
+    static private final Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
+
     private final App app;
     private final ConsoleArea searchArea;
-    private final NavigationArea pageArea;
+    private final SimpleArea pageArea;
 
     private String[] pages = new String[0];
 
@@ -58,7 +61,7 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 		    return super.onAreaQuery(query);
 		}
 	    };
-	this.pageArea = new SimpleArea(new DefaultControlContext(app.getLuwrain())){
+	this.pageArea = new SimpleArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().pageAreaName()){
 		@Override public boolean onInputEvent(InputEvent event)
 		{
 		    NullCheck.notNull(event, "event");
@@ -81,43 +84,53 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 		    return super.onAreaQuery(query);
 		}
 	    };
-		searchArea.setConsoleInputHandler(this);
-				searchArea.setConsoleClickHandler(this);
     }
 
-@Override public boolean onConsoleClick(ConsoleArea area, int index, Object obj)
+    @Override public boolean onConsoleClick(ConsoleArea area, int index, Object obj)
     {
-			    return false;
-	    }
-
-@Override public ConsoleArea.InputHandler.Result onConsoleInput(ConsoleArea area, String text)
-    {
-		NullCheck.notNull(text, "text");
-		if (text.trim().isEmpty())
-		    return ConsoleArea.InputHandler.Result.REJECTED;
-		if (!search(text.trim().toLowerCase()))
-		    		    return ConsoleArea.InputHandler.Result.REJECTED;
-		area.refresh();
-		app.getLuwrain().playSound(Sounds.DONE);
-		return ConsoleArea.InputHandler.Result.OK;
+	NullCheck.notNull(obj, "obj");
+	if (obj.toString().trim().isEmpty())
+	    return false;
+	final Matcher m = ENTRY_PATTERN.matcher(obj.toString().trim());
+	if (!m.find())
+	    return false;
+	final BashProcess p = new BashProcess("man " + BashProcess.escape(m.group(2)) + " " + BashProcess.escape(m.group(1)));
+	try {
+	    p.run();
+	}
+	catch(IOException e)
+	{
+	    app.getLuwrain().crash(e);
+	    return true;
+	}
+	final int exitCode = p.waitFor();
+	if (exitCode != 0)
+	{
+	    app.getLuwrain().playSound(Sounds.ERROR);
+	    for(String s: p.getErrors())
+		Log.error(App.LOG_COMPONENT, "man: " + s);
+	    return true;
+	}
+	pageArea.setLines(p.getOutput());
+	pageArea.setHotPoint(0, 0);
+	app.getLuwrain().setActiveArea(pageArea);
+	return true;
     }
 
-    ConsoleArea.Params getSearchAreaParams()
+    @Override public ConsoleArea.InputHandler.Result onConsoleInput(ConsoleArea area, String text)
     {
-	final ConsoleArea.Params params = new ConsoleArea.Params();
-	params.context = new DefaultControlContext(app.getLuwrain());
-	params.model = new ConsoleUtils.ArrayModel(()->{return pages;});
-	params.appearance = new SearchAreaAppearance();
-	params.name = app.getStrings().appName();
-	params.inputPos = ConsoleArea.InputPos.TOP;
-	params.inputPrefix = "man>";
-	return params;
+	NullCheck.notNull(text, "text");
+	if (text.trim().isEmpty())
+	    return ConsoleArea.InputHandler.Result.REJECTED;
+	if (!search(text.trim().toLowerCase()))
+	    return ConsoleArea.InputHandler.Result.REJECTED;
+	area.refresh();
+	return ConsoleArea.InputHandler.Result.OK;
     }
 
     boolean search(String query)
     {
 	NullCheck.notEmpty(query, "query");
-	final List<String> res = new ArrayList();
 	final BashProcess p = new BashProcess("man -k " + BashProcess.escape(query.trim()));
 	try {
 	    p.run();
@@ -127,9 +140,34 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 	    app.getLuwrain().crash(e);
 	    return true;
 	}
-	p.waitFor();
+	final int exitCode = p.waitFor();
+	if (exitCode != 0)
+	{
+	    final String[] errors = p.getErrors();
+	    for(String s: errors)
+		Log.debug(App.LOG_COMPONENT, "man: " + s);
+	    if (errors.length > 0)
+		app.getLuwrain().message(errors[0], Luwrain.MessageType.ERROR); else
+		app.getLuwrain().playSound(Sounds.ERROR);
+	    return true;
+	}
+	app.getLuwrain().playSound(Sounds.OK);
 	pages = p.getOutput();
 	return true;
+    }
+
+    ConsoleArea.Params getSearchAreaParams()
+    {
+	final ConsoleArea.Params params = new ConsoleArea.Params();
+	params.context = new DefaultControlContext(app.getLuwrain());
+	params.model = new ConsoleUtils.ArrayModel(()->{return pages;});
+	params.appearance = new SearchAreaAppearance();
+	params.name = app.getStrings().searchAreaName();
+	params.inputPos = ConsoleArea.InputPos.TOP;
+	params.inputPrefix = "man>";
+	params.inputHandler = this;
+	params.clickHandler = this;
+	return params;
     }
 
     AreaLayout getLayout()
