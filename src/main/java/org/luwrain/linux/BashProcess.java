@@ -211,7 +211,7 @@ public final class BashProcess
 
     static public String escape(String value)
     {
-	return "'" + value + "'";
+	return "'" + value.replaceAll("'", "'\\\\''") + "'";
     }
 
     static public final class EmptyListener implements Listener

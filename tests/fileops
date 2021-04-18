@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-exec java -cp $LUWRAIN_HOME/jar/luwrain-base.jar:$LUWRAIN_HOME/jar/luwrain-linux.jar org.luwrain.linux.fileops.Operations "$@"
