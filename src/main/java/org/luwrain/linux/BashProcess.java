@@ -26,10 +26,16 @@ public final class BashProcess
 {
     public enum Flags {ROOT};
 
-    
+    public interface Listener
+    {
+	void onOutputLine(String line);
+	void onErrorLine(String line);
+	void onFinishing(int exitCode);
+    }
 
     private final String command;
     private final Set<Flags> flags;
+    private final Listener listener;
     private Process p = null;
     private int pid = -1;
     private int exitCode = -1;
@@ -39,12 +45,19 @@ public final class BashProcess
     private final AtomicBoolean doneOutput = new AtomicBoolean(false);
     private final AtomicBoolean doneErrors = new AtomicBoolean(false);
 
-    public BashProcess(String command, Set<Flags> flags)
+    public BashProcess(String command, Set<Flags> flags, Listener listener)
     {
 	NullCheck.notEmpty(command, "command");
 	NullCheck.notNull(flags, "flags");
+	NullCheck.notNull(listener, "listener");
 	this.command = command;;
 	this.flags = flags;
+	this.listener = listener;
+    }
+
+    public BashProcess(String command, Set<Flags> flags)
+    {
+	this(command, flags, new EmptyListener());
     }
 
     public BashProcess(String command)
@@ -78,6 +91,7 @@ public final class BashProcess
 			done.set(true);
 			done.notifyAll();
 		    }
+		    listener.onFinishing(exitCode);
 		}
 		catch(InterruptedException e)
 		{
@@ -136,6 +150,7 @@ public final class BashProcess
 			while (line != null)
 			{
 			    output.add(line);
+			    listener.onOutputLine(line);
 			    line = r.readLine();
 			}
 		    }
@@ -155,11 +170,6 @@ public final class BashProcess
 	}).start();
     }
 
-    public String[] getOutput()
-    {
-	return output.toArray(new String[output.size()]);
-    }
-
     private void readErrors(BufferedReader r)
     {
 	new Thread(()->{
@@ -169,6 +179,7 @@ public final class BashProcess
 			while (line != null)
 			{
 			    errors.add(line);
+			    listener.onErrorLine(line);
 			    line = r.readLine();
 			}
 		    }
@@ -188,6 +199,11 @@ public final class BashProcess
 	}).start();
     }
 
+        public String[] getOutput()
+    {
+	return output.toArray(new String[output.size()]);
+    }
+
     public String[] getErrors()
     {
 	return errors.toArray(new String[errors.size()]);
@@ -196,5 +212,12 @@ public final class BashProcess
     static public String escape(String value)
     {
 	return "'" + value + "'";
+    }
+
+    static public final class EmptyListener implements Listener
+    {
+	@Override public void onOutputLine(String line) {}
+	@Override public void onErrorLine(String line) {}
+	@Override public void onFinishing(int exitCode) {}
     }
 }
