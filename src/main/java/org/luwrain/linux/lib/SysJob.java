@@ -1,3 +1,18 @@
+/*
+   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
+
+   This file is part of LUWRAIN.
+
+   LUWRAIN is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public
+   License as published by the Free Software Foundation; either
+   version 3 of the License, or (at your option) any later version.
+
+   LUWRAIN is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+*/
 
 package org.luwrain.linux.lib;
 
@@ -17,7 +32,35 @@ public final class SysJob implements Job
 	NullCheck.notNullItems(args, "args");
 	if (args.length == 0 || args[0].isEmpty())
 	    return new ErrorJob("sys", "No command");
-	final BashProcess p = new BashProcess(args[0]);
+	final Data data = new Data();
+	final Instance ins = new Instance(){
+		@Override public void stop() { if (data.stopProc != null) data.stopProc.run(); }
+	    	@Override public String getInstanceName() { return args[0]; }
+		@Override public Status getStatus() { return data.finished?Status.FINISHED:Status.RUNNING; }
+		@Override public int getExitCode() { return data.exitCode; }
+		@Override public boolean isFinishedSuccessfully() { return data.finished && data.exitCode == 0; }
+		@Override public String getSingleLineState() { return data.state; }
+		@Override public String[] getMultilineState() { return data.mlState.toArray(new String[data.mlState.size()]); }
+		@Override public String[] getNativeState() { return data.mlState.toArray(new String[data.mlState.size()]); }
+	    };
+	final BashProcess p = new BashProcess(args[0], EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
+		@Override public void onOutputLine(String line)
+		{
+		    data.mlState.add(line);
+		    listener.onMultilineStateChange(ins);
+		}
+		@Override public void onErrorLine(String line)
+		{
+		    data.mlState.add(line);
+		    listener.onMultilineStateChange(ins);
+		}
+		@Override public void onFinishing(int exitCode)
+		{
+		    data.finished = true;
+		    data.exitCode = exitCode;
+		    listener.onStatusChange(ins);
+		}
+	    });
 	try {
 	    p.run();
 	}
@@ -25,52 +68,25 @@ public final class SysJob implements Job
 	{
 	    return new ErrorJob(args[0], e.getMessage());
 	}
-	return new Instance(){
-	    @Override public void stop()
-	    {
-	    }
-
-	    	@Override public String getInstanceName()
-	    {
-		return "";
-	    }
-	@Override public Status getStatus()
-	    {
-		return Status.FINISHED;
-	    }
-	@Override public int getExitCode()
-	    {
-		return 0;
-	    }
-	@Override public boolean isFinishedSuccessfully()
-	    {
-		return false;
-	    }
-	@Override public String getSingleLineState()
-	    {
-		return "";
-	    }
-	@Override public String[] getMultilineState()
-	    {
-		return new String[0];
-	    }
-	@Override public String[] getNativeState()
-	    {
-	     return new String[0];
-	     }
-	};
+	return ins;
     }
 
-        @Override public String getExtObjName()
+    @Override public String getExtObjName()
     {
 	return "sys";
     }
-
 
     @Override public Set<Flags> getJobFlags()
     {
 	return EnumSet.noneOf(Flags.class);
     }
 
-    
+    static private final class Data
+    {
+	boolean finished = false;
+	int exitCode = -1;
+	String state = "";
+	final List<String> mlState = new ArrayList();
+	Runnable stopProc = null;
+    }
 }
