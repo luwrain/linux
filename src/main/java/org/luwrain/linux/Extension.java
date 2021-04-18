@@ -133,7 +133,7 @@ public final class Extension extends org.luwrain.core.extensions.EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	final List<ExtensionObject> res = new ArrayList();
 	if (scripts.exists("webcam-take"))
-	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
+	    //	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 	res.add(new SystemProperties.Battery(luwrain));
 	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
 	res.add(new SimpleShortcut("install", org.luwrain.app.install.App.class));

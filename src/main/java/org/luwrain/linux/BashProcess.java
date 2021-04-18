@@ -26,6 +26,8 @@ public final class BashProcess
 {
     public enum Flags {ROOT};
 
+    
+
     private final String command;
     private final Set<Flags> flags;
     private Process p = null;
