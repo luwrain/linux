@@ -82,18 +82,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	}
     }
 
-    @Override public org.luwrain.core.OsCommand runOsCommand(String cmd, String dir,
-							     org.luwrain.core.OsCommand.Output output , org.luwrain.core.OsCommand.Listener listener )
-    {
-	NullCheck.notEmpty(cmd, "cmd");
-	NullCheck.notNull(dir, "dir");
-	final List<String> arg = new LinkedList();
-	arg.add("/bin/bash");
-	arg.add("-c");
-	arg.add(cmd);
-	return new OsCommand(output, listener, arg, dir);
-    }
-
     org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
     {
 	return this.newlyAvailableDisk;
