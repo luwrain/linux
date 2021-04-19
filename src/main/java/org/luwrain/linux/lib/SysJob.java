@@ -43,7 +43,7 @@ public final class SysJob implements Job
 		@Override public String[] getMultilineState() { return data.mlState.toArray(new String[data.mlState.size()]); }
 		@Override public String[] getNativeState() { return data.mlState.toArray(new String[data.mlState.size()]); }
 	    };
-	final BashProcess p = new BashProcess(args[0], EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
+		final BashProcess p = new BashProcess(buildCmd(args), EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
 		@Override public void onOutputLine(String line)
 		{
 		    data.mlState.add(line);
@@ -68,6 +68,7 @@ public final class SysJob implements Job
 	{
 	    return new ErrorJob(args[0], e.getMessage());
 	}
+	data.stopProc = ()->p.stop();
 	return ins;
     }
 
@@ -79,6 +80,20 @@ public final class SysJob implements Job
     @Override public Set<Flags> getJobFlags()
     {
 	return EnumSet.noneOf(Flags.class);
+    }
+
+    static private String buildCmd(String[] args)
+    {
+	NullCheck.notNullItems(args, "args");
+	if (args.length == 0)
+	    throw new IllegalArgumentException("args can't be empty");
+	if (args[0].isEmpty())
+	    throw new IllegalArgumentException("args[0] can't be empty");
+	final StringBuilder b = new StringBuilder();
+	b.append(args[0]);
+	for(int i = 1;i < args.length;i++)
+	    b.append(" ").append(BashProcess.escape(args[i]));
+	return new String(b);
     }
 
     static private final class Data

@@ -24,6 +24,8 @@ import org.luwrain.core.*;
 
 public final class BashProcess
 {
+    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+
     public enum Flags {ROOT};
 
     public interface Listener
@@ -100,6 +102,19 @@ public final class BashProcess
 	}).start();
     }
 
+    public void stop()
+    {
+	try {
+	    if (flags.contains(Flags.ROOT))
+		new ProcessBuilder("sudo", "bash", "-c", "kill -KILL -" + String.valueOf(pid)).start(); else
+	    new ProcessBuilder("bash", "-c", "kill -KILL -" + String.valueOf(pid)).start();
+	}
+	catch(IOException e)
+	{
+	    throw new RuntimeException(e);
+	}
+    }
+
     public int waitFor()
     {
 	try {
@@ -135,6 +150,7 @@ public final class BashProcess
 		"echo $$; " + this.command
 	    };
 	return new String[]{
+	    "setsid",
 	    "/bin/bash",
 	    "-c",
 	    "echo $$; " + this.command
