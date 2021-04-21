@@ -96,13 +96,13 @@ public final class App extends AppBase<Strings>
 	}
     }
 
-        String getDeviceSize(String dev)
+    String getDeviceSize(String dev)
     {
 	NullCheck.notNull(dev, "dev");
 	try {
-final String sizeStr = FileUtils.readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), "UTF-8").trim();
-final Long l = Long.parseLong(sizeStr);
-return Long.toString(l.longValue() / 1048576) + "G";
+	    final String sizeStr = FileUtils.readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), "UTF-8").trim();
+	    final Long l = Long.parseLong(sizeStr);
+	    return Long.toString(l.longValue() / 1048576) + "G";
 	}
 	catch(IOException e)
 	{
@@ -112,7 +112,6 @@ return Long.toString(l.longValue() / 1048576) + "G";
 	}
     }
 
-
     @Override public boolean onEscape(InputEvent event)
     {
 	NullCheck.notNull(event, "event");
@@ -120,7 +119,7 @@ return Long.toString(l.longValue() / 1048576) + "G";
 	return true;
     }
 
-	@Override public AreaLayout getDefaultAreaLayout()
+    @Override public AreaLayout getDefaultAreaLayout()
     {
 	return this.mainLayout.getAreaLayout();
     }
