@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2021 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -22,85 +22,74 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
-import org.luwrain.core.queries.*;
-import org.luwrain.popups.Popups;
+import org.luwrain.app.base.*;
+import org.luwrain.util.*;
 
-public class App implements Application, MonoApp
+public final class App extends AppBase<Strings>
 {
-    private Luwrain luwrain = null;
-    private Strings strings = null;
-    private Base base = null;
-    private FormArea formArea = null;
+    static final String LOG_COMPONENT = "install";
+    
+    private MainLayout mainLayout = null;
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+    public App()
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.i18n().getStrings(Strings.NAME);
-	if (o == null || !(o instanceof Strings))
-	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
-	strings = (Strings)o;
-	this.luwrain = luwrain;
-	this.base = new Base(luwrain, strings);
-	createArea();
-	return new InitResult();
+	super(Strings.NAME, Strings.class);
     }
 
-    private void createArea()
+    @Override protected boolean onAppInit()
     {
-		formArea = new FormArea(new DefaultControlContext(luwrain)){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case ESCAPE:
-			    closeApp();
-			    return true;
-			    /*
-			case TAB:
-			    goToProgress();
-			    return true;
-			    */
-			}
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != SystemEvent.Type.REGULAR )
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case CLOSE:
-			closeApp();
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-	    };
+	this.mainLayout = new MainLayout(this);
+	return true;
     }
 
-    @Override public String getAppName()
+    File[] getDevices()
     {
-	return strings.appName();
+	final List<File> res = new ArrayList();
+	final File[] dev = new File("/sys/block").listFiles();
+	if (dev == null)
+	    return new File[0];
+	final File devDir = new File("/dev");
+	for(File f: dev)
+	{
+	    if (!f.isDirectory())
+		continue;
+	    final File removable = new File(f, "removable");
+	    final File cap = new File(f, "capability");
+	    try {
+		if (new File(f, "loop").exists())
+		    continue;
+		if (new File(f, "dm").exists()) //Appears on crypt devices
+		    continue;
+		if (FileUtils.readTextFileSingleString(removable, "UTF-8").trim().equals("1"))
+		    continue;
+		final Integer capValue = Integer.parseInt(FileUtils.readTextFileSingleString(cap, "UTF-8").trim(), 16);
+		if ((capValue.intValue() & 0x0010) == 0) //The device is down
+		    continue;
+		if ((capValue.intValue() & 0x0200) != 0) //Partition scanning is disabled. Used for loop devices in their default settings
+		    continue;
+	    }
+	    catch(Exception e)
+	    {
+		Log.debug(LOG_COMPONENT, "exploring " + f.getAbsolutePath() + ": " + e.getClass().getName() + ": " + e.getMessage());
+		e.printStackTrace();
+		continue;
+	    }
+	    res.add(new File(devDir, f.getName()));
+	}
+	final File[] r = res.toArray(new File[res.size()]);
+	Arrays.sort(r);
+	return r;
     }
 
-    @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
+    @Override public boolean onEscape(InputEvent event)
     {
-	NullCheck.notNull(app, "app");
-	return MonoApp.Result.BRING_FOREGROUND;
+	NullCheck.notNull(event, "event");
+	closeApp();
+	return true;
     }
 
-    @Override public AreaLayout getAreaLayout()
+	@Override public AreaLayout getDefaultAreaLayout()
     {
-	return new AreaLayout(formArea);
-    }
-
-    @Override public void closeApp()
-    {
-	luwrain.closeApp();
+	return this.mainLayout.getAreaLayout();
     }
 }
