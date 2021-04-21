@@ -28,7 +28,8 @@ import org.luwrain.util.*;
 public final class App extends AppBase<Strings>
 {
     static final String LOG_COMPONENT = "install";
-    
+    static final File SYS_BLOCK = new File("/sys/block");
+
     private MainLayout mainLayout = null;
 
     public App()
@@ -42,12 +43,12 @@ public final class App extends AppBase<Strings>
 	return true;
     }
 
-    File[] getDevices()
+    String[] getDevices()
     {
-	final List<File> res = new ArrayList();
-	final File[] dev = new File("/sys/block").listFiles();
+	final List<String> res = new ArrayList();
+	final File[] dev = SYS_BLOCK.listFiles();
 	if (dev == null)
-	    return new File[0];
+	    return new String[0];
 	final File devDir = new File("/dev");
 	for(File f: dev)
 	{
@@ -74,12 +75,43 @@ public final class App extends AppBase<Strings>
 		e.printStackTrace();
 		continue;
 	    }
-	    res.add(new File(devDir, f.getName()));
+	    res.add(f.getName());
 	}
-	final File[] r = res.toArray(new File[res.size()]);
+	final String[] r = res.toArray(new String[res.size()]);
 	Arrays.sort(r);
 	return r;
     }
+
+    String getDeviceName(String dev)
+    {
+	NullCheck.notNull(dev, "dev");
+	try {
+	    return FileUtils.readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "device/model"), "UTF-8").trim();
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to get the name of the device " + dev + ": " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	    return "";
+	}
+    }
+
+        String getDeviceSize(String dev)
+    {
+	NullCheck.notNull(dev, "dev");
+	try {
+final String sizeStr = FileUtils.readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), "UTF-8").trim();
+final Long l = Long.parseLong(sizeStr);
+return Long.toString(l.longValue() / 1048576) + "G";
+	}
+	catch(IOException e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to get the name of the device " + dev + ": " + e.getClass().getName() + ": " + e.getMessage());
+	    e.printStackTrace();
+	    return "";
+	}
+    }
+
 
     @Override public boolean onEscape(InputEvent event)
     {
