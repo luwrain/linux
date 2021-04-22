@@ -33,7 +33,6 @@ public final class Linux implements org.luwrain.base.OperatingSystem
     private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
     private org.luwrain.linux.wifi.Connections wifiConnections = null;
-    private org.luwrain.linux.disks.Disk newlyAvailableDisk = null;
 
     @Override public InitResult init(PropertiesBase props)
     {
@@ -82,31 +81,9 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	}
     }
 
-    org.luwrain.linux.disks.Disk getNewlyAvailableDisk()
-    {
-	return this.newlyAvailableDisk;
-    }
-
     public org.luwrain.linux.wifi.Connections getWifiConnections()
     {
 	return wifiConnections;
-    }
-
-    void onUsbDiskAttached(Luwrain luwrain, String path)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(path, "path");
-	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
-	luwrain.message("Подключён новый съёмный диск", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
-	luwrain.sendBroadcastEvent(new SystemEvent(SystemEvent.Type.BROADCAST, SystemEvent.Code.REFRESH, "", "disksvolumes:"));
-    }
-
-    void onCdromChanged(Luwrain luwrain, String path)
-    {
-	NullCheck.notNull(luwrain, "luwrain");
-	NullCheck.notNull(path, "path");
-	this.newlyAvailableDisk = new org.luwrain.linux.disks.Disk(new File("/sys" + path));
-	luwrain.message("Обнаружен новый носитель в приводе компакт-дисков", Luwrain.MessageType.ANNOUNCEMENT);//FIXME:
     }
 
     PropertiesBase getProps()

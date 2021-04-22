@@ -1,80 +1,21 @@
-/*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-   This file is part of LUWRAIN.
-
-   LUWRAIN is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public
-   License as published by the Free Software Foundation; either
-   version 3 of the License, or (at your option) any later version.
-
-   LUWRAIN is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-*/
 
 package org.luwrain.linux.disks;
 
-import java.util.*;
-import java.io.*;
-
 import org.luwrain.core.*;
-import org.luwrain.util.*;
-import org.luwrain.script.*;
+import org.luwrain.popups.*;
 
-public final class Disk extends Base
+public final class Disk implements DisksPopup.Disk
 {
-    public Disk(File path)
-    {
-	super(path);
-    }
+    final String name;
 
-        public boolean isRemovable()
-    {
-	final File removableFile = new File(path, "removable");
-	if (!removableFile.exists() || removableFile.isDirectory())
-	    return false;
-	try {
-	    final String text = FileUtils.readTextFileSingleString(removableFile, "UTF-8");
-	    return text.equals("1\n");
-	}
-	catch(IOException e)
-	{
-	    return false;
-	}
-    }
-
-    public Partition[] getPartitions()
-    {
-	final List<Partition> res = new LinkedList();
-	final File[] files = path.listFiles();
-	if (files == null)
-	    return new Partition[0];
-	for(File f: files)
-	{
-	    if (!f.isDirectory())
-		continue;
-	    final Partition part = new Partition(f);
-	    if (part.isPartition())
-		res.add(part);
-	}
-	return res.toArray(new Partition[res.size()]);
-    }
-
-    @Override public Object getMember(String name)
+    Disk(String name)
     {
 	NullCheck.notNull(name, "name");
-	switch(name)
-	{
-	case "type":
-	    return "disk";
-	case "removable":
-	    return new Boolean(isRemovable());
-	case "partitions":
-	    return ScriptUtils.createReadOnlyArray(getPartitions());
-	default:
-	    return super.getMember(name);
-	}
+	this.name = name;
+    }
+
+    @Override public String toString()
+    {
+	return this.name;
     }
 }

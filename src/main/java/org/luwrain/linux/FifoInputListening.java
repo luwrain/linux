@@ -101,6 +101,7 @@ final class FifoInputListening
 	}
 
 	//usb disk
+	/*
 		if (line.startsWith(USB_DISK_ATTACHED_PREFIX))
 	{
 	    final String path = line.substring(USB_DISK_ATTACHED_PREFIX.length()).trim();
@@ -108,8 +109,10 @@ final class FifoInputListening
 		luwrain.runUiSafely(()->linux.onUsbDiskAttached(luwrain, path));
 	return;
 	}
+	*/
 
 			//cdrom
+	/*
 		if (line.startsWith(CDROM_CHANGED_PREFIX))
 	{
 	    final String path = line.substring(CDROM_CHANGED_PREFIX.length()).trim();
@@ -117,6 +120,7 @@ final class FifoInputListening
 		luwrain.runUiSafely(()->linux.onCdromChanged(luwrain, path));
 	return;
 	}
+	*/
 
 
 

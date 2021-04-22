@@ -21,7 +21,6 @@ import java.io.*;
 
 import org.luwrain.base.*;
 import org.luwrain.core.*;
-import org.luwrain.linux.disks.*;
 import org.luwrain.core.script2.*;
 import org.luwrain .script2.*;
 
