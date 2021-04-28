@@ -35,6 +35,24 @@ public final class Disks implements DisksPopup.Disks
 	{
 	    Log.error(LOG_COMPONENT, "unable to read " + FILE_MOUNTS.getPath() + ": " + e.getClass().getName() + ": " + e.getMessage());
 	}
-	return res.toArray(new Disk[res.size()]);
+	final Disk[] r = res.toArray(new Disk[res.size()]);
+	Arrays.sort(r, (d1, d2)->{
+		if (d2.toString().equals("/"))
+		return -1;
+		if (d1.toString().equals("/"))
+		return 1;
+
+				if (d2.toString().equals("/home"))
+		return -1;
+		if (d1.toString().equals("/home"))
+		return 1;
+
+
+		
+				return d1.toString().compareTo(d2.toString());
+
+				
+	    });
+	return r;
     }
 }
