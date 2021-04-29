@@ -58,7 +58,7 @@ public final class App extends AppBase<Strings>
 	this.startingDir = startingDir;
     }
 
-    @Override public boolean onAppInit() throws IOException
+    @Override public AreaLayout onAppInit() throws IOException
     {
 	final Map<String, String> env = new HashMap(System.getenv());
 	env.put("TERM", "linux");
@@ -72,7 +72,7 @@ public final class App extends AppBase<Strings>
 		getLuwrain().executeBkg(new FutureTask(()->listening(), null));
 	setAppName(getStrings().appName());
 	this.layout = new MainLayout(this);
-	return true;
+	return layout.getLayout();
     }
 
     private void readOutput()
@@ -179,11 +179,6 @@ void sendChar(char ch)
 	    getLuwrain().crash(e);
 	}
 	    }
-
-        @Override public AreaLayout getDefaultAreaLayout()
-    {
-	return this.layout.getLayout();
-    }
 
     @Override public void closeApp()
     {

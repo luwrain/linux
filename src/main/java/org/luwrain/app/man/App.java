@@ -31,22 +31,17 @@ public final class App extends AppBase<Strings> implements MonoApp
 	super(Strings.NAME, Strings.class, "luwrain.linux.man");
     }
 
-    @Override protected boolean onAppInit()
+    @Override protected AreaLayout onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
-	return true;
+	return mainLayout.getLayout();
     }
 
     @Override public boolean onEscape(InputEvent event)
     {
 	closeApp();
 	return true;
-    }
-
-    @Override protected AreaLayout getDefaultAreaLayout()
-    {
-	return this.mainLayout.getLayout();
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)

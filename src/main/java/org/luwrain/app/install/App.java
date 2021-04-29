@@ -37,10 +37,10 @@ public final class App extends AppBase<Strings>
 	super(Strings.NAME, Strings.class);
     }
 
-    @Override protected boolean onAppInit()
+    @Override protected AreaLayout onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
-	return true;
+	return mainLayout.getAreaLayout();
     }
 
     String[] getDevices()
@@ -119,8 +119,4 @@ public final class App extends AppBase<Strings>
 	return true;
     }
 
-    @Override public AreaLayout getDefaultAreaLayout()
-    {
-	return this.mainLayout.getAreaLayout();
-    }
 }
