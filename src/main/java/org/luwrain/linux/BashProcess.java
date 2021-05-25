@@ -36,6 +36,7 @@ public final class BashProcess
     }
 
     private final String command;
+    private final String dir;
     private final Set<Flags> flags;
     private final Listener listener;
     private Process p = null;
@@ -47,14 +48,20 @@ public final class BashProcess
     private final AtomicBoolean doneOutput = new AtomicBoolean(false);
     private final AtomicBoolean doneErrors = new AtomicBoolean(false);
 
-    public BashProcess(String command, Set<Flags> flags, Listener listener)
+    public BashProcess(String command, String dir, Set<Flags> flags, Listener listener)
     {
 	NullCheck.notEmpty(command, "command");
 	NullCheck.notNull(flags, "flags");
 	NullCheck.notNull(listener, "listener");
-	this.command = command;;
+	this.command = command;
+	this.dir = dir != null?dir:"";
 	this.flags = flags;
 	this.listener = listener;
+    }
+
+    public BashProcess(String command, Set<Flags> flags, Listener listener)
+    {
+	this(command, null, flags, listener);
     }
 
     public BashProcess(String command, Set<Flags> flags)
