@@ -34,6 +34,16 @@ def play_part(n):
     else:
         play("/opt/greeter/" + str(n) + ".ogg")
 
+def help(stdscr):
+    part = 1
+    stdscr.clear()
+    stdscr.refresh()
+    stdscr.addstr(5, 5, "Добро пожаловать!")
+    stdscr.refresh()
+    play_part(part)
+    key = stdscr.getkey()
+    return
+
 def main(stdscr):
     stdscr.clear()
     stdscr.refresh()
@@ -41,7 +51,10 @@ def main(stdscr):
     stdscr.refresh()
     while True:
         key = stdscr.getkey()
-        print(key)
+        if key == key_help:
+            stop_player()
+            help()
+            return
         return
 
 stdscr = curses.initscr()
