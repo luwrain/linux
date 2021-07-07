@@ -54,7 +54,7 @@ public final class BashProcess
 	NullCheck.notNull(flags, "flags");
 	NullCheck.notNull(listener, "listener");
 	this.command = command;
-	this.dir = dir != null?dir:"";
+	this.dir = dir != null?dir:"/";
 	this.flags = flags;
 	this.listener = listener;
     }
@@ -154,13 +154,13 @@ public final class BashProcess
 		"setsid",
 		"/bin/bash",
 		"-c",
-		"echo $$; " + this.command
+		"echo $$; cd '" + escape(dir) + "'; " + this.command
 	    };
 	return new String[]{
 	    "setsid",
 	    "/bin/bash",
 	    "-c",
-	    "echo $$; " + this.command
+	    "echo $$; cd '" + escape(dir) + "'; " + this.command
 	};
     }
 

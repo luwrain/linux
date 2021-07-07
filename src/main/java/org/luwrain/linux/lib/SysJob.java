@@ -26,7 +26,7 @@ import org.luwrain.linux.*;
 public final class SysJob implements Job
 {
 
-    @Override public Instance launch(Listener listener, String[] args)
+    @Override public Instance launch(Listener listener, String[] args, String dir)
     {
 	NullCheck.notNull(listener, "listener");
 	NullCheck.notNullItems(args, "args");
@@ -43,7 +43,7 @@ public final class SysJob implements Job
 		@Override public String[] getMultilineState() { return data.mlState.toArray(new String[data.mlState.size()]); }
 		@Override public String[] getNativeState() { return data.mlState.toArray(new String[data.mlState.size()]); }
 	    };
-		final BashProcess p = new BashProcess(buildCmd(args), EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
+	final BashProcess p = new BashProcess(buildCmd(args), dir, EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
 		@Override public void onOutputLine(String line)
 		{
 		    data.mlState.add(line);
