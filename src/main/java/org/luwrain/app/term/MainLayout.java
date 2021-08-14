@@ -66,7 +66,6 @@ app.sendChar('\t');
 			    app.sendChar('\u0004');
 			    return true;
 			}
-			
 		    if (!event.isSpecial() && (!event.isModified() || event.withShiftOnly()))
 		    {
 			app.sendChar(event.getChar());
@@ -129,7 +128,7 @@ app.sendChar('\t');
 		}
 		@Override public void announceLine(int index, String line)
 		{
-		    app.getLuwrain().setEventResponse(DefaultEventResponse.text(app.getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING)));
+		    defaultLineAnnouncement(context, index, app.getLuwrain().getSpeakableText(line, Luwrain.SpeakableTextType.PROGRAMMING));
 		}
 		@Override public String getAreaName()
 		{
