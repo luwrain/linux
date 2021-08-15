@@ -19,12 +19,11 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.core.script2.*;
 import org.luwrain .script2.*;
 
-public final class Extension extends org.luwrain.core.extensions.EmptyExtension
+public final class Extension extends EmptyExtension
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
 

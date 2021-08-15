@@ -19,7 +19,6 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 public final class Scripts

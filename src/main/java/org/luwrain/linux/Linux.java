@@ -20,12 +20,10 @@ import java.util.*;
 import java.io.*;
 import java.nio.file.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
-
-public final class Linux implements org.luwrain.base.OperatingSystem
+public final class Linux implements OperatingSystem
 {
     static public final String LOG_COMPONENT = "linux";
 
@@ -59,7 +57,7 @@ public final class Linux implements org.luwrain.base.OperatingSystem
 	return "";
     }
 
-    @Override public org.luwrain.base.Braille getBraille()
+    @Override public Braille getBraille()
     {
 	return new BrlApi();
     }

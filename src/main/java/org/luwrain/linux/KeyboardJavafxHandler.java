@@ -20,7 +20,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import org.luwrain.core.*;
-import org.luwrain.base.*;
 import org.luwrain.core.events.InputEvent;
 import org.luwrain.interaction.KeyboardHandler;
 

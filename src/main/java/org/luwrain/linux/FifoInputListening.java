@@ -20,7 +20,6 @@ import java.io.*;
 import java.util.concurrent.*;
 import org.luwrain.core.events.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class FifoInputListening

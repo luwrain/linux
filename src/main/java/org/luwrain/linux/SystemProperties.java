@@ -19,7 +19,6 @@ package org.luwrain.linux;
 import java.io.*;
 import java.util.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 
 final class SystemProperties
@@ -41,7 +40,7 @@ final class SystemProperties
 	{
 	    return new String[]{"^battery\\."};
 	}
-	@Override public Set<org.luwrain.base.PropertiesProvider.Flags> getPropertyFlags(String propName)
+	@Override public Set<PropertiesProvider.Flags> getPropertyFlags(String propName)
 	{
 	    NullCheck.notEmpty(propName, "propName");
 	    return EnumSet.of(PropertiesProvider.Flags.PUBLIC);
@@ -66,7 +65,7 @@ final class SystemProperties
 	    NullCheck.notNull(value, "value");
 	    return false;
 	}
-	@Override public void setListener(org.luwrain.base.PropertiesProvider.Listener listener)
+	@Override public void setListener(PropertiesProvider.Listener listener)
 	{
 	    this.listener = listener;
 	}

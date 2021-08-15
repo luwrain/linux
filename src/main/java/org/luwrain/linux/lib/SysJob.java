@@ -19,7 +19,6 @@ package org.luwrain.linux.lib;
 import java.util.*;
 import java.io.*;
 
-import org.luwrain.base.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 

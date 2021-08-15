@@ -38,7 +38,7 @@ final class InterfaceObj extends EmptyHookObject implements Interface
 
         @Override public boolean suspend()
     {
-	final org.luwrain.base.PropertiesBase props = linux.getProps();
+	final PropertiesBase props = linux.getProps();
 	if (props == null)
 	    return false;
 	new Scripts(props).runSync(Scripts.ID.SUSPEND, true);

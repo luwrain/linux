@@ -41,7 +41,7 @@ public final class Connections
     private Network connectedNetwork = null;
     private Object lockOwner = null;
 
-    public Connections(org.luwrain.base.PropertiesBase props)
+    public Connections(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	this.scripts = new Scripts(props);
