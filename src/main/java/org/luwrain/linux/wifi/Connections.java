@@ -46,9 +46,6 @@ public final class Connections
 	NullCheck.notNull(props, "props");
 	this.scripts = new Scripts(props);
 this.wlanInterface = getWlanInterface();
-	if (this.wlanInterface == null || this.wlanInterface.trim().isEmpty())
-	Log.debug(LOG_COMPONENT, "no wlan interfacewlan interface"); else
-	Log.debug(LOG_COMPONENT, "wlan interface is " + wlanInterface);
     }
 
     synchronized public boolean getConnectionLock(Object owner)
