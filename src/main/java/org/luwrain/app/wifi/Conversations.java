@@ -50,6 +50,6 @@ final class Conversations
 
     String askPassword()
     {
-	return Popups.simple(luwrain, strings.connectionPopupName(), strings.enterThePassword(), "");
+	return Popups.text(luwrain, strings.connectionPopupName(), strings.enterThePassword(), "");
     }
 }
