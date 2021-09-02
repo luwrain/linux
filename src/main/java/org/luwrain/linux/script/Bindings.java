@@ -20,7 +20,7 @@ import org.graalvm.polyglot.*;
 
 import org.luwrain.core.*;
 
-public final class Bindings implements org.luwrain.core.script2.Bindings
+public final class Bindings implements org.luwrain.script.core.Bindings
 {
     private final Luwrain luwrain;
 

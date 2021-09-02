@@ -20,7 +20,7 @@ import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.script2.*;
+import org.luwrain.script.core.*;
 import org.luwrain .script2.*;
 
 public final class Extension extends EmptyExtension
