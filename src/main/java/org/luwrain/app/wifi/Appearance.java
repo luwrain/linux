@@ -22,7 +22,7 @@ import org.luwrain.core.*;
 import org.luwrain.controls.*;
 import org.luwrain.linux.wifi.*;
 
-final class Appearance implements ListArea.Appearance
+final class Appearance implements ListArea.Appearance<Object>
 {
     private final Luwrain luwrain;
     private final Strings strings;
