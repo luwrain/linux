@@ -50,7 +50,7 @@ public final class SysDevicesList
     {
 	if (pciDevDir == null)
 	    return new SysDevice[0];
-	final List<SysDevice> devices = new LinkedList();
+	final List<SysDevice> devices = new ArrayList<>();
 	final File[] pciDirs = pciDevDir.listFiles();
 	if (pciDirs == null)
 	    return new SysDevice[0];

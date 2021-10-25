@@ -62,6 +62,7 @@ public class App implements Application, MonoApp
 	return new InitResult();
     }
 
+    @SuppressWarnings("unchecked")
     private void createArea()
     {
 	final ListArea.Params params = new ListArea.Params();

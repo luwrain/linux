@@ -60,7 +60,7 @@ public final class App extends AppBase<Strings>
 
     @Override public AreaLayout onAppInit() throws IOException
     {
-	final Map<String, String> env = new HashMap(System.getenv());
+	final Map<String, String> env = new HashMap<>(System.getenv());
 	env.put("TERM", "linux");
 	this.pty = (UnixPtyProcess)(new PtyProcessBuilder(new String[]{"/bin/bash", "-l"})
 				    .setEnvironment(env)
@@ -68,8 +68,8 @@ public final class App extends AppBase<Strings>
 				    .setConsole(false)
 				    .start());
 	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
-	getLuwrain().executeBkg(new FutureTask(()->readOutput(), null));
-		getLuwrain().executeBkg(new FutureTask(()->listening(), null));
+	getLuwrain().executeBkg(new FutureTask<>(()->readOutput(), null));
+		getLuwrain().executeBkg(new FutureTask<>(()->listening(), null));
 	setAppName(getStrings().appName());
 	this.layout = new MainLayout(this);
 	return layout.getLayout();
@@ -110,7 +110,7 @@ public final class App extends AppBase<Strings>
 	    }
 	    catch(Exception e)
 	    {
-		getLuwrain().crash(e);
+		crash(e);
 	    }
 	}
 	catch(Throwable t)

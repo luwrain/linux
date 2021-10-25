@@ -170,7 +170,7 @@ public ScanResult scan()
 	Log.debug(LOG_COMPONENT, "wifi scan result directory is " + dir);
 	if (dir == null || dir.trim().isEmpty())
 	    return new ScanResult();
-	final List<Network> networks = new LinkedList();
+	final List<Network> networks = new ArrayList<>();
 	final File[] files = new File(dir).listFiles();
 	if (files == null)
 	    return new ScanResult();
@@ -207,7 +207,7 @@ public ScanResult scan()
 
     private String getWlanInterface()
     {
-	final List<Path> dirs = new LinkedList();
+	final List<Path> dirs = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(INTERFACES_DIR))) {
 		for (Path p : directoryStream) 
 		    if (Files.isDirectory(p))

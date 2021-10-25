@@ -42,8 +42,8 @@ public final class BashProcess
     private Process p = null;
     private int pid = -1;
     private int exitCode = -1;
-    private final ArrayList<String> output = new ArrayList();
-    private final ArrayList<String> errors = new ArrayList();
+    private final ArrayList<String> output = new ArrayList<>();
+    private final ArrayList<String> errors = new ArrayList<>();
     private final AtomicBoolean done = new AtomicBoolean(false);
     private final AtomicBoolean doneOutput = new AtomicBoolean(false);
     private final AtomicBoolean doneErrors = new AtomicBoolean(false);

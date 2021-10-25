@@ -45,7 +45,7 @@ public final class App extends AppBase<Strings>
 
     String[] getDevices()
     {
-	final List<String> res = new ArrayList();
+	final List<String> res = new ArrayList<>();
 	final File[] dev = SYS_BLOCK.listFiles();
 	if (dev == null)
 	    return new String[0];

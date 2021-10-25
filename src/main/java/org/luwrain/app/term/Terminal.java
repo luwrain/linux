@@ -27,7 +27,7 @@ final class Terminal implements Lines, HotPoint
 
     private final Luwrain luwrain;
     private final TermInfo termInfo;
-    private Vector<String> lines = new Vector();
+    private List<String> lines = new ArrayList<>();
     private int hotPointX = 0;
     private int hotPointY = 0;
     private StringBuilder seq = new StringBuilder();

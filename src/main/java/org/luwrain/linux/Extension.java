@@ -54,8 +54,8 @@ public final class Extension extends EmptyExtension
 	    Log.error(LOG_COMPONENT, "unable to load terminfo: " + e.getClass().getName() + ":" + e.getMessage());
 	    this.termInfo = null;
 	}
-	final List<PointerInputListening> inputs = new LinkedList();
-	final List<FifoInputListening> fifos = new LinkedList();
+	final List<PointerInputListening> inputs = new ArrayList<>();
+	final List<FifoInputListening> fifos = new ArrayList<>();
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
 	    inputs.add(new PointerInputListening(luwrain, s));
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_FIFO))
@@ -129,7 +129,7 @@ public final class Extension extends EmptyExtension
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	final List<ExtensionObject> res = new ArrayList();
+	final List<ExtensionObject> res = new ArrayList<>();
 	//	if (scripts.exists("webcam-take"))
 	    //	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 	res.add(new org.luwrain.linux.lib.SysJob());

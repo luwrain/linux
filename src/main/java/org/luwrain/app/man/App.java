@@ -26,16 +26,13 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     private MainLayout mainLayout = null;
 
-    public App()
-    {
-	super(Strings.NAME, Strings.class, "luwrain.linux.man");
-    }
+    public App() { super(Strings.NAME, Strings.class, "luwrain.linux.man"); }
 
     @Override protected AreaLayout onAppInit()
     {
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
-	return mainLayout.getLayout();
+	return mainLayout.getAreaLayout();
     }
 
     @Override public boolean onEscape()

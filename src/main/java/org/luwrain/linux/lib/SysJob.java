@@ -100,7 +100,7 @@ public final class SysJob implements Job
 	boolean finished = false;
 	int exitCode = -1;
 	String state = "";
-	final List<String> mlState = new ArrayList();
+	final List<String> mlState = new ArrayList<>();
 	Runnable stopProc = null;
     }
 }

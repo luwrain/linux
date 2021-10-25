@@ -120,7 +120,7 @@ Log.info("linux", "braille supported successfully initialized");
 
     private FutureTask createTask()
     {
-	return new FutureTask(()->{
+	return new FutureTask<>(()->{
 	    while(!Thread.currentThread().isInterrupted())
 	    {
 		try {

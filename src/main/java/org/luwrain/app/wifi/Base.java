@@ -49,7 +49,7 @@ final class Base
     {
 	if (isBusy())
 	    return false;
-	task = new FutureTask(()->{
+	task = new FutureTask<>(()->{
 		networks = null;//to indicate a scanning is in progress
 		final ScanResult res = connections.scan();
 		luwrain.runUiSafely(()->acceptResult(listArea, res));
@@ -78,7 +78,7 @@ final class Base
 	    connections.releaseConnectionLock(this);
 	    return false;
 	}
-	task = new FutureTask(()->{
+	task = new FutureTask<>(()->{
 		if (connections.connect(connectTo, (line)->luwrain.runUiSafely(()->destArea.addProgressLine(line)), Base.this))
 		    luwrain.message(strings.connectionEstablished(), Luwrain.MessageType.DONE); else
 		    luwrain.message(strings.errorConnecting(), Luwrain.MessageType.ERROR);

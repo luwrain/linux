@@ -56,7 +56,7 @@ class PointerInputListening
 
     private FutureTask createTask()
     {
-	return new FutureTask(()->{
+	return new FutureTask<>(()->{
 		DataInputStream s = null;
 		try {
 		    s = new DataInputStream(new FileInputStream("/dev/input/mice"));

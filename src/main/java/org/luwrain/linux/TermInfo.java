@@ -25,8 +25,8 @@ public final class TermInfo
 {
 final String text;
     private String termName = null;
-    private Set<String> values = new HashSet();
-    private Map<Character, Map<String, String> > seqs = new HashMap();
+    private Set<String> values = new HashSet<>();
+    private Map<Character, Map<String, String> > seqs = new HashMap<>();
 
     TermInfo() throws IOException
     {
@@ -169,7 +169,7 @@ final String text;
 	    Map<String, String> m = seqs.get(c);
 	    if (m == null)
 	    {
-		m = new HashMap();
+		m = new HashMap<>();
 	    seqs.put(c, m);
 	    //	    Log.debug("terminfo", "put  " + c);
 	    }

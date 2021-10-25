@@ -24,74 +24,42 @@ import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.linux.*;
+import org.luwrain.controls.ConsoleUtils.*;
+import org.luwrain.app.base.*;
 
-final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHandler
+import static org.luwrain.core.DefaultEventResponse.*;
+
+final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<String>, ConsoleArea.InputHandler
 {
     static private final Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
 
     private final App app;
-    private final ConsoleArea searchArea;
+    private final ConsoleArea<String> searchArea;
     private final SimpleArea pageArea;
 
     private String[] pages = new String[0];
 
     MainLayout(App app)
     {
+	super(app);
 	this.app = app;
-	this.searchArea = new ConsoleArea(getSearchAreaParams()){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onInputEvent(this, event))
-			return true;
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onSystemEvent(this, event))
-			return true;
-		    return super.onSystemEvent(event);
-		}
-		@Override public boolean onAreaQuery(AreaQuery query)
-		{
-		    NullCheck.notNull(query, "query");
-		    if (app.onAreaQuery(this, query))
-			return true;
-		    return super.onAreaQuery(query);
-		}
-	    };
-	this.pageArea = new SimpleArea(new DefaultControlContext(app.getLuwrain()), app.getStrings().pageAreaName()){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onInputEvent(this, event))
-			return true;
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (app.onSystemEvent(this, event))
-			return true;
-		    return super.onSystemEvent(event);
-		}
-		@Override public boolean onAreaQuery(AreaQuery query)
-		{
-		    NullCheck.notNull(query, "query");
-		    if (!app.onAreaQuery(this, query))
-			return true;
-		    return super.onAreaQuery(query);
-		}
-	    };
+	this.searchArea = new ConsoleArea<>(consoleParams((params)->{
+		    params.model = new ArrayModel<>(()->pages);
+		    params.appearance = new SearchAreaAppearance();
+		    params.name = app.getStrings().searchAreaName();
+		    params.inputPos = ConsoleArea.InputPos.TOP;
+		    params.inputPrefix = "man>";
+		    params.inputHandler = this;
+		    params.clickHandler = this;
+		}));
+	this.pageArea = new SimpleArea(getControlContext(), app.getStrings().pageAreaName());
+	setAreaLayout(AreaLayout.TOP_BOTTOM, searchArea, null, pageArea, null);
     }
 
-    @Override public boolean onConsoleClick(ConsoleArea area, int index, Object obj)
+    @Override public boolean onConsoleClick(ConsoleArea area, int index, String item)
     {
-	NullCheck.notNull(obj, "obj");
-	if (obj.toString().trim().isEmpty())
-	    return false;
-	final Matcher m = ENTRY_PATTERN.matcher(obj.toString().trim());
+	NullCheck.notNull(item, "item");
+	final Matcher m = ENTRY_PATTERN.matcher(item.trim());
 	if (!m.find())
 	    return false;
 	final BashProcess p = new BashProcess("man " + BashProcess.escape(m.group(2)) + " " + BashProcess.escape(m.group(1)));
@@ -156,36 +124,17 @@ final class MainLayout implements ConsoleArea.ClickHandler, ConsoleArea.InputHan
 	return true;
     }
 
-    ConsoleArea.Params getSearchAreaParams()
+    private final class SearchAreaAppearance implements ConsoleArea.Appearance<String>
     {
-	final ConsoleArea.Params params = new ConsoleArea.Params();
-	params.context = new DefaultControlContext(app.getLuwrain());
-	params.model = new ConsoleUtils.ArrayModel(()->{return pages;});
-	params.appearance = new SearchAreaAppearance();
-	params.name = app.getStrings().searchAreaName();
-	params.inputPos = ConsoleArea.InputPos.TOP;
-	params.inputPrefix = "man>";
-	params.inputHandler = this;
-	params.clickHandler = this;
-	return params;
-    }
-
-    AreaLayout getLayout()
-    {
-	return new AreaLayout(AreaLayout.TOP_BOTTOM, searchArea, pageArea);
-    }
-
-    private final class SearchAreaAppearance implements ConsoleArea.Appearance
-    {
-	@Override public void announceItem(Object item)
+	@Override public void announceItem(String item)
 	{
 	    NullCheck.notNull(item, "item");
-	    app.getLuwrain().setEventResponse(DefaultEventResponse.text(app.getLuwrain().getSpeakableText(item.toString(), Luwrain.SpeakableTextType.PROGRAMMING)));
+	    app.setEventResponse(text(app.getLuwrain().getSpeakableText(item, Luwrain.SpeakableTextType.PROGRAMMING)));
 	}
-	@Override public String getTextAppearance(Object item)
+	@Override public String getTextAppearance(String item)
 	{
 	    NullCheck.notNull(item, "item");
-	    return item.toString();
+	    return item;
 	}
     }
 }

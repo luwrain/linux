@@ -55,7 +55,7 @@ final class FifoInputListening
 
     private FutureTask createTask()
     {
-	return new FutureTask(()->{
+	return new FutureTask<>(()->{
 		BufferedReader reader = null;
 		FileOutputStream output = null;
 		try {

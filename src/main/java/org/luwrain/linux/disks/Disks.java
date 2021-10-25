@@ -19,7 +19,7 @@ public final class Disks implements DisksPopup.Disks
 
     @Override public Disk[] getDisks()
     {
-	final List<Disk> res = new ArrayList();
+	final List<Disk> res = new ArrayList<>();
 	try {
 	    final String[] mounts = FileUtils.readTextFileMultipleStrings(FILE_MOUNTS, "UTF-8", System.lineSeparator());
 	    for(String line: mounts) {

@@ -31,7 +31,7 @@ final class MainLayout extends LayoutBase
     private final App app;
     private final Terminal term ;
     private final NavigationArea termArea;
-    private Vector<String> lines = new Vector();
+    private List<String> lines = new ArrayList<>();
     private int oldHotPointX = -1;
     private int oldHotPointY = -1;
 

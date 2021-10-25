@@ -128,7 +128,7 @@ public final class Scripts
     {
 	NullCheck.notNull(scriptName, "scriptName");
 	NullCheck.notNullItems(args, "args");
-	final List<String> cmd = new LinkedList();
+	final List<String> cmd = new ArrayList<>();
 	if (sudo)
 	    cmd.add("sudo");
 	cmd.add(getScriptPath(scriptName));
