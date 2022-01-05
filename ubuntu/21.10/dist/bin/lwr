@@ -1,5 +1,4 @@
 #!/bin/bash -e
 # Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
 
-/usr/bin/mplayer -fs -dvd-device "$1" dvd://1 &> /dev/null
-exit $?
+exec luwrain "$@" &> /dev/null
