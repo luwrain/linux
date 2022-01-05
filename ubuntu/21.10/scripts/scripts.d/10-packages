@@ -1,9 +1,9 @@
 
 install-pkg acpi ntfs-3g smartmontools udisks2
 install-pkg unrar unzip
-install-pkg net-tools openssh-server fetchmail procmail  unattended-upgrades 
+install-pkg curl wget net-tools openssh-server fetchmail procmail  unattended-upgrades 
 #install-pkg dvd+rw-tools growisofs
-install-pkg openjdk-11-jre
+install-pkg openjdk-11-jre openjfx
 install-pkg gcc gdb make git
 install-pkg yasr xterm
 install-pkg lame sox mpg123 mplayer xbindkeys vorbis-tools geeqie

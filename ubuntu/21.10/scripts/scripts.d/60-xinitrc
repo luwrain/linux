@@ -24,6 +24,8 @@ cat <<EOF > $LWRISO_ROOT/home/$LWRISO_USER/.xinitrc
 export LANG=ru_RU.UTF-8
 export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
 
+mplayer /opt/greeter/greeter.ogg
+
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:caps_toggle,grp_led:scroll"
 

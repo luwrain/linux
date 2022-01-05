@@ -2,7 +2,7 @@
 install-pkg voiceman mbrola-suite rhvoice-legacy
 
 cat <<EOF > $LWRISO_ROOT/etc/voiceman.conf
-# VoiceMan configuration for Homeros
+# VoiceMan configuration for LUWRAIN
 # Michael Pozhidaev <msp@luwrain.org>
 
 [Global]

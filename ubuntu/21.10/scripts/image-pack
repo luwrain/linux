@@ -8,8 +8,6 @@ deb http://security.ubuntu.com/ubuntu/ focal-security main restricted universe m
 deb http://ru.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
 deb http://ru.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
 EOF
-
-echo "nameserver $LWRISO_NAMESERVER" > "/etc/resolv.conf"
 apt-get update
 apt-get --yes install wget squashfs-tools xorriso
 

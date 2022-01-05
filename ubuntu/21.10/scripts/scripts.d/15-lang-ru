@@ -1,4 +1,10 @@
 
+# Locale
+#echo 'LANG="ru_RU.UTF-8"' > ./chroot/etc/default/locale
+# For proper Russian characters in console
+# FIXME!
+#sed -i -e s:'^ExecStart=.*$':'ExecStart=/bin/setupcon': ./chroot/lib/systemd/system/systemd-vconsole-setup.service
+
 install-pkg language-pack-ru language-pack-ru-base
 
 if [ "$LWRISO_LANG" == ru ]; then
