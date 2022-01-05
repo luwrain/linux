@@ -19,8 +19,6 @@ remove-pkg $(apt-cache search mythes | grep ^mythes | cut -f1 -d' ')
 #remove-pkg aspell dictionaries-common
 remove-pkg-prefix language-pack
 remove-pkg-prefix hunspell
-#remove-pkg-prefix ubiquity
-#remove-pkg-prefix ubuntu-wallpaper
 #remove-pkg transmission-common shotwell                                   seahorse                                   rhythmbox remmina reiserfsprogs                            language-selector-common ibus
 remove-pkg-prefix printer-driver
 
