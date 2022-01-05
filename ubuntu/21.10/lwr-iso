@@ -4,7 +4,7 @@ THIS="${0##*/}"
 
 [ -z "$1" ] && echo "$THIS:no Ubuntu image given" >&2 && exit 1
 
-WORK="./tmp-env/image"
+WORK="./tmp/image"
 CHROOT="$WORK/iso/chroot"
 DISK="$1"
 SQUASHFSSRC="$1/casper/filesystem.squashfs"
@@ -18,17 +18,17 @@ unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
 echo Preparing the image
 (
     #cp -r dist install "$WORK/iso"
-    cp -r dist emacs scripts/. "$WORK/iso"
+    cp -r dist scripts/. "$WORK/iso"
     mount --bind /proc "$CHROOT/proc"
     chroot "$WORK" /iso/image-prepare
     umount "$CHROOT/proc"
-    ) &> /tmp/homeros-iso.log
+    ) &> /tmp/luwrain-iso.log
 
 echo Packing the image
 (
     rm -f "$WORK/iso/disk/casper/filesystem.squashfs"
     chroot "$WORK" /iso/image-pack
-    cp "$WORK/iso/homeros.iso" homeros.iso
-    ) &>> /tmp/homeros-iso.log
+    cp "$WORK/iso/luwrain.iso" luwrain.iso
+    ) &>> /tmp/luwrain-iso.log
 
 echo 'OK!'
