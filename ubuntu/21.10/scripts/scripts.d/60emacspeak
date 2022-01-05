@@ -16,13 +16,13 @@ EOF
 install-pkg emacspeak
 install-pkg w3m-el
 
-pushd $HMRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/lisp
+pushd $LWRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/lisp
 for i in /iso/emacs/*; do
     patch -p1 < "$i"
 done
 popd
 
-cat <<EOF > $HMRISO_ROOT/etc/emacspeak.conf
+cat <<EOF > $LWRISO_ROOT/etc/emacspeak.conf
 # emacspeak configuration
 export DTK_PROGRAM=/usr/bin/voiceman-emacspeak
 export DTK_TCL=tcl
@@ -30,5 +30,5 @@ export DTK_PORT=none
 export DTK_DEVICE="espeak"
 EOF
 
-rm -rf $HMRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/lisp/*.elc $HMRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/debian_compiled_version
+rm -rf $LWRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/lisp/*.elc $LWRISO_ROOT/usr/share/emacs/site-lisp/emacspeak/debian_compiled_version
 chroot-run /usr/lib/emacsen-common/packages/install/emacspeak  emacs

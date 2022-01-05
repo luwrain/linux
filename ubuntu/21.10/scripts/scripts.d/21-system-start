@@ -1,6 +1,6 @@
 
-mkdir $HMRISO_ROOT/etc/homeros
-cat <<EOF > $HMRISO_ROOT/etc/homeros/system-start
+mkdir $LWRISO_ROOT/etc/homeros
+cat <<EOF > $LWRISO_ROOT/etc/homeros/system-start
 #!/bin/bash
 # Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
 
@@ -14,7 +14,7 @@ if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi
 
-/bin/su - $HMRISO_USER -c /usr/bin/startx
+/bin/su - $LWRISO_USER -c /usr/bin/startx
 EOF
 
-chmod 755 $HMRISO_ROOT/etc/homeros/system-start
+chmod 755 $LWRISO_ROOT/etc/homeros/system-start

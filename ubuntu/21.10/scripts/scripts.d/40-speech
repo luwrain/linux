@@ -1,7 +1,7 @@
 
 install-pkg voiceman mbrola-suite rhvoice-legacy
 
-cat <<EOF > $HMRISO_ROOT/etc/voiceman.conf
+cat <<EOF > $LWRISO_ROOT/etc/voiceman.conf
 # VoiceMan configuration for Homeros
 # Michael Pozhidaev <msp@luwrain.org>
 
@@ -15,7 +15,7 @@ default language = eng
 default = "0123456789.,;:_-+=[]&<>""'/\\|?~\`!@#\$%^*(){}"
 EOF
 
-cat <<EOF > $HMRISO_ROOT/etc/voiceman.d/rhvoice.output
+cat <<EOF > $LWRISO_ROOT/etc/voiceman.d/rhvoice.output
 
 [output]
 name = RHVoice
@@ -33,7 +33,7 @@ rate aver = 1.6
 rate min = 2
 EOF
 
-cat <<EOF > $HMRISO_ROOT/etc/voiceman.d/mbrola.output
+cat <<EOF > $LWRISO_ROOT/etc/voiceman.d/mbrola.output
 
 [output]
 name = mbrola
@@ -56,7 +56,7 @@ volume aver = 2.5
 volume max = 10
 EOF
 
-cat <<EOF > $HMRISO_ROOT/usr/share/voiceman/chars-table.rus
+cat <<EOF > $LWRISO_ROOT/usr/share/voiceman/chars-table.rus
 0:ноль
 1:один
 2:два

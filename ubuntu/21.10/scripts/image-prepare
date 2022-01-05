@@ -4,7 +4,7 @@ cd /iso
 . base.sh
 
 export DEBIAN_FRONTEND=noninteractive
-export HOME=/home/$HMRISO_USER
+export HOME=/home/$LWRISO_USER
 
 #in-chroot apt-get -y remove pulseaudio pulseaudio-utils \
 #ubiquity \

@@ -1,12 +1,12 @@
 
-HMRISO_ARCH=amd64
-HMRISO_DATE="$(date +%Y%m%d)"
-HMRISO_USER=homeros
-HMRISO_NAMESERVER=8.8.8.8
-HMRISO_LANG=ru
-HMRISO_BOOT_VER=21.10
+LWRISO_ARCH=amd64
+LWRISO_DATE="$(date +%Y%m%d)"
+LWRISO_USER=homeros
+LWRISO_NAMESERVER=8.8.8.8
+LWRISO_LANG=ru
+LWRISO_BOOT_VER=21.10
 
-export HMRISO_ROOT=/iso/chroot
+export LWRISO_ROOT=/iso/chroot
 
 chroot-run()
 {
