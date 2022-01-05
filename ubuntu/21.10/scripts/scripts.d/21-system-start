@@ -10,6 +10,7 @@ export VOICEMAN_LIBAO_DRIVER=alsa
 #/sbin/brltty -t ru
 
 pulseaudio --system -D ||:
+pactl set-sink-volume 0 100%
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi

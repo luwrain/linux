@@ -1,4 +1,5 @@
 
+find ./dist -name .gitignore -delete
 [ -d ./dist/etc ] && cp -r ./dist/etc/. $LWRISO_ROOT/etc/ ||:
 [ -d ./dist/opt ] && cp -r ./dist/opt/. $LWRISO_ROOT/opt/ ||:
 [ -d ./dist/bin ] && cp -r ./dist/bin/. $LWRISO_ROOT/usr/local/bin/ ||:
