@@ -4,3 +4,12 @@ find ./dist -name .gitignore -delete
 [ -d ./dist/opt ] && cp -r ./dist/opt/. $LWRISO_ROOT/opt/ ||:
 [ -d ./dist/bin ] && cp -r ./dist/bin/. $LWRISO_ROOT/usr/local/bin/ ||:
 [ -d ./dist/sbin ] && cp -r ./dist/sbin/. $LWRISO_ROOT/sbin/ ||:
+
+pushd $LWRISO_ROOT/opt
+if ! [ -e luwrain ]; then
+    wget -q "http://download.luwrain.org/nightly/latest/$(latest-iso)"
+    tar xf luwrain*.tar.gz
+    rm -f luwrain*.tar.gz
+    mv luwrain-iso* luwrain
+fi
+popd

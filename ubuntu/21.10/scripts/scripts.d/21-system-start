@@ -1,4 +1,7 @@
 
+#killall brltty
+#/sbin/brltty -t ru
+
 mkdir $LWRISO_ROOT/etc/luwrain
 cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 #!/bin/bash
@@ -6,11 +9,8 @@ cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 
 export VOICEMAN_LIBAO_DRIVER=alsa
 
-#killall brltty
-#/sbin/brltty -t ru
-
 pulseaudio --system -D ||:
-pactl set-sink-volume 0 100%
+pactl set-sink-volume 0 80%
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
 fi

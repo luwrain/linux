@@ -2,14 +2,7 @@
 
 cd /iso
 . base.sh
-
-cat <<EOF > /etc/apt/sources.list
-deb http://security.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
-deb http://ru.archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
-deb http://ru.archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
-EOF
-apt-get update
-apt-get --yes install wget squashfs-tools xorriso
+apt-get --yes install squashfs-tools xorriso
 
 mksquashfs chroot disk/casper/filesystem.squashfs -comp xz > /dev/null
 

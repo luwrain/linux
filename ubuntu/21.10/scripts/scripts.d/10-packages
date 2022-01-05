@@ -1,6 +1,6 @@
 
 install-pkg acpi ntfs-3g smartmontools udisks2 cpufrequtils
-install-pkg unrar unzip
+install-pkg unrar zip p7zip-full
 install-pkg curl wget net-tools openssh-server fetchmail procmail  unattended-upgrades 
 #install-pkg dvd+rw-tools growisofs
 install-pkg openjdk-11-jre openjfx
