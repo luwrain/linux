@@ -1,5 +1,11 @@
 
-# Linux-dependent components
+# LUWRAIN components for Linux
+
+Please find the following components in this repository:
+
+* The source code of luwrain-linux.jar
+* The ISO compilation scripts to compile the LUWRAIN ISO using Ubuntu (21.10 at the moment)
+* The greeter utility
 
 LUWRAIN is a platform for the creation of apps for the blind and partially-sighted.
 It provides a Java API for constructing highly-distributable apps
