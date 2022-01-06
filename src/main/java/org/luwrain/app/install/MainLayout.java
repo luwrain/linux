@@ -48,7 +48,7 @@ final class MainLayout extends LayoutBase
 	NullCheck.notNull(f, "f");
 	final StringBuilder b = new StringBuilder();
 	b.append(f).append(", ")
-	.append(app.blockDevices.getDeviceSize(f)).append(", ")
+	.append(app.blockDevices.getDeviceSize(f) / 1048576 / 1024).append("G, ")
 	.append(app.blockDevices.getDeviceName(f));
 	return new String(b);
     }

@@ -26,8 +26,8 @@ import static org.luwrain.util.FileUtils.*;
 public final class BlockDevices
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
-        static public final File SYS_BLOCK = new File("/sys/block");
-            static public final File DEV = new File("/dev");
+    static public final File SYS_BLOCK = new File("/sys/block");
+    static public final File DEV = new File("/dev");
 
     public String[] getHardDrives()
     {
@@ -68,7 +68,7 @@ public final class BlockDevices
 	return r;
     }
 
-        public String getDeviceName(String dev)
+    public String getDeviceName(String dev)
     {
 	NullCheck.notNull(dev, "dev");
 	try {
@@ -82,22 +82,20 @@ public final class BlockDevices
 	}
     }
 
-    public String getDeviceSize(String dev)
+    public long getDeviceSize(String dev)
     {
 	NullCheck.notNull(dev, "dev");
 	try {
-	    final String sizeStr = readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), "UTF-8").trim();
+	    final String sizeStr = readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), UTF_8).trim();
 	    final Long l = Long.parseLong(sizeStr);
-	    return Long.toString(l.longValue() / 1048576) + "G";
+	    return l.longValue() * 512;
 	}
 	catch(IOException e)
 	{
 	    Log.error(LOG_COMPONENT, "unable to get the name of the device " + dev + ": " + e.getClass().getName() + ": " + e.getMessage());
 	    e.printStackTrace();
-	    return "";
+	    return -1;
 	}
     }
-
-
 
 }
