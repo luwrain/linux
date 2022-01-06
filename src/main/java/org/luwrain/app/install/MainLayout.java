@@ -37,8 +37,8 @@ final class MainLayout extends LayoutBase
 	this.wizardArea = new WizardArea(getControlContext());
 	setAreaLayout(wizardArea, actions());
 	final WizardArea.Frame devFrame = wizardArea.newFrame()
-	.addText("Привет");
-	for(String f: app.getDevices())
+	.addText(app.getStrings().greeting());
+	for(String f: app.blockDevices.getHardDrives())
 	    devFrame.addClickable(getDeviceStr(f), (values)->{ return false; });
 	wizardArea.show(devFrame);
     }
@@ -47,9 +47,9 @@ final class MainLayout extends LayoutBase
     {
 	NullCheck.notNull(f, "f");
 	final StringBuilder b = new StringBuilder();
-	b.append(app.getDeviceName(f)).append(", ")
-	.append(app.getDeviceSize(f)).append(", ")
-	.append(f);
+	b.append(f).append(", ")
+	.append(app.blockDevices.getDeviceSize(f)).append(", ")
+	.append(app.blockDevices.getDeviceName(f));
 	return new String(b);
     }
 }

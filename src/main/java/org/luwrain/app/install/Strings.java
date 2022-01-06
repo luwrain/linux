@@ -21,4 +21,5 @@ public interface Strings
 static final String NAME = "luwrain.install";
 
     String appName();
+    String greeting();
 }
