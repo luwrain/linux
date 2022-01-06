@@ -36,5 +36,5 @@ remove-pkg-prefix()
 
 latest-iso()
 {
-    curl https://download.luwrain.org/nightly/latest/ 2> /dev/null | egrep -o  'luwrain-iso.[0-9-]*.tar.gz' | head -n 1
+    curl https://download.luwrain.org/nightly/latest/ 2> /dev/null | egrep -o  'luwrain-iso-[a-z0-9-]*.tar.gz' | head -n 1
 }

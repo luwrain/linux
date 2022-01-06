@@ -11,5 +11,8 @@ if ! [ -e luwrain ]; then
     tar xf luwrain*.tar.gz
     rm -f luwrain*.tar.gz
     mv luwrain-iso* luwrain
+    pushd luwrain/jar 
+    wget -q https://download.luwrain.org/jni/luwrain-jni-ubuntu-21.10-x64.jar
+    popd
 fi
 popd
