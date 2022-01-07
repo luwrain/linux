@@ -45,16 +45,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 	for(String dev: blockDevices.getHardDrives())
 	{
 	    final File devFile = new File(BlockDevices.DEV, dev);
-	    disks.add(new Parted(devFile.getPath(), (args)->{
-				    return new String[]{
-		"BYT;",
-		"/dev/nvme0n1:128GB:nvme:512:512:gpt:KBG40ZMT128G TOSHIBA MEMORY:;",
-		"1:1049kB:211MB:210MB:fat16::загрузочный, esp;",
-		"2:211MB:31,7GB:31,5GB:ext4::;",
-		"3:31,7GB:42,2GB:10,5GB:ext4::;",
-		"4:42,2GB:128GB:85,9GB:::;"
-	    };
-	    }));
+	    disks.add(new Parted(devFile.getPath()));
 	}
 	try {
 	    for(Parted p: disks)

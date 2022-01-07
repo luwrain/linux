@@ -21,10 +21,12 @@ import java.util.*;
 import org.luwrain.core.*;
 import org.luwrain.app.base.*;
 import org.luwrain.linux.*;
+import org.luwrain.linux.services.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
     final List<WifiNetwork> networks = new ArrayList<>();
+    final NmCli nmCli = new NmCli();
     private MainLayout mainLayout = null;
 
     public App() { super(Strings.NAME, Strings.class, "luwrain.linux.wifi"); }
@@ -34,6 +36,20 @@ public final class App extends AppBase<Strings> implements MonoApp
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
+    }
+
+    boolean updateNetworkList()
+    {
+	final TaskId taskId = newTaskId();
+	return runTask(taskId, ()->{
+		final WifiNetwork[] n = nmCli.scan();
+		finishedTask(taskId, ()->{
+			networks.clear();
+			networks.addAll(Arrays.asList(n));
+			if (mainLayout != null)
+			    mainLayout.networksArea.refresh();
+		    });
+	    });
     }
 
     @Override public boolean onEscape()

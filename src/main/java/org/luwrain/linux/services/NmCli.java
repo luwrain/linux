@@ -29,12 +29,35 @@ public final class NmCli
 	String[] caller(String[] args) throws IOException;
     }
 
+static private final class Network implements WifiNetwork
+{
+    private final String name;
+    Network(String name)
+    {
+	NullCheck.notNull(name, "name");
+	this.name = name;
+    }
+    public String getName() { return name; }
+    @Override public String toString() { return name; }
+}
+
     private final Caller caller;
 
     public NmCli(Caller caller)
     {
 	NullCheck.notNull(caller, "caller");
 	this.caller = caller;
+    }
+
+    public NmCli()
+    {
+	this(createDefaultCaller());
+    }
+
+    public WifiNetwork[] scan() throws IOException
+    {
+	final List<WifiNetwork> res = new ArrayList<>();
+	return res.toArray(new WifiNetwork[res.size()]);
     }
 
     static public Caller createDefaultCaller()
@@ -46,6 +69,7 @@ public final class NmCli
 		for(String a: args)
 		    cmd.append(" ").append(BashProcess.escape(a));
 	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.ROOT));
+	    p.run();
 	    final int exitCode = p.waitFor();
 	    if (exitCode != 0)
 		throw new IOException("nmcli returned " + String.valueOf(exitCode));

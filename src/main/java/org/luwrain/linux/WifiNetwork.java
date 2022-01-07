@@ -18,4 +18,5 @@ package org.luwrain.linux;
 
 public interface WifiNetwork
 {
+    String getName();
 }

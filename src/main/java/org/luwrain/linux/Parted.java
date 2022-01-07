@@ -50,6 +50,11 @@ public final class Parted
 	this.caller = caller;
     }
 
+    public Parted(String device)
+    {
+	this(device, createDefaultCaller());
+    }
+
     public void init() throws IOException
     {
 	final String[] lines = caller.call(new String[]{device, "print"});
@@ -83,4 +88,22 @@ public final class Parted
     public String getType() { return type; }
     public String getPartTableType() { return partTableType; }
     public String getName() { return name; }
+
+        static public Caller createDefaultCaller()
+    {
+	return (args)->{
+	    final StringBuilder cmd = new StringBuilder();
+	    cmd.append("parted -m");
+	    if (args != null)
+		for(String a: args)
+		    cmd.append(" ").append(BashProcess.escape(a));
+	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.ROOT));
+	    p.run();
+	    final int exitCode = p.waitFor();
+	    if (exitCode != 0)
+		throw new IOException("nmcli returned " + String.valueOf(exitCode));
+	    return p.getOutput();
+	};
+    }
+
 }
