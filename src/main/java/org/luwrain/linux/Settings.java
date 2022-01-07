@@ -42,13 +42,6 @@ public interface Network
 	return RegistryProxy.create(registry, NETWORK_PATH, Network.class);
     }
 
-    static public WifiNetwork createWifiNetwork(Registry registry, org.luwrain.linux.wifi.Network network)
-    {
-	NullCheck.notNull(registry, "registry");
-	NullCheck.notNull(network, "network");
-	return RegistryProxy.create(registry, Registry.join(NETWORKS_PATH, makeRegistryName(network.name)), WifiNetwork.class);
-    }
-
     static String makeRegistryName(String value)
     {
 	return value.replaceAll("/", "_").replaceAll("\n", "_").replaceAll(" ", "_");

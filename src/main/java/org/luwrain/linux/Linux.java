@@ -30,14 +30,12 @@ public final class Linux implements OperatingSystem
     static public final Syscalls syscalls = new Syscalls();
     private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
-    private org.luwrain.linux.wifi.Connections wifiConnections = null;
 
     @Override public InitResult init(PropertiesBase props)
     {
 	NullCheck.notNull(props, "props");
 	Extension.setLinux(this);
 	this.props = props;
-	this.wifiConnections = new org.luwrain.linux.wifi.Connections(props );
 	return new InitResult();
     }
 
@@ -77,11 +75,6 @@ public final class Linux implements OperatingSystem
 	default:
 	    return null;
 	}
-    }
-
-    public org.luwrain.linux.wifi.Connections getWifiConnections()
-    {
-	return wifiConnections;
     }
 
     PropertiesBase getProps()

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,241 +16,34 @@
 
 package org.luwrain.app.wifi;
 
-import java.net.*;
-import java.util.*;
-import java.io.*;
-
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
-import org.luwrain.controls.*;
-import org.luwrain.core.queries.*;
-import org.luwrain.popups.Popups;
-import org.luwrain.linux.wifi.*;
+import org.luwrain.app.base.*;
 
-public class App implements Application, MonoApp
+public final class App extends AppBase<Strings> implements MonoApp
 {
-    private Luwrain luwrain = null;
-    private Strings strings = null;
-    private Base base = null;
-    private ListArea listArea = null;
-    private ProgressArea progressArea = null;
-    private AreaLayoutHelper layout;
+    static final String LOG_COMPONENT = "man";
 
-    private final Connections connections;
+    private MainLayout mainLayout = null;
 
-    public App(Connections connections)
+    public App() { super(Strings.NAME, Strings.class, "luwrain.linux.man"); }
+
+    @Override protected AreaLayout onAppInit()
     {
-	NullCheck.notNull(connections, "connections");
-	this.connections = connections;
+	this.mainLayout = new MainLayout(this);
+	setAppName(getStrings().appName());
+	return mainLayout.getAreaLayout();
     }
 
-    @Override public InitResult onLaunchApp(Luwrain luwrain)
+    @Override public boolean onEscape()
     {
-	NullCheck.notNull(luwrain, "luwrain");
-	final Object o = luwrain.i18n().getStrings(Strings.NAME);
-	if (o == null || !(o instanceof Strings))
-	    return new InitResult(InitResult.Type.NO_STRINGS_OBJ, Strings.NAME);
-	strings = (Strings)o;
-	this.luwrain = luwrain;
-	this.base = new Base(this, luwrain, strings, connections);
-	createArea();
-	this.layout = new AreaLayoutHelper(()->{
-		luwrain.onNewAreaLayout();
-		luwrain.announceActiveArea();
-	    }, listArea);
-	base.launchScanning(listArea);
-	return new InitResult();
-    }
-
-    @SuppressWarnings("unchecked")
-    private void createArea()
-    {
-	final ListArea.Params params = new ListArea.Params();
-	params.context = new DefaultControlContext(luwrain);
-	params.model = base.getListModel();
-	params.appearance = new Appearance(luwrain, strings, connections);
-	params.clickHandler = (area, index, obj)->onConnect(obj);
-	params.name = strings.appName();
-
-	this.listArea = new ListArea(params){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case ESCAPE:
-			    return onCloseApp();
-			case TAB:
-			    if (layout.hasAdditionalArea())
-				luwrain.setActiveArea(layout.getAdditionalArea()); else
-				return false;
-			    return true;
-			}
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != SystemEvent.Type.REGULAR )
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case ACTION:
-			if (ActionEvent.isAction(event, "disconnect"))
-			    return onDisconnect();
-			return false;
-		    case CLOSE:
-			return onCloseApp();
-		    case REFRESH:
-			doScanning();
-			return true;
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-		@Override public boolean onAreaQuery(AreaQuery query)		{
-		    NullCheck.notNull(query, "query");
-		    switch(query.getQueryCode())
-		    {
-		    case AreaQuery.BACKGROUND_SOUND:
-			if (!base.isScanning())
-			    return false;
-			((BackgroundSoundQuery)query).answer(new BackgroundSoundQuery.Answer(BkgSounds.WIFI));
-			return true;
-		    default:
-			return super.onAreaQuery(query);
-		    }}
-		@Override public Action[] getAreaActions()
-		{
-		    if (base.isBusy())
-			return new Action[0];
-		    if (connections.hasConnection())
-			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect(), new InputEvent(InputEvent.Special.F5)),
-			};
-		    return new Action[0];
-		}
-		@Override protected String noContentStr()
-		{
-		    return base.isScanning()?strings.scanningInProgress():strings.noWifiNetworks();
-		}
-	    };
-
-	this.progressArea = new ProgressArea(new DefaultControlContext(luwrain), "Подключение"){
-		@Override public boolean onInputEvent(InputEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.isSpecial() && !event.isModified())
-			switch(event.getSpecial())
-			{
-			case TAB:
-			case BACKSPACE:
-			    luwrain.setActiveArea(listArea);
-			    return true;
-			case ESCAPE:
-			    if (base.isBusy())
-				return false;
-			    layout.closeAdditionalArea();
-			    return true;
-			}
-		    return super.onInputEvent(event);
-		}
-		@Override public boolean onSystemEvent(SystemEvent event)
-		{
-		    NullCheck.notNull(event, "event");
-		    if (event.getType() != SystemEvent.Type.REGULAR )
-			return super.onSystemEvent(event);
-		    switch(event.getCode())
-		    {
-		    case ACTION:
-			if (ActionEvent.isAction(event, "disconnect"))
-			    return onDisconnect();
-			return false;
-		    case CLOSE:
-			return onCloseApp();
-		    default:
-			return super.onSystemEvent(event);
-		    }
-		}
-		@Override public Action[] getAreaActions()
-		{
-		    if (base.isBusy())
-			return new Action[0];
-		    if (connections.hasConnection())
-			return new Action[]{
-			    new Action("disconnect", strings.actionDisconnect(), new InputEvent(InputEvent.Special.F5)),
-			};
-		    return new Action[0];
-		}
-	    };
-    }
-
-    private void doScanning()
-    {
-	if (!base.launchScanning(listArea))
-	    return;
-	listArea.refresh();
-	luwrain.onAreaNewBackgroundSound(listArea);
-    }
-
-    private boolean onConnect(Object obj)
-    {
-	NullCheck.notNull(obj, "obj");
-	if (!(obj instanceof Network))
-	    return false;
-	final Network network = (Network)obj;
-	if (!connections.getConnectedNetworkName().isEmpty() && connections.getConnectedNetworkName().equals(network.name))
-	    return false;
-	progressArea.clear();
-	if (!base.launchConnection(progressArea, network))
-	{
-	    layout.closeAdditionalArea();
-	    return true;
-	}
-	layout.openAdditionalArea(progressArea, AreaLayoutHelper.Position.BOTTOM);
-	return true;
-    }
-
-    private boolean onDisconnect()
-    {
-	if (base.isBusy())
-	    return false;
-	if (!connections .hasConnection())
-	    return false;
-	if (connections.disconnect())
-	    luwrain.message(strings.successfullyDisconnected(), Luwrain.MessageType.OK); else
-	    luwrain.message(strings.errorDisconnecting(), Luwrain.MessageType.ERROR);
-	return true;
-    }
-
-    private boolean onCloseApp()
-    {
-	//FIXME:cancelling active tasks
-	if (base.isBusy())
-	    return false;
 	closeApp();
 	return true;
-    }
-
-    @Override public String getAppName()
-    {
-	return strings.appName();
     }
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
 	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
-    }
-
-    @Override public AreaLayout getAreaLayout()
-    {
-	return layout.getLayout();
-    }
-
-    @Override public void closeApp()
-    {
-	luwrain.closeApp();
     }
 }

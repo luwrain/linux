@@ -163,7 +163,7 @@ public final class Extension extends EmptyExtension
 		@Override public Application[] prepareApp(String[] args)
 		{
 		    NullCheck.notNull(args, "args");
-		    return new Application[]{new org.luwrain.app.wifi.App(linux.getWifiConnections())};
+		    return new Application[]{new org.luwrain.app.wifi.App()};
 		}
 	    });
 
