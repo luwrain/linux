@@ -16,17 +16,18 @@
 
 package org.luwrain.app.wifi;
 
+import java.util.*;
+
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
+import org.luwrain.linux.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    static final String LOG_COMPONENT = "man";
-
+    final List<WifiNetwork> networks = new ArrayList<>();
     private MainLayout mainLayout = null;
 
-    public App() { super(Strings.NAME, Strings.class, "luwrain.linux.man"); }
+    public App() { super(Strings.NAME, Strings.class, "luwrain.linux.wifi"); }
 
     @Override protected AreaLayout onAppInit()
     {

@@ -20,6 +20,8 @@ public interface Strings
 {
 static final String NAME = "luwrain.wifi";
 
+    String networksAreaName();
+    String statusAreaName();
     String actionDisconnect();
     String appName();
     String scanningInProgress();

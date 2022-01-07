@@ -84,7 +84,6 @@ public final class BashProcess
 	    throw new IOException("Bash process didn't return its pid");
 	try {
 	    this.pid = Integer.parseInt(pidStr);
-	    Log.debug("proba", "pid=" + pid);
 	}
 	catch(NumberFormatException e)
 	{
@@ -224,11 +223,13 @@ public final class BashProcess
 
         public String[] getOutput()
     {
+	//FIXME: Checking the process finishes
 	return output.toArray(new String[output.size()]);
     }
 
     public String[] getErrors()
     {
+		//FIXME: Checking the process finishes
 	return errors.toArray(new String[errors.size()]);
     }
 
