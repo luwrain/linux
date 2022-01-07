@@ -26,8 +26,9 @@ import static org.luwrain.util.FileUtils.*;
 public final class BlockDevices
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
-    static public final File SYS_BLOCK = new File("/sys/block");
-    static public final File DEV = new File("/dev");
+    static public final File
+	SYS_BLOCK = new File("/sys/block"),
+	DEV = new File("/dev");
 
     public String[] getHardDrives()
     {

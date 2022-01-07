@@ -95,9 +95,9 @@ public final class Extension extends EmptyExtension
     @Override public Command[] getCommands(Luwrain luwrain)
     {
 	return new Command[]{
-
 	    	    new SimpleShortcutCommand("term"),
 	    	    	    new SimpleShortcutCommand("man"),
+		    	    	    	    new SimpleShortcutCommand("parted"),
 	    	    	    	    new SimpleShortcutCommand("wifi"),
 	    	    	    	    	    new SimpleShortcutCommand("install"),
 
@@ -135,6 +135,7 @@ public final class Extension extends EmptyExtension
 	res.add(new org.luwrain.linux.lib.SysJob());
 	res.add(new SystemProperties.Battery(luwrain));
 	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
+		res.add(new SimpleShortcut("parted", org.luwrain.app.parted.App.class));
 	res.add(new SimpleShortcut("install", org.luwrain.app.install.App.class));
 
 	res.add(new Shortcut(){

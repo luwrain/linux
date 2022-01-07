@@ -28,8 +28,8 @@ public final class Parted
 {
     static public final String
 	GPT= "gpt",
-	NVME = "nvme"
-    SCSI = "scsi";
+	NVME = "nvme",
+	SCSI = "scsi";
 
     static private final Pattern PAT_DEVICE = Pattern.compile("^(/[^:]*):([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):([^:]*):.*;$", Pattern.CASE_INSENSITIVE);
 
@@ -63,6 +63,20 @@ public final class Parted
 	    this.partTableType = m.group(6);
 	    this.name = m.group(7);
 	}
+    }
+
+    @Override public String toString()
+    {
+	final String devStr = BlockDevices.DEV.getPath();
+	final StringBuilder b = new StringBuilder();
+	if (device.startsWith(devStr))
+	    b.append(device.substring(devStr.length())); else
+	    b.append(device);
+	if (size != null && !size.trim().isEmpty())
+	    b.append(", ").append(size.trim());
+	if (name != null && !name.trim().isEmpty())
+	    b.append(", ").append(name.trim());
+	return new String(b);
     }
 
     public String getSize() { return size; }
