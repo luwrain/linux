@@ -24,9 +24,14 @@ import org.luwrain.linux.*;
 
 public final class NmCli
 {
+    static private final String
+	IN_USE = "IN-USE:",
+	SECURITY = "SECURITY:",
+	SSID = "SSID:";
+
     public interface Caller
     {
-	String[] caller(String[] args) throws IOException;
+	String[] call(String[] args) throws IOException;
     }
 
 static private final class Network implements WifiNetwork
@@ -57,6 +62,31 @@ static private final class Network implements WifiNetwork
     public WifiNetwork[] scan() throws IOException
     {
 	final List<WifiNetwork> res = new ArrayList<>();
+	final String[] lines = caller.call(new String[]{"device", "wifi", "list"});
+	String ssid = "", security = "", inUse = "";
+	for (String l: lines)
+	{
+	    final String line = l.trim();
+	    if (line.startsWith(IN_USE))
+	    {
+		inUse = line.substring(IN_USE.length()).trim();
+		continue;
+	    }
+	    if (line.startsWith(SSID))
+	    {
+		ssid = line.substring(SSID.length()).trim();
+		continue;
+	    }
+	    if (line.startsWith(SECURITY))
+	    {
+		security = line.substring(SECURITY .length()).trim();
+		res.add(new Network(ssid));
+		inUse = "";
+		ssid = "";
+		security = "";
+		continue;
+	    }
+	}
 	return res.toArray(new WifiNetwork[res.size()]);
     }
 
@@ -64,7 +94,7 @@ static private final class Network implements WifiNetwork
     {
 	return (args)->{
 	    final StringBuilder cmd = new StringBuilder();
-	    cmd.append("nmcli");
+	    cmd.append("nmcli -m multiline");
 	    if (args != null)
 		for(String a: args)
 		    cmd.append(" ").append(BashProcess.escape(a));

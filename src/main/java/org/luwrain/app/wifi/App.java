@@ -33,6 +33,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override protected AreaLayout onAppInit()
     {
+	updateNetworkList();
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
