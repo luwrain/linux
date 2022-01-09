@@ -34,7 +34,6 @@ public final class Extension extends EmptyExtension
 
     private ScriptCore scriptCore = null;
     private TermInfo termInfo = null;
-    //    private Scripts scripts = null;
     private PointerInputListening[] pointerInputs = null;
     private FifoInputListening[] fifoInputs = null;
 
@@ -42,7 +41,6 @@ public final class Extension extends EmptyExtension
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	loadScriptCore(luwrain);
-	//	this.scripts = new Scripts(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	try {
 	    this.termInfo = new TermInfo();

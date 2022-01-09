@@ -1,8 +1,0 @@
-#!/bin/bash -e
-# Copyright 2012-2018 Michael Pozhidaev <michael.pozhidaev@gmail.com>
-
-THIS="${0##*/}"
-
-[ -z "$1" ] && echo "$THIS:no search query given" >&2 && exit 1
-
-exec man  -k "$1"
