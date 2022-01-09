@@ -39,10 +39,12 @@ public final class Linux implements OperatingSystem
 	return new InitResult();
     }
 
+    /*
     Scripts getScripts()
     {
 	return new Scripts(props);
     }
+    */
 
     @Override public OsInterface getInterface()
     {

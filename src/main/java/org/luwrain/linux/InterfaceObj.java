@@ -38,10 +38,12 @@ final class InterfaceObj extends EmptyHookObject implements Interface
 
         @Override public boolean suspend()
     {
+	/*
 	final PropertiesBase props = linux.getProps();
 	if (props == null)
 	    return false;
 	new Scripts(props).runSync(Scripts.ID.SUSPEND, true);
+	*/
 	return true;
     }
 

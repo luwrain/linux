@@ -34,7 +34,7 @@ public final class Extension extends EmptyExtension
 
     private ScriptCore scriptCore = null;
     private TermInfo termInfo = null;
-    private Scripts scripts = null;
+    //    private Scripts scripts = null;
     private PointerInputListening[] pointerInputs = null;
     private FifoInputListening[] fifoInputs = null;
 
@@ -42,7 +42,7 @@ public final class Extension extends EmptyExtension
     {
 	NullCheck.notNull(luwrain, "luwrain");
 	loadScriptCore(luwrain);
-	this.scripts = new Scripts(luwrain);
+	//	this.scripts = new Scripts(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	try {
 	    this.termInfo = new TermInfo();
@@ -113,7 +113,6 @@ public final class Extension extends EmptyExtension
 	//	if (scripts.exists("webcam-take"))
 	    //	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
 	res.add(new org.luwrain.linux.lib.SysJob());
-	res.add(new SystemProperties.Battery(luwrain));
 	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
 		res.add(new SimpleShortcut("parted", org.luwrain.app.parted.App.class));
 	res.add(new SimpleShortcut("install", org.luwrain.app.install.App.class));
