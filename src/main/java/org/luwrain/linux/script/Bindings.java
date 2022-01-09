@@ -30,9 +30,10 @@ public final class Bindings implements org.luwrain.script.core.Bindings
 	this.luwrain = luwrain;
     }
 
-    @Override public void onBindings(Value value)
+    @Override public void onBindings(Value value, Object syncObj)
     {
 	NullCheck.notNull(value, "value");
-	value.putMember("Linux", new LinuxObj(luwrain));
+	NullCheck.notNull(syncObj, "syncObj");
+	value.putMember("Linux", new LinuxObj(luwrain, syncObj));
     }
 }

@@ -72,13 +72,13 @@ public final class Extension extends EmptyExtension
     private void loadScriptCore(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");
-	scriptCore = new ScriptCore(luwrain, new org.luwrain.linux.script.Bindings(luwrain));
-		final File scriptsDir = new File(new File(luwrain.getFileProperty("luwrain.dir.data"), "linux"), "js");
+	this.scriptCore = new ScriptCore(luwrain, new org.luwrain.linux.script.Bindings(luwrain));
+	final File scriptsDir = luwrain.getFileProperty(Luwrain.PROP_DIR_JS);
 	final File[] scripts = scriptsDir.listFiles();
 	if (scripts == null)
 	    return;
 	for(File f: scripts)
-	    if (f != null)
+	    if (f != null && f.getName().startsWith("linux-"))
 	    {
 		Log.debug(LOG_COMPONENT, "loading " + f.getAbsolutePath());
 		try {
@@ -90,40 +90,20 @@ public final class Extension extends EmptyExtension
 		    e.printStackTrace();
 		}
 	    }
-	    }
+    }
 
     @Override public Command[] getCommands(Luwrain luwrain)
     {
-	return new Command[]{
-	    	    new SimpleShortcutCommand("term"),
-	    	    	    new SimpleShortcutCommand("man"),
-		    	    	    	    new SimpleShortcutCommand("parted"),
-	    	    	    	    new SimpleShortcutCommand("wifi"),
-	    	    	    	    	    new SimpleShortcutCommand("install"),
-
-		    new Command() {
-			@Override public String getName()
-			{
-			    return "reboot";
-			}
-			@Override public void onCommand(Luwrain luwrain)
-			{
-			    scripts.runSync(Scripts.ID.REBOOT, true);
-			}
-		    },
-
-		    new Command() {
-			@Override public String getName()
-			{
-			    return "shutdown";
-			}
-			@Override public void onCommand(Luwrain luwrain)
-			{
-			    scripts.runSync(Scripts.ID.SHUTDOWN, true);
-			}
-		    },
-
-	    	};
+	final List<Command> res = new ArrayList<>();
+	res.addAll(Arrays.asList(scriptCore.getCommands()));
+	res.addAll(Arrays.asList(
+				 new SimpleShortcutCommand("term"),
+				 new SimpleShortcutCommand("man"),
+				 new SimpleShortcutCommand("parted"),
+				 new SimpleShortcutCommand("wifi"),
+				 new SimpleShortcutCommand("install")
+				 ));
+	return res.toArray(new Command[res.size()]);
     }
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
