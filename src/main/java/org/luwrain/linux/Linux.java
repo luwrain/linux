@@ -28,7 +28,6 @@ public final class Linux implements OperatingSystem
     static public final String LOG_COMPONENT = "linux";
 
     static public final Syscalls syscalls = new Syscalls();
-    private InterfaceObj interfaceObj = new InterfaceObj(this);
     private PropertiesBase props = null;
 
     @Override public InitResult init(PropertiesBase props)
@@ -45,11 +44,6 @@ public final class Linux implements OperatingSystem
 	return new Scripts(props);
     }
     */
-
-    @Override public OsInterface getInterface()
-    {
-	return interfaceObj;
-    }
 
     public String getProperty(String propName)
     {
