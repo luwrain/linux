@@ -5,6 +5,9 @@ remove-pkg aspell dictionaries-common
 remove-pkg transmission-common shotwell                                   seahorse                                   rhythmbox remmina reiserfsprogs                            language-selector-common ibus
 remove-pkg gvfs-common gedit-common yelp
 remove-pkg-prefix gnome
+remove-pkg libreoffice-style-breeze                   libreoffice-style-colibre
+remove-pkg gparted-common orca yaru-theme-gnome-shell usb-creator-gtk  mousetweaks file-roller  gcr baobab aisleriot
+remove-pkg yaru-theme-icon yaru-theme-sound libsane1
 
 chroot-run apt-get -y autoremove
 chroot-run  apt-get clean
