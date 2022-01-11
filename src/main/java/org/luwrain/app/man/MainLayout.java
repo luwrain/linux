@@ -81,7 +81,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 	}
 	pageArea.setLines(p.getOutput());
 	pageArea.setHotPoint(0, 0);
-	app.getLuwrain().setActiveArea(pageArea);
+	setActiveArea(pageArea);
 	return true;
     }
 
