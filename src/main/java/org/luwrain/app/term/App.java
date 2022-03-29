@@ -183,7 +183,7 @@ void sendChar(char ch)
     @Override public void closeApp()
     {
 	pty.hangup();
-	pty.terminate();
+	pty.destroy();
 	super.closeApp();
     }
 }
