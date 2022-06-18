@@ -22,10 +22,12 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.script.core.*;
 import org.luwrain .script.*;
+import org.luwrain.linux.services.*;
 
 public final class Extension extends EmptyExtension
 {
-    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = Linux.LOG_COMPONENT;
 
     static private final String PREFIX_INPUT_POINTER = "--linux-input-pointer=";
     static private final String PREFIX_INPUT_FIFO = "--linux-input-fifo=";
@@ -34,23 +36,30 @@ public final class Extension extends EmptyExtension
 
     private ScriptCore scriptCore = null;
     private TermInfo termInfo = null;
+    private UdisksCliMonitor udisksMonitor = null;
     private PointerInputListening[] pointerInputs = null;
     private FifoInputListening[] fifoInputs = null;
 
     @Override public String init(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
 	loadScriptCore(luwrain);
 	final CmdLine cmdLine = luwrain.getCmdLine();
 	try {
 	    this.termInfo = new TermInfo();
 	    this.termInfo.read();
-	    Log.debug(LOG_COMPONENT, "terminfo loaded for '" + termInfo.getTermName() + "'");
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to load terminfo: " + e.getClass().getName() + ":" + e.getMessage());
+	    Log.error(LOG_COMPONENT, "unable to load terminfo: " + e.getClass().getName() + ": " + e.getMessage());
 	    this.termInfo = null;
+	}
+	try {
+	    udisksMonitor = new UdisksCliMonitor(luwrain);
+	}
+	catch(IOException e)
+	{
+	    Log.info(LOG_COMPONENT, "no udisks monitor service, the process can't be launched");
+	    udisksMonitor = null;
 	}
 	final List<PointerInputListening> inputs = new ArrayList<>();
 	final List<FifoInputListening> fifos = new ArrayList<>();
