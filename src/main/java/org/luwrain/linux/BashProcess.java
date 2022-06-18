@@ -77,7 +77,9 @@ public final class BashProcess
 
     public void run() throws IOException
     {
-	this.p = new ProcessBuilder(prepareCmd()).start();
+	final String[] cmd = prepareCmd();
+	Log.debug(LOG_COMPONENT, "Running bash process: " + Arrays.toString(cmd));
+	this.p = new ProcessBuilder(cmd).start();
 	p.getOutputStream().close();
 	final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 	final String pidStr = r.readLine();
@@ -154,13 +156,13 @@ public final class BashProcess
 		"setsid",
 		"/bin/bash",
 		"-c",
-		"echo $$; cd '" + escape(dir) + "'; " + this.command
+		"echo $$; cd " + escape(dir) + "; " + this.command
 	    };
 	return new String[]{
-	    "setsid",
+	    	    "setsid",
 	    "/bin/bash",
 	    "-c",
-	    "echo $$; cd '" + escape(dir) + "'; " + this.command
+	    "echo $$; cd " + escape(dir) + "; " + this.command
 	};
     }
 

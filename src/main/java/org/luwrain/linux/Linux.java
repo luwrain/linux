@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2022 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -25,25 +25,32 @@ import org.luwrain.core.events.*;
 
 public final class Linux implements OperatingSystem
 {
-    static public final String LOG_COMPONENT = "linux";
+    static public final String
+	LOG_COMPONENT = "linux";
 
     static public final Syscalls syscalls = new Syscalls();
     private PropertiesBase props = null;
 
     @Override public InitResult init(PropertiesBase props)
     {
-	NullCheck.notNull(props, "props");
 	Extension.setLinux(this);
 	this.props = props;
 	return new InitResult();
     }
 
-    /*
-    Scripts getScripts()
+    @Override public String escapeString(String style, String value)
     {
-	return new Scripts(props);
+	switch(style.trim().toUpperCase())
+	{
+	case "CMD":
+	case "SHELL":
+	case "BASH":
+	    return BashProcess.escape(value);
+	default:
+	    Log.warning(LOG_COMPONENT, "unknown escaping style: " + style);
+	    return value;
+	}
     }
-    */
 
     public String getProperty(String propName)
     {

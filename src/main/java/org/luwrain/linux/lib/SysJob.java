@@ -91,7 +91,7 @@ public final class SysJob implements Job
 	final StringBuilder b = new StringBuilder();
 	b.append(args[0]);
 	for(int i = 1;i < args.length;i++)
-	    b.append(" ").append(BashProcess.escape(args[i]));
+	    b.append(" ").append(args[i]);
 	return new String(b);
     }
 
