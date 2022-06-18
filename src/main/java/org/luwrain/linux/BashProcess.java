@@ -24,9 +24,10 @@ import org.luwrain.core.*;
 
 public final class BashProcess
 {
-    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = Linux.LOG_COMPONENT;
 
-    public enum Flags {ROOT};
+    public enum Flags {ROOT, LOG_OUTPUT, LOG_ERRORS};
 
     public interface Listener
     {
@@ -71,7 +72,7 @@ public final class BashProcess
 
     public BashProcess(String command)
     {
-	this(command, EnumSet.noneOf(Flags.class));
+	this(command, EnumSet.of(Flags.LOG_OUTPUT, Flags.LOG_ERRORS));
     }
 
     public void run() throws IOException
@@ -165,13 +166,15 @@ public final class BashProcess
 
     private void readOutput(BufferedReader r)
     {
+	final boolean logOutput = flags.contains(Flags.LOG_OUTPUT);
 	new Thread(()->{
 		try {
 		    try {
 			String line = r.readLine();
 			while (line != null)
 			{
-			    output.add(line);
+			    if (logOutput)
+				output.add(line);
 			    listener.onOutputLine(line);
 			    line = r.readLine();
 			}
@@ -194,13 +197,15 @@ public final class BashProcess
 
     private void readErrors(BufferedReader r)
     {
+		final boolean logErrors = flags.contains(Flags.LOG_OUTPUT);
 	new Thread(()->{
 		try {
 		    try {
 			String line = r.readLine();
 			while (line != null)
 			{
-			    errors.add(line);
+			    if (logErrors)
+				errors.add(line);
 			    listener.onErrorLine(line);
 			    line = r.readLine();
 			}

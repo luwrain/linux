@@ -16,12 +16,7 @@
 
 package org.luwrain.linux;
 
-import java.io.*;
-import java.net.*;
-
 import org.junit.*;
-
-import org.luwrain.core.*;
 
 public class BashProcessTest extends Assert
 {
@@ -30,16 +25,18 @@ public class BashProcessTest extends Assert
 	assertEquals("''", BashProcess.escape(""));
     }
 
-        @Test public void escapeSimple()
+    @Test public void escapeSimple()
     {
 	assertEquals("'abc'", BashProcess.escape("abc"));
     }
 
-            @Test public void escapeComplex()
+    @Test public void escapeComplex()
     {
 	assertEquals("'a'\\''b'\\''c'", BashProcess.escape("a'b'c"));
     }
 
-
-    
+    @Test public void escapeComplex2()
+    {
+	assertEquals("'Michael Learns To Rock - That'\\''s Why You Go Away [Official Video] (with Lyrics Closed Caption)-4T5g-9E6PUs.mkv'", BashProcess.escape("Michael Learns To Rock - That's Why You Go Away [Official Video] (with Lyrics Closed Caption)-4T5g-9E6PUs.mkv"));
+    }
 }
