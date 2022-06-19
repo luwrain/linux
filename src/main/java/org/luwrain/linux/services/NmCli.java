@@ -25,26 +25,37 @@ import org.luwrain.linux.*;
 public final class NmCli
 {
     static private final String
+	LOG_COMPONENT = "nmcli",
 	IN_USE = "IN-USE:",
 	SECURITY = "SECURITY:",
-	SSID = "SSID:";
+	SSID = "SSID:",
+	SIGNAL = "SIGNAL:";
 
     public interface Caller
     {
 	String[] call(String[] args) throws IOException;
     }
 
-static private final class Network implements WifiNetwork
-{
-    private final String name;
-    Network(String name)
+    static private final class Network implements WifiNetwork
     {
-	NullCheck.notNull(name, "name");
-	this.name = name;
+	private final String name, protectionType;
+	private final boolean connected;
+	private final int signalLevel;
+	Network(String name, String protectionType, boolean connected, int signalLevel)
+	{
+	    NullCheck.notNull(name, "name");
+	    NullCheck.notNull(protectionType, "protectionType");
+	    this.name = name;
+	    this.protectionType = protectionType;
+	    this.signalLevel = signalLevel;
+	    this.connected = connected;
+	}
+	@Override public String getName() { return name; }
+	@Override public String getProtectionType() { return protectionType; }
+	@Override public boolean isConnected() { return connected; }
+	@Override public int getSignalLevel() { return signalLevel; }
+	@Override public String toString() { return name; }
     }
-    public String getName() { return name; }
-    @Override public String toString() { return name; }
-}
 
     private final Caller caller;
 
@@ -63,28 +74,38 @@ static private final class Network implements WifiNetwork
     {
 	final List<WifiNetwork> res = new ArrayList<>();
 	final String[] lines = caller.call(new String[]{"device", "wifi", "list"});
-	String ssid = "", security = "", inUse = "";
+	String
+	ssid = null,
+	security = null,
+	inUse = null,
+	signal = null;
 	for (String l: lines)
 	{
 	    final String line = l.trim();
+	    Log.debug("proba", "Checking " + line);
 	    if (line.startsWith(IN_USE))
-	    {
 		inUse = line.substring(IN_USE.length()).trim();
-		continue;
-	    }
 	    if (line.startsWith(SSID))
-	    {
 		ssid = line.substring(SSID.length()).trim();
-		continue;
-	    }
+	    if (line.startsWith(SIGNAL))
+		signal = line.substring(SIGNAL.length()).trim();
 	    if (line.startsWith(SECURITY))
+		security = line.substring(SECURITY.length()).trim();
+	    if (ssid != null && inUse != null && signal != null && security != null)
 	    {
-		security = line.substring(SECURITY .length()).trim();
-		res.add(new Network(ssid));
-		inUse = "";
-		ssid = "";
-		security = "";
-		continue;
+		int level = 0;
+		try {
+		    level = Integer.parseInt(signal);
+		}
+		catch(NumberFormatException e)
+		{
+		    Log.warning(LOG_COMPONENT, "unparsable signal level value: " + signal);
+		}
+		res.add(new Network(ssid, security.trim(), !inUse.trim().isEmpty(), level));
+		inUse = null;
+		ssid = null;
+		security = null;
+		signal = null;
 	    }
 	}
 	return res.toArray(new WifiNetwork[res.size()]);
@@ -98,7 +119,7 @@ static private final class Network implements WifiNetwork
 	    if (args != null)
 		for(String a: args)
 		    cmd.append(" ").append(BashProcess.escape(a));
-	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.ROOT));
+	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.LOG_OUTPUT));
 	    p.run();
 	    final int exitCode = p.waitFor();
 	    if (exitCode != 0)

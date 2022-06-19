@@ -36,12 +36,11 @@ final class Appearance extends ListUtils.AbstractAppearance<WifiNetwork>
 
     @Override public void announceItem(WifiNetwork wifi, Set<Flags> flags)
     {
-	    luwrain.setEventResponse(listItem(Sounds.SELECTED, wifi.toString(), Suggestions.CLICKABLE_LIST_ITEM));
-	    /*
-	    if (network.hasPassword)
-		luwrain.setEventResponse(DefaultEventResponse.listItem(Sounds.PROTECTED_RESOURCE, network.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
-		luwrain.setEventResponse(DefaultEventResponse.listItem(network.toString(), Suggestions.CLICKABLE_LIST_ITEM));
-	    */
+	if (wifi.isConnected())
+	    luwrain.setEventResponse(listItem(Sounds.SELECTED, wifi.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
+	    if (wifi.getProtectionType() != null && !wifi.getProtectionType().isEmpty())
+		luwrain.setEventResponse(listItem(Sounds.BLOCKED, wifi.toString(), Suggestions.CLICKABLE_LIST_ITEM)); else
+	luwrain.setEventResponse(listItem(wifi.toString(), Suggestions.CLICKABLE_LIST_ITEM));
     }
 
     @Override public String getScreenAppearance(WifiNetwork wifi, Set<Flags> flags)
