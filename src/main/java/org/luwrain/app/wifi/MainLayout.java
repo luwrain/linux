@@ -42,6 +42,7 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler<WifiN
 	this.networksArea = new ListArea<>(listParams((params)->{
 		    params.model = new ListModel(app.networks);
 		    params.name = app.getStrings().networksAreaName();
+		    params.appearance = new Appearance(app);
 		    params.clickHandler = this;
 		}));
 	this.statusArea = new SimpleArea(getControlContext(), app.getStrings().statusAreaName());
@@ -50,7 +51,6 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler<WifiN
 
     @Override public boolean onListClick(ListArea area, int index, WifiNetwork network)
     {
-	NullCheck.notNull(network, "network");
 	return false;
     }
 

@@ -49,6 +49,7 @@ public final class App extends AppBase<Strings> implements MonoApp
 			networks.addAll(Arrays.asList(n));
 			if (mainLayout != null)
 			    mainLayout.networksArea.refresh();
+			getLuwrain().playSound(Sounds.DONE);
 		    });
 	    });
     }
@@ -61,7 +62,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
-	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 }
