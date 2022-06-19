@@ -22,6 +22,10 @@ import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
+import org.luwrain.script.core.*;
+
+import static org.luwrain.script.Hooks.*;
+
 
 public final class UdisksCliMonitor implements BashProcess.Listener
 {
@@ -40,7 +44,8 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 	PREFIX_SIZE = "Size:",
 	PREFIX_MODEL = "Model:",
 	PREFIX_DEVICE = "Device:",
-	PREFIX_DRIVE = "Drive:";
+	PREFIX_DRIVE = "Drive:",
+		PREFIX_VENDOR = "Vendor:";
 
     private final Luwrain luwrain;
     private final BashProcess p ;
@@ -62,18 +67,43 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 
     		@Override public void onOutputLine(String line)
 		{
-		    //		    Log.debug(LOG_COMPONENT, line);
+		    //		    		    Log.debug(LOG_COMPONENT, line);
+		    try {
 		    Matcher m = RE_ADDED.matcher(line);
 		    if (m.find())
 		    {
 			final String obj = m.group(1).trim();
+			activeDisk = null;
 			if (obj.startsWith(OBJ_DRIVES))
 			{
-			    activeDisk = new Disk();
+			    activeDisk = new Disk(obj);
 			    disks.put(obj, activeDisk);
 			    Log.debug(LOG_COMPONENT, "added new disk: " + obj);
 			    return;
 			}
+			return;
+		    }
+
+m = RE_REMOVED.matcher(line);
+		    if (m.find())
+		    {
+			final String obj = m.group(1).trim();
+			activeDisk = null;
+			if (disks.containsKey(obj))
+			{
+			    final Disk disk = disks.get(obj);
+			    disks.remove(obj);
+			    chainOfResponsibility(luwrain, Hooks.DISK_REMOVED, new Object[]{ new MapScriptObject(disk.createHookMap())});
+			    return;
+			}
+			return;
+		    }
+		    if (activeDisk != null)
+			activeDisk.onLine(line.trim());
+		    }
+		    catch(Throwable e)
+		    {
+			Log.error(LOG_COMPONENT, "unable to process a line of udisksctl output: " + e.getClass().getName() + ": " + e.getMessage());
 		    }
 		}
 
@@ -85,7 +115,30 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 	{
 	}
 
-    static private final class Disk
+    private final class Disk
     {
+	final String obj;
+	String
+	    vendor = null,
+	    model = null;
+	Disk(String obj) { this.obj = obj; }
+	void onLine(String line)
+	{
+	    if (line.startsWith(PREFIX_MODEL))
+		model = line.substring(PREFIX_MODEL.length()).trim();
+	    if (line.startsWith(PREFIX_VENDOR))
+		vendor = line.substring(PREFIX_VENDOR.length()).trim();
+	    if (model != null && vendor != null)
+		chainOfResponsibility(luwrain, Hooks.DISK_ADDED, new Object[]{new MapScriptObject(createHookMap())});
+	}
+	Map<String, Object> createHookMap()
+	{
+	    		final Map<String, Object> d = new HashMap<>();
+			d.put("obj", obj);
+		d.put("model", model);
+		d.put("vendor", vendor);
+		return d;
+		
+	}
     }
 }
