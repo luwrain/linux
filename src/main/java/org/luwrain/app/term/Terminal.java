@@ -23,7 +23,8 @@ import org.luwrain.linux.*;
 
 final class Terminal implements Lines, HotPoint
 {
-    static private final String LOG_COMPONENT = App.LOG_COMPONENT;
+    static private final String
+	LOG_COMPONENT = App.LOG_COMPONENT;
 
     private final Luwrain luwrain;
     private final TermInfo termInfo;
@@ -42,7 +43,6 @@ final class Terminal implements Lines, HotPoint
 
     void termText(String text)
     {
-	NullCheck.notNull(text, "text");
 	if (text.isEmpty())
 	    return;
 	if (lines.isEmpty())
@@ -94,7 +94,7 @@ final class Terminal implements Lines, HotPoint
 			hotPointX = 0;
 			continue;
 		default:
-		    Log.warning(LOG_COMPONENT, "unknown command: '" + res + "'");
+		    Log.warning(LOG_COMPONENT, "unknown terminal command: '" + res + "'");
 		    continue;
 		}
 	    }
@@ -106,7 +106,6 @@ final class Terminal implements Lines, HotPoint
 
     private void speak(String text)
     {
-	NullCheck.notNull(text, "text");
 	final StringBuilder str = new StringBuilder();
 	for(int i = 0;i < text.length();i++)
 	{
