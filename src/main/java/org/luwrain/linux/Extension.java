@@ -115,10 +115,8 @@ public final class Extension extends EmptyExtension
 
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)
     {
-	NullCheck.notNull(luwrain, "luwrain");
 	final List<ExtensionObject> res = new ArrayList<>();
-	//	if (scripts.exists("webcam-take"))
-	    //	    res.add(new ScriptsCommandLineTool(luwrain, "webcam-take"));
+	res.add(new SimpleObjFactory("disks-popup-factory", "org.luwrain.linux.DefaultDisksPopupFactory", ()->new DefaultDisksPopupFactory(udisksMonitor)));
 	res.add(new org.luwrain.linux.lib.SysJob());
 	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
 		res.add(new SimpleShortcut("parted", org.luwrain.app.parted.App.class));

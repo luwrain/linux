@@ -39,4 +39,18 @@ public class BashProcessTest extends Assert
     {
 	assertEquals("'Michael Learns To Rock - That'\\''s Why You Go Away [Official Video] (with Lyrics Closed Caption)-4T5g-9E6PUs.mkv'", BashProcess.escape("Michael Learns To Rock - That's Why You Go Away [Official Video] (with Lyrics Closed Caption)-4T5g-9E6PUs.mkv"));
     }
+
+    @Test public void output() throws Exception
+    {
+	final BashProcess b = new BashProcess("echo proba");
+	b.run();
+	assertEquals(0, b.waitFor());
+	final String[] res = b.getOutput();
+	assertNotNull(res);
+	assertEquals(1, res.length);
+	assertEquals("proba", res[0]);
+	
+    }
+
+    
 }
