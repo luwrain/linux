@@ -171,7 +171,6 @@ final String text;
 	    {
 		m = new HashMap<>();
 	    seqs.put(c, m);
-	    //	    Log.debug("terminfo", "put  " + c);
 	    }
 	    m.put(value, name);
 	    return;
@@ -186,7 +185,6 @@ final String text;
 
     public String find(String seq)
     {
-	NullCheck.notEmpty(seq, "seq");
 	if (seq.length() == 1 && seq.charAt(0) == 27)
 	    return "";//Needs more characters
 	//Manually stripping color codes
