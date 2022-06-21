@@ -45,6 +45,7 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 	IFACE_BLOCK = "org.freedesktop.UDisks2.Block",
 	IFACE_FILESYSTEM = "org.freedesktop.UDisks2.Filesystem",
 	PREFIX_REMOVABLE = "Removable:",
+		PREFIX_EJECTABLE = "Ejectable:",
 	PREFIX_SIZE = "Size:",
 	PREFIX_MODEL = "Model:",
 	PREFIX_VENDOR = "Vendor:",
@@ -69,11 +70,20 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 this.p.run();
 	    }
 
-    public synchronized void enumBlockDevices(Consumer<Map<String, Object>> consumer)
+    public synchronized void enumRemovableBlockDevices(Consumer<Map<String, Object>> consumer)
     {
 	for(Map.Entry<String, BlockDev> e: blockDevs.entrySet())
 	    if (e.getValue().isReady())
+	    {
+		final Disk disk = disks.get(e.getValue().drive.replaceAll("'", ""));
+		if (disk == null)
+		    continue;
+		final boolean
+		removable = disk.removable != null && disk.removable.toLowerCase().equals("true"),
+		ejectable = disk.ejectable != null && disk.ejectable.toLowerCase().equals("true");
+		if (ejectable)		
 	    consumer.accept(e.getValue().createAttrMap());
+	    }
     }
 
     		@Override public synchronized void onOutputLine(String line)
@@ -264,7 +274,9 @@ m = RE_PROP_CHANGED.matcher(line);
 	final String obj;
 	String
 	    vendor = null,
-	    model = null;
+	    model = null,
+	    removable = null,
+	    ejectable = null;
 	Disk(String obj) { this.obj = obj; }
 	void onLine(String iface, String line)
 	{
@@ -274,6 +286,13 @@ m = RE_PROP_CHANGED.matcher(line);
 		model = line.substring(PREFIX_MODEL.length()).trim();
 	    if (line.startsWith(PREFIX_VENDOR))
 		vendor = line.substring(PREFIX_VENDOR.length()).trim();
+	    	    if (line.startsWith(PREFIX_REMOVABLE))
+		removable = line.substring(PREFIX_REMOVABLE.length()).trim();
+		    	    	    if (line.startsWith(PREFIX_EJECTABLE))
+				    {
+		ejectable = line.substring(PREFIX_EJECTABLE.length()).trim();
+		Log.debug("proba", "ejectable " + ejectable + " for " + obj);
+				    }
 	    /*
 	    if (isReady())
 		chainOfResponsibility(luwrain, Hooks.DISK_ADDED, new Object[]{new MapScriptObject(createAttrMap())});
@@ -281,7 +300,11 @@ m = RE_PROP_CHANGED.matcher(line);
 	}
 	boolean isReady()
 	{
-	    return model != null && vendor != null;
+	    return
+	    model != null &&
+	    vendor != null &&
+removable != null &&
+	    ejectable != null;
 	}
 	Map<String, Object> createAttrMap()
 	{
@@ -300,7 +323,7 @@ m = RE_PROP_CHANGED.matcher(line);
 	    device = null,
 	    drive = null,
 	    fsType = null,
-	    mountPoints = null;
+	    mountPoints = "";
 	BlockDev(String obj) { this.obj = obj; }
 	void onLine(String iface, String line)
 	{
@@ -319,7 +342,7 @@ m = RE_PROP_CHANGED.matcher(line);
 	}
 	boolean isReady()
 	{
-	    return device != null && drive != null && fsType != null && mountPoints != null;
+	    return device != null && drive != null && fsType != null/* && mountPoints != null*/;
 	}
 	Map<String, Object> createAttrMap()
 	{

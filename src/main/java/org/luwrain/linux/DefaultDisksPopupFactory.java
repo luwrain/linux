@@ -38,15 +38,13 @@ private final class DisksImpl implements DisksPopup.Disks
 	    @Override public DisksPopup.Disk[] getDisks()
 	    {
 		final List<DiskImpl> res = new ArrayList<>();
-		monitor.enumBlockDevices((m)->{
+		monitor.enumRemovableBlockDevices((m)->{
 			final String
 			obj = m.containsKey("obj")?m.get("obj").toString():"",
 			device = m.containsKey("device")?m.get("device").toString():"",
 			fsType = m.containsKey("fsType")?m.get("fsType").toString():"",
-									mountPoints = m.containsKey("mountPoints")?m.get("mountPoints").toString():"";
-			Log.debug("proba", "points " + mountPoints);
-			if (!fsType.trim().isEmpty())
-			    res.add(new DiskImpl(device, mountPoints));
+			mountPoints = m.containsKey("mountPoints")?m.get("mountPoints").toString():"";
+			res.add(new DiskImpl(device, mountPoints));
 		    });
 		return res.toArray(new DisksPopup.Disk[res.size()]);
 	    }
