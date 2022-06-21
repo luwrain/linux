@@ -9,7 +9,7 @@ deb https://download.luwrain.org/repo/ luwrain bullseye
 EOF
 
 apt-get update
-apt-get install luwrain voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy
+apt-get install voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy
 
 mkdir /etc/luwrain
 cp system-start /etc/luwrain

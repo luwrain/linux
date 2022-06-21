@@ -28,14 +28,16 @@ public final class App extends AppBase<Strings> implements MonoApp
     final List<WifiNetwork> networks = new ArrayList<>();
     final NmCli nmCli = new NmCli();
     private MainLayout mainLayout = null;
+    private Conv conv = null;
 
     public App() { super(Strings.NAME, Strings.class, "luwrain.linux.wifi"); }
 
     @Override protected AreaLayout onAppInit()
     {
-	updateNetworkList();
+	this.conv = new Conv(this);
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
+	updateNetworkList();
 	return mainLayout.getAreaLayout();
     }
 
@@ -64,4 +66,6 @@ public final class App extends AppBase<Strings> implements MonoApp
     {
 	return MonoApp.Result.BRING_FOREGROUND;
     }
+
+    Conv getConv() { return conv; }
 }

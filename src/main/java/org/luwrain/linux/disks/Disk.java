@@ -21,6 +21,11 @@ public final class Disk implements DisksPopup.Disk
 	return new File(name);
     }
 
+    @Override public boolean isActivated()
+    {
+	return false;
+    }
+
     @Override public String toString()
     {
 	return this.name;

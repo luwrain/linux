@@ -111,6 +111,16 @@ public final class NmCli
 	return res.toArray(new WifiNetwork[res.size()]);
     }
 
+    public boolean connect(WifiNetwork network, String password) throws IOException
+    {
+	return false;
+    }
+
+        public boolean disconnect() throws IOException
+    {
+	return false;
+    }
+
     static public Caller createDefaultCaller()
     {
 	return (args)->{
@@ -119,7 +129,7 @@ public final class NmCli
 	    if (args != null)
 		for(String a: args)
 		    cmd.append(" ").append(BashProcess.escape(a));
-	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.LOG_OUTPUT));
+	    final BashProcess p = new BashProcess(new String(cmd), EnumSet.of(BashProcess.Flags.ROOT, BashProcess.Flags.LOG_OUTPUT));
 	    p.run();
 	    final int exitCode = p.waitFor();
 	    if (exitCode != 0)

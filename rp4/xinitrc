@@ -1,5 +1,5 @@
 
-export PATH=~/private/publications:~/piano/scripts:$PATH
+export PATH=~/.local:bin:$PATH
 export LANG=ru_RU.UTF-8
 export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
 

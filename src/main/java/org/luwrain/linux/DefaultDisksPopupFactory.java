@@ -55,13 +55,18 @@ private final class DisksImpl implements DisksPopup.Disks
 	private final class DiskImpl implements DisksPopup.Disk
 	{
 	    final String
-		title, mountPoint;
-	    DiskImpl(String title, String mountPoint)
+		title, device, mountPoint;
+	    DiskImpl(String device, String mountPoint)
 	    {
-		this.title = title;
+		this.title = device.startsWith("/dev/")?device.substring(5):device;
+		this.device = device;
 		this.mountPoint = mountPoint;
 	    }
-	    	@Override public File activate()
+	    @Override public boolean isActivated()
+	    {
+		return mountPoint != null && !mountPoint.trim().isEmpty();
+	    }
+	    @Override public File activate()
 	    {
 		/*
 		final UdisksCli u = new UdisksCli();

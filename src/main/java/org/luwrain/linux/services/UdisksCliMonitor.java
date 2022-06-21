@@ -64,15 +64,10 @@ public final class UdisksCliMonitor implements BashProcess.Listener
     public UdisksCliMonitor(Luwrain luwrain) throws IOException
     {
 	this.luwrain = luwrain;
-	p = launch();
+	init();
+	this.p = new BashProcess("udisksctl monitor", null, EnumSet.noneOf(BashProcess.Flags.class), this);
+this.p.run();
 	    }
-
-    BashProcess launch() throws IOException
-    {
-	final BashProcess b = new BashProcess("udisksctl monitor", null, EnumSet.noneOf(BashProcess.Flags.class), this);
-	b.run();
-	return b;
-    }
 
     public synchronized void enumBlockDevices(Consumer<Map<String, Object>> consumer)
     {
@@ -187,6 +182,67 @@ m = RE_PROP_CHANGED.matcher(line);
 		    }
 		}
 
+    public void init() throws IOException
+    {
+	final BashProcess p = new BashProcess("udisksctl dump", EnumSet.of(BashProcess.Flags.LOG_OUTPUT));
+	p.run();
+	final int exitCode = p.waitFor();
+	if (exitCode != 0)
+	    throw new IOException("udisksctl dump returned exit code " + String.valueOf(exitCode));
+	final String[] output = p.getOutput();
+	for(String l: output)
+	{
+	    //	    Log.debug("proba", l);
+	    final String line = l.trim();
+	    if (line.startsWith("/org/freedesktop/") && line.endsWith(":"))
+	    {
+		final String obj = line.substring(0, line.length() - 1);
+
+		//Adding disk
+		if (obj.startsWith(OBJ_DRIVES))
+		{
+		    activeDisk = new Disk(obj);
+		    disks.put(obj, activeDisk);
+		    activeBlockDev = null;
+		    activeIface = null;
+		    Log.debug(LOG_COMPONENT, "adding disk " + obj);
+		    continue;
+		}
+
+				//Adding block device
+		if (obj.startsWith(OBJ_BLOCK))
+		{
+		    activeBlockDev = new BlockDev(obj);
+		    blockDevs.put(obj, activeBlockDev);
+		    activeDisk = null;
+		    activeIface = null;
+		    Log.debug(LOG_COMPONENT, "adding block device " + obj);
+		    continue;
+		}
+
+		Log.warning(LOG_COMPONENT, "unrecognized initial object: " + line);
+		continue;
+	    }
+
+	    if (line.startsWith("org.freedesktop.") && line.endsWith(":"))
+	    {
+		activeIface = line.substring(0, line.length() - 1);
+		continue;
+	    }
+
+	    if (activeIface == null)
+		continue;
+
+	    if (activeDisk != null)
+		activeDisk.onLine(activeIface, line); else
+		if (activeBlockDev != null)
+		    activeBlockDev.onLine(activeIface, line);
+	}
+	activeDisk = null;
+	activeBlockDev = null;
+	activeIface = null;
+    }
+
 	@Override public void onErrorLine(String line)
 	{
 	    Log.error(LOG_COMPONENT, "monitor error: " + line);
@@ -218,8 +274,14 @@ m = RE_PROP_CHANGED.matcher(line);
 		model = line.substring(PREFIX_MODEL.length()).trim();
 	    if (line.startsWith(PREFIX_VENDOR))
 		vendor = line.substring(PREFIX_VENDOR.length()).trim();
-	    if (model != null && vendor != null)
+	    /*
+	    if (isReady())
 		chainOfResponsibility(luwrain, Hooks.DISK_ADDED, new Object[]{new MapScriptObject(createAttrMap())});
+	    */
+	}
+	boolean isReady()
+	{
+	    return model != null && vendor != null;
 	}
 	Map<String, Object> createAttrMap()
 	{
@@ -250,8 +312,10 @@ m = RE_PROP_CHANGED.matcher(line);
 		fsType = line.substring(PREFIX_FS_TYPE.length()).trim();
 	    if (iface.equals(IFACE_FILESYSTEM) && line.startsWith(PREFIX_MOUNT_POINTS))
 		mountPoints = line.substring(PREFIX_MOUNT_POINTS.length()).trim();
+	    /*
 	    if (isReady())
 		chainOfResponsibility(luwrain, Hooks.BLOCK_DEV_ADDED, new Object[]{new MapScriptObject(createAttrMap())});
+	    */
 	}
 	boolean isReady()
 	{

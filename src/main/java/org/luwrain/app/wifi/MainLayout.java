@@ -39,19 +39,78 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler<WifiN
     {
 	super(app);
 	this.app = app;
-	this.networksArea = new ListArea<>(listParams((params)->{
+	this.networksArea = new ListArea<WifiNetwork>(listParams((params)->{
 		    params.model = new ListModel(app.networks);
 		    params.name = app.getStrings().networksAreaName();
 		    params.appearance = new Appearance(app);
 		    params.clickHandler = this;
-		}));
+		})){
+		@Override public boolean onSystemEvent(SystemEvent event)
+		{
+		    if (event.getType() == SystemEvent.Type.REGULAR)
+			switch(event.getCode())
+		    {
+		    case REFRESH:
+		    return app.updateNetworkList();
+		    }
+		    return super.onSystemEvent(event);
+		}
+	    };
 	this.statusArea = new SimpleArea(getControlContext(), app.getStrings().statusAreaName());
-	setAreaLayout(AreaLayout.LEFT_RIGHT, networksArea, null, statusArea, null);
+	setAreaLayout(networksArea, actions(
+					    action("disconnect", app.getStrings().actionDisconnect(), new InputEvent(InputEvent.Special.F5), this::actDisconnect, ()->(findConnected() != null))
+					    ));
+	//	setAreaLayout(AreaLayout.LEFT_RIGHT, networksArea, null, statusArea, null);
     }
 
     @Override public boolean onListClick(ListArea area, int index, WifiNetwork network)
     {
-	return false;
+	final WifiNetwork wifi = networksArea.selected();
+	if (wifi == null || app.isBusy())
+	    return false;
+	final String password;
+	if (wifi.getProtectionType() != null && !wifi.getProtectionType().trim().isEmpty())
+	{
+	    password = app.getConv().askPassword();
+	    if (password == null)
+		return true;
+	}else
+	    password = "";
+	final App.TaskId taskId = app.newTaskId();
+	return app.runTask(taskId, ()->{
+		final boolean res = app.nmCli.connect(wifi, password);
+		app.finishedTask(taskId, ()->{
+			if (res)
+			    app.message(app.getStrings().connectionEstablished(), Luwrain.MessageType.DONE); else
+			    app.message(app.getStrings().errorConnecting(), Luwrain.MessageType.ERROR);
+		    });
+	    });
     }
 
+    private boolean actDisconnect()
+    {
+	final WifiNetwork wifi = findConnected();
+	if (wifi == null)
+	    return false;
+	if (!app.getConv().disconnectCurrent(wifi.getName()))
+	    return true;
+		final App.TaskId taskId = app.newTaskId();
+	return app.runTask(taskId, ()->{
+		final boolean res = app.nmCli.disconnect();
+		app.finishedTask(taskId, ()->{
+			if (res)
+			    app.message(app.getStrings().successfullyDisconnected(), Luwrain.MessageType.DONE); else
+			    app.message(app.getStrings().errorDisconnecting(), Luwrain.MessageType.ERROR);
+		    });
+	    });
+    }
+
+    private WifiNetwork findConnected()
+    {
+	final int count = networksArea.getListModel().getItemCount();
+	for(int i = 0;i < count;i++)
+	    if (networksArea.getListModel().getItem(i).isConnected())
+		return networksArea.getListModel().getItem(i);
+	return null;
+    }
 }
