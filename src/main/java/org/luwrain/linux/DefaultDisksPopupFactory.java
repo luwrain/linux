@@ -42,24 +42,28 @@ private final class DisksImpl implements DisksPopup.Disks
 			final String
 			obj = m.containsKey("obj")?m.get("obj").toString():"",
 			device = m.containsKey("device")?m.get("device").toString():"",
-						fsType = m.containsKey("fsType")?m.get("fsType").toString():"";
+			fsType = m.containsKey("fsType")?m.get("fsType").toString():"",
+									mountPoints = m.containsKey("mountPoints")?m.get("mountPoints").toString():"";
+			Log.debug("proba", "points " + mountPoints);
 			if (!fsType.trim().isEmpty())
-			res.add(new DiskImpl(device));
+			    res.add(new DiskImpl(device, mountPoints));
 		    });
-
 		return res.toArray(new DisksPopup.Disk[res.size()]);
 	    }
 	}
 
 	private final class DiskImpl implements DisksPopup.Disk
 	{
-	    final String title;
-	    DiskImpl(String title)
+	    final String
+		title, mountPoint;
+	    DiskImpl(String title, String mountPoint)
 	    {
 		this.title = title;
+		this.mountPoint = mountPoint;
 	    }
 	    	@Override public File activate()
 	    {
+		/*
 		final UdisksCli u = new UdisksCli();
 		try {
 		return u.mount(title);
@@ -68,6 +72,8 @@ private final class DisksImpl implements DisksPopup.Disks
 		{
 		     throw new RuntimeException(e);
 		     }
+		*/
+		return new File(mountPoint);
 	    }
 	    @Override public String toString()
 	    {

@@ -36,7 +36,7 @@ public final class UdisksCliMonitor implements BashProcess.Listener
     static private final Pattern
 	RE_ADDED = Pattern.compile("^\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d:\\sAdded\\s(.*)$"),
 	RE_REMOVED = Pattern.compile("^\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d:\\sRemoved\\s(.*)$"),
-    	RE_PROP_CHANGED = Pattern.compile("^\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d:\\s+([^:]+):\\s+([^:]+):\\s+Properties Changed\\s+$");
+	    	RE_PROP_CHANGED = Pattern.compile("^\\d\\d:\\d\\d:\\d\\d\\.\\d\\d\\d:\\s*([^:]+):\\s*(.*):\\s*Properties Changed\\s*$");
 
     static private final String
 	OBJ_DRIVES = "/org/freedesktop/UDisks2/drives/",
@@ -50,7 +50,8 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 	PREFIX_VENDOR = "Vendor:",
 	PREFIX_DEVICE = "Device:",
 	PREFIX_DRIVE = "Drive:",
-	PREFIX_FS_TYPE = "IdType:";
+	PREFIX_FS_TYPE = "IdType:",
+	PREFIX_MOUNT_POINTS = "MountPoints:";
 
     private final Luwrain luwrain;
     private final BashProcess p ;
@@ -118,11 +119,13 @@ m = RE_REMOVED.matcher(line);
 			activeDisk = null;
 			activeBlockDev = null;
 			activeIface = null;
+
 			if (disks.containsKey(obj))
 			{
 			    final Disk disk = disks.get(obj);
 			    disks.remove(obj);
-			    chainOfResponsibility(luwrain, Hooks.DISK_REMOVED, new Object[]{ new MapScriptObject(disk.createHookMap())});
+			    Log.debug(LOG_COMPONENT, "removed disk " + disk.obj);
+			    chainOfResponsibility(luwrain, Hooks.DISK_REMOVED, new Object[]{ new MapScriptObject(disk.createAttrMap())});
 			    return;
 			}
 
@@ -130,12 +133,41 @@ m = RE_REMOVED.matcher(line);
 			{
 			    final BlockDev blockDev = blockDevs.get(obj);
 			    blockDevs.remove(obj);
+			    Log.debug(LOG_COMPONENT, "removed block device " + blockDev.obj);
 			    chainOfResponsibility(luwrain, Hooks.BLOCK_DEV_REMOVED, new Object[]{ new MapScriptObject(blockDev.createAttrMap())});
 			    return;
 			}
 
 						return;
 		    }
+
+		    //Updating properties
+m = RE_PROP_CHANGED.matcher(line);
+				    if (m.find())
+				    {
+					final String
+					obj = m.group(1).trim(),
+					iface = m.group(2).trim();
+
+					if (obj.startsWith(OBJ_DRIVES) && disks.containsKey(obj))
+					{
+					    activeDisk = disks.get(obj);
+					    activeIface = iface;
+					    					    Log.debug(LOG_COMPONENT, "updating the disk " + obj + " with the interface " + activeIface);
+					    return;
+					}
+
+										if (obj.startsWith(OBJ_BLOCK) && blockDevs.containsKey(obj))
+					{
+					    activeBlockDev = blockDevs.get(obj);
+					    activeIface = iface;
+					    Log.debug(LOG_COMPONENT, "updating the block device " + obj + " with the interface " + activeIface);
+					    return;
+					}
+
+										Log.warning(LOG_COMPONENT, "unrecognized updating line: " + line);
+					return;
+				    }
 
 		    final String l = line.trim();
 		    if (l.startsWith("org.freedesktop") && l.endsWith(":"))
@@ -145,9 +177,9 @@ m = RE_REMOVED.matcher(line);
 		    }
 
 		    if (activeDisk != null)
-			activeDisk.onLine(l);
+			activeDisk.onLine(activeIface, l);
 		    if (activeBlockDev != null)
-			activeBlockDev.onLine(l);
+			activeBlockDev.onLine(activeIface, l);
 		    }
 		    catch(Throwable e)
 		    {
@@ -178,16 +210,18 @@ m = RE_REMOVED.matcher(line);
 	    vendor = null,
 	    model = null;
 	Disk(String obj) { this.obj = obj; }
-	void onLine(String line)
+	void onLine(String iface, String line)
 	{
+	    if (!iface.equals(IFACE_DRIVE))
+		return;
 	    if (line.startsWith(PREFIX_MODEL))
 		model = line.substring(PREFIX_MODEL.length()).trim();
 	    if (line.startsWith(PREFIX_VENDOR))
 		vendor = line.substring(PREFIX_VENDOR.length()).trim();
 	    if (model != null && vendor != null)
-		chainOfResponsibility(luwrain, Hooks.DISK_ADDED, new Object[]{new MapScriptObject(createHookMap())});
+		chainOfResponsibility(luwrain, Hooks.DISK_ADDED, new Object[]{new MapScriptObject(createAttrMap())});
 	}
-	Map<String, Object> createHookMap()
+	Map<String, Object> createAttrMap()
 	{
 	    final Map<String, Object> d = new HashMap<>();
 	    d.put("obj", obj);
@@ -203,9 +237,10 @@ m = RE_REMOVED.matcher(line);
 	String
 	    device = null,
 	    drive = null,
-	    fsType = null;
+	    fsType = null,
+	    mountPoints = null;
 	BlockDev(String obj) { this.obj = obj; }
-	void onLine(String line)
+	void onLine(String iface, String line)
 	{
 	    if (line.startsWith(PREFIX_DEVICE))
 		device = line.substring(PREFIX_DEVICE.length()).trim();
@@ -213,12 +248,14 @@ m = RE_REMOVED.matcher(line);
 		drive = line.substring(PREFIX_DRIVE.length()).trim();
 	    if (line.startsWith(PREFIX_FS_TYPE))
 		fsType = line.substring(PREFIX_FS_TYPE.length()).trim();
+	    if (iface.equals(IFACE_FILESYSTEM) && line.startsWith(PREFIX_MOUNT_POINTS))
+		mountPoints = line.substring(PREFIX_MOUNT_POINTS.length()).trim();
 	    if (isReady())
 		chainOfResponsibility(luwrain, Hooks.BLOCK_DEV_ADDED, new Object[]{new MapScriptObject(createAttrMap())});
 	}
 	boolean isReady()
 	{
-	    return device != null && drive != null && fsType != null;
+	    return device != null && drive != null && fsType != null && mountPoints != null;
 	}
 	Map<String, Object> createAttrMap()
 	{
@@ -227,6 +264,7 @@ m = RE_REMOVED.matcher(line);
 	    d.put("device", device);
 	    d.put("drive", drive);
 	    d.put("fsType", fsType);
+	    d.put("mountPoints", mountPoints);
 	    return d;
 	}
     }
