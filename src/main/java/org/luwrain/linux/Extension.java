@@ -76,6 +76,12 @@ public final class Extension extends EmptyExtension
 	return null;
     }
 
+    @Override public void close()
+    {
+	if (udisksMonitor != null)
+	    udisksMonitor.close();
+    }
+
     private void loadScriptCore(Luwrain luwrain)
     {
 	NullCheck.notNull(luwrain, "luwrain");

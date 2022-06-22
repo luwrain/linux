@@ -28,7 +28,7 @@ import org.luwrain.script.core.*;
 import static org.luwrain.script.Hooks.*;
 
 
-public final class UdisksCliMonitor implements BashProcess.Listener
+public final class UdisksCliMonitor implements BashProcess.Listener, AutoCloseable
 {
     static private final String
 	LOG_COMPONENT = "udisks";
@@ -41,6 +41,7 @@ public final class UdisksCliMonitor implements BashProcess.Listener
     static private final String
 	OBJ_DRIVES = "/org/freedesktop/UDisks2/drives/",
 		OBJ_BLOCK = "/org/freedesktop/UDisks2/block_devices/",
+	OBJ_MANAGER = "/org/freedesktop/UDisks2/Manager",
 	IFACE_DRIVE = "org.freedesktop.UDisks2.Drive",
 	IFACE_BLOCK = "org.freedesktop.UDisks2.Block",
 	IFACE_FILESYSTEM = "org.freedesktop.UDisks2.Filesystem",
@@ -56,6 +57,7 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 
     private final Luwrain luwrain;
     private final BashProcess p ;
+    private boolean closed = true;
     private final Map<String, Disk> disks = new HashMap<>();
     private final Map<String, BlockDev> blockDevs = new HashMap<>();
     private Disk activeDisk = null;
@@ -69,6 +71,15 @@ public final class UdisksCliMonitor implements BashProcess.Listener
 	this.p = new BashProcess("udisksctl monitor", null, EnumSet.noneOf(BashProcess.Flags.class), this);
 this.p.run();
 	    }
+
+    @Override public synchronized void close()
+    {
+	if (closed)
+	    return;
+	Log.debug(LOG_COMPONENT, "stopping udiscli monitor");
+	this.closed = true;
+	p.stop();
+    }
 
     public synchronized void enumRemovableBlockDevices(Consumer<Map<String, Object>> consumer)
     {
@@ -192,7 +203,7 @@ m = RE_PROP_CHANGED.matcher(line);
 		    }
 		}
 
-    public void init() throws IOException
+    private void init() throws IOException
     {
 	final BashProcess p = new BashProcess("udisksctl dump", EnumSet.of(BashProcess.Flags.LOG_OUTPUT));
 	p.run();
@@ -230,6 +241,9 @@ m = RE_PROP_CHANGED.matcher(line);
 		    continue;
 		}
 
+		if (obj.startsWith(OBJ_MANAGER))
+		    continue;
+
 		Log.warning(LOG_COMPONENT, "unrecognized initial object: " + line);
 		continue;
 	    }
@@ -258,16 +272,20 @@ m = RE_PROP_CHANGED.matcher(line);
 	    Log.error(LOG_COMPONENT, "monitor error: " + line);
 	}
 
-	@Override public void onFinishing(int exitCode)
+    @Override public void onFinishing(int exitCode)
+    {
+	activeDisk = null;
+	activeBlockDev = null;
+	disks.clear();
+	blockDevs.clear();
+	if (!closed)
 	{
 	    if (exitCode == 0)
 		Log.debug(LOG_COMPONENT, "the monitor finished without errors"); else
 		Log.error(LOG_COMPONENT, "the monitor finished with the exit code " + String.valueOf(exitCode));
-	    activeDisk = null;
-	    activeBlockDev = null;
-	    disks.clear();
-	    blockDevs.clear();
 	}
+	closed = true;
+    }
 
     private final class Disk
     {
