@@ -25,6 +25,9 @@ import org.luwrain.popups.*;
 
 public final class DefaultDisksPopupFactory implements DisksPopup.Factory
     {
+	static private final String
+	    LOG_COMPONENT = Linux.LOG_COMPONENT;
+
 	private UdisksCliMonitor monitor;
 	DefaultDisksPopupFactory(UdisksCliMonitor monitor) { this.monitor = monitor; }
 
@@ -44,6 +47,10 @@ private final class DisksImpl implements DisksPopup.Disks
 			device = m.containsKey("device")?m.get("device").toString():"",
 			fsType = m.containsKey("fsType")?m.get("fsType").toString():"",
 			mountPoints = m.containsKey("mountPoints")?m.get("mountPoints").toString():"";
+			final boolean
+			ejectable = m.containsKey("ejectable")?((Boolean)m.get("ejectable")).booleanValue():false,
+			removable = m.containsKey("removable")?((Boolean)m.get("removable")).booleanValue():false;
+			if (removable && !fsType.trim().isEmpty())
 			res.add(new DiskImpl(device, mountPoints));
 		    });
 		return res.toArray(new DisksPopup.Disk[res.size()]);

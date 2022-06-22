@@ -76,7 +76,7 @@ this.p.run();
     {
 	if (closed)
 	    return;
-	Log.debug(LOG_COMPONENT, "stopping udiscli monitor");
+	Log.debug(LOG_COMPONENT, "stopping udisksctl monitor");
 	this.closed = true;
 	p.stop();
     }
@@ -89,11 +89,13 @@ this.p.run();
 		final Disk disk = disks.get(e.getValue().drive.replaceAll("'", ""));
 		if (disk == null)
 		    continue;
+		final Map<String, Object> m = new HashMap<>(e.getValue().createAttrMap());
 		final boolean
 		removable = disk.removable != null && disk.removable.toLowerCase().equals("true"),
 		ejectable = disk.ejectable != null && disk.ejectable.toLowerCase().equals("true");
-		if (ejectable)		
-	    consumer.accept(e.getValue().createAttrMap());
+		m.put("removable", Boolean.valueOf(removable));
+		m.put("ejectable", Boolean.valueOf(ejectable));
+	    consumer.accept(m);
 	    }
     }
 
