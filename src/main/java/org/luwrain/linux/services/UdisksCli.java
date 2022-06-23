@@ -17,13 +17,13 @@
 package org.luwrain.linux.services;
 
 import java.util.*;
-import java.util.function.*;
+//import java.util.function.*;
 import java.util.regex.*;
 import java.io.*;
 
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
-import org.luwrain.script.core.*;
+//import org.luwrain.script.core.*;
 
 import static org.luwrain.script.Hooks.*;
 
@@ -31,6 +31,9 @@ public final class UdisksCli
 {
     static private final String
 	LOG_COMPONENT = "udisks";
+
+    static private final Pattern
+	PAT_MOUNTED = Pattern.compile("^\\s*Mounted\\s+[^ ]+\\s+at\\s+([^ ].*)\\s*$");
 
     public interface Caller
     {
@@ -53,11 +56,25 @@ public final class UdisksCli
     public File mount(String device) throws IOException
     {
 	final String[] res = caller.call(new String[]{"mount", "-b", device});
-	Log.debug(LOG_COMPONENT, Arrays.toString(res));
-	return null;
+	if (res.length != 1)
+	{
+	    Log.error(LOG_COMPONENT, "illegal number of output lines from udisksctl mount: " + Arrays.toString(res));
+	    return null;
+	}
+	final Matcher m = PAT_MOUNTED.matcher(res[0]);
+	if (!m.find())
+	{
+	    Log.error(LOG_COMPONENT, "unrecognized udisksctl mount output line: " + res[0]);
+	    return null;
+	}
+	return new File(m.group(1));
     }
 
-    
+    public void unmount(String device) throws IOException
+    {
+	caller.call(new String[]{"unmount", "-b", device});
+    }
+
     static public Caller createDefaultCaller()
     {
 	return (args)->{

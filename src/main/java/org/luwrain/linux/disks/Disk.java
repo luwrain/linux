@@ -1,6 +1,7 @@
 
 package org.luwrain.linux.disks;
 
+import java.util.*;
 import java.io.*;
 
 import org.luwrain.core.*;
@@ -16,10 +17,16 @@ public final class Disk implements DisksPopup.Disk
 	this.name = name;
     }
 
-    @Override public  File activate()
+    @Override public  File activate(Set<DisksPopup.Flags> flags)
     {
 	return new File(name);
     }
+
+        @Override public  boolean deactivate(Set<DisksPopup.Flags> flags)
+    {
+	return true;
+    }
+
 
     @Override public boolean isActivated()
     {

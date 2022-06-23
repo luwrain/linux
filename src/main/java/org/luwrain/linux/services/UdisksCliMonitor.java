@@ -215,7 +215,6 @@ m = RE_PROP_CHANGED.matcher(line);
 	final String[] output = p.getOutput();
 	for(String l: output)
 	{
-	    //	    Log.debug("proba", l);
 	    final String line = l.trim();
 	    if (line.startsWith("/org/freedesktop/") && line.endsWith(":"))
 	    {
@@ -311,7 +310,6 @@ m = RE_PROP_CHANGED.matcher(line);
 		    	    	    if (line.startsWith(PREFIX_EJECTABLE))
 				    {
 		ejectable = line.substring(PREFIX_EJECTABLE.length()).trim();
-		Log.debug("proba", "ejectable " + ejectable + " for " + obj);
 				    }
 	    /*
 	    if (isReady())

@@ -17,7 +17,7 @@ public final class Disks implements DisksPopup.Disks
     static private final Pattern PAT_MOUNTS = Pattern.compile("^(\\S+)\\s(\\S+)\\s(\\S+)\\s(.*)$", Pattern.CASE_INSENSITIVE);
     static private final List<String> FS_SKIP = Arrays.asList("autofs", "cgroup", "configfs", "debugfs", "devfs", "devpts", "devtmpfs", "fusectl", "hugetlbfs", "mqueue", "nsfs", "proc", "pstore", "securityfs", "sysctl", "tmpfs");
 
-    @Override public Disk[] getDisks()
+    @Override public Disk[] getDisks(Set<DisksPopup.Flags> flags)
     {
 	final List<Disk> res = new ArrayList<>();
 	try {
