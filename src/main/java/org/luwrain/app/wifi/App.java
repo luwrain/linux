@@ -56,6 +56,13 @@ public final class App extends AppBase<Strings> implements MonoApp
 	    });
     }
 
+    void updateNetworksSync() throws Exception
+    {
+	final WifiNetwork[] n = nmCli.scan();
+	networks.clear();
+	networks.addAll(Arrays.asList(n));
+    }
+
     @Override public boolean onEscape()
     {
 	closeApp();

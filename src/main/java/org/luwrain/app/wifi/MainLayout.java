@@ -79,10 +79,16 @@ final class MainLayout extends LayoutBase implements ListArea.ClickHandler<WifiN
 	final App.TaskId taskId = app.newTaskId();
 	return app.runTask(taskId, ()->{
 		final boolean res = app.nmCli.connect(wifi, password);
+		if (!res)
+		{
+		    app.finishedTask(taskId, ()->			    app.message(app.getStrings().errorConnecting(), Luwrain.MessageType.ERROR));
+		    return;
+		}
+		app.updateNetworksSync();
 		app.finishedTask(taskId, ()->{
-			if (res)
-			    app.message(app.getStrings().connectionEstablished(), Luwrain.MessageType.DONE); else
-			    app.message(app.getStrings().errorConnecting(), Luwrain.MessageType.ERROR);
+			networksArea.refresh();
+			    app.message(app.getStrings().connectionEstablished(), Luwrain.MessageType.DONE);
+
 		    });
 	    });
     }

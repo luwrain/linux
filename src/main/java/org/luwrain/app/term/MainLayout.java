@@ -169,7 +169,7 @@ app.sendChar('\t');
     void termText(String text)
     {
 	NullCheck.notNull(text, "text");
-	term.termText(text);
+	term.termText(text.replaceAll("\\[\\?2004[hl]", ""));
 	termArea.setHotPoint(term.getHotPointX(), term.getHotPointY());
     }
 

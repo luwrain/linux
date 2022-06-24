@@ -39,7 +39,7 @@ public final class NmCli
     static private final class Network implements WifiNetwork
     {
 	private final String name, protectionType;
-	private final boolean connected;
+	private boolean connected = false;
 	private final int signalLevel;
 	Network(String name, String protectionType, boolean connected, int signalLevel)
 	{
@@ -82,7 +82,6 @@ public final class NmCli
 	for (String l: lines)
 	{
 	    final String line = l.trim();
-	    Log.debug("proba", "Checking " + line);
 	    if (line.startsWith(IN_USE))
 		inUse = line.substring(IN_USE.length()).trim();
 	    if (line.startsWith(SSID))
@@ -113,7 +112,17 @@ public final class NmCli
 
     public boolean connect(WifiNetwork network, String password) throws IOException
     {
-	return false;
+	try {
+	    if (password != null && !password.isEmpty())
+	    caller.call(new String[]{"device", "wifi", "connect", network.getName(), "password", password}); else
+			    caller.call(new String[]{"device", "wifi", "connect", network.getName()});
+	    return true;
+	}
+	catch(Throwable e)
+	{
+	    Log.error(LOG_COMPONENT, "unable to connect to the network '" + network.getName() + "': " + e.getClass().getName() + ": " + e.getMessage());
+	    return false;
+	}
     }
 
         public boolean disconnect() throws IOException
