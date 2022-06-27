@@ -3,6 +3,8 @@
 # Alexander Panshin <alexanderpanshin@gmail.com>
 # Michael Pozhidaev <msp@luwrain.org>
 
+USER=luwrain
+
 curl -s https://download.luwrain.org/gpg/dpkg.gpg.pub | apt-key add -
 cat <<EOF > /etc/apt/sources.list.d/luwrain.list
 deb https://download.luwrain.org/repo/ luwrain bullseye
@@ -12,7 +14,15 @@ apt-get update
 apt-get install voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy
 
 mkdir /etc/luwrain
-cp system-start /etc/luwrain
+cat <<EOF > /etc/luwrain/system-start
+#!/bin/bash -e
+# Starts LUWRAIN as a regular user
+
+USER=$USER
+
+/bin/su - \$USER -c /usr/bin/startx
+EOF
+chmod 755 /etc/luwrain/system-start
 
 systemctl set-default multi-user.target
 mkdir -p /etc/systemd/system/getty@tty1.service.d
@@ -34,8 +44,8 @@ cp *.output /etc/voiceman.d
 cat voiceman.conf > /etc/voiceman.conf
 
 cat xorg.conf > /etc/X11/xorg.conf
-cat xinitrc > /home/pi/.xinitrc
-chown pi:pi /home/pi/.xinitrc
+cat xinitrc > /home/$USER/.xinitrc
+chown $USER:$USER /home/$USER/.xinitrc
 
 cat dwm-autolaunch > /usr/local/bin/dwm-autolaunch
 chmod 755 /usr/local/bin/dwm-autolaunch
