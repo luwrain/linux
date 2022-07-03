@@ -11,7 +11,8 @@ deb https://download.luwrain.org/repo/ luwrain bullseye
 EOF
 
 apt-get update
-apt-get install voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer
+apt-get install --yes  voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer openjdk-17-jre openjfx network-manager
+apt-get remove --yes  openresolv dhcpcd5
 
 mkdir /etc/luwrain
 cat <<EOF > /etc/luwrain/system-start
@@ -50,3 +51,25 @@ chown $USER:$USER /home/$USER/.xinitrc
 cat dwm-autolaunch > /usr/local/bin/dwm-autolaunch
 chmod 755 /usr/local/bin/dwm-autolaunch
 
+cat <<EOF > /etc/asound.conf
+pcm.!default {
+    type pulse
+}
+ 
+ctl.!default {
+    type pulse
+}
+EOF
+
+
+cd /etc/java-*-openjdk
+cat <<EOF >> sound.properties
+
+javax.sound.sampled.Clip=com.sun.media.sound.DirectAudioDeviceProvider
+javax.sound.sampled.Port=com.sun.media.sound.PortMixerProvider
+javax.sound.sampled.SourceDataLine=com.sun.media.sound.DirectAudioDeviceProvider
+javax.sound.sampled.TargetDataLine=com.sun.media.sound.DirectAudioDeviceProvider
+EOF
+
+cd /etc/pulse
+echo 'load-module module-switch-on-connect' >> default.pa
