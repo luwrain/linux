@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-/bin/su - pi -c /usr/bin/startx

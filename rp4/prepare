@@ -21,6 +21,7 @@ cat <<EOF > /etc/luwrain/system-start
 
 USER=$USER
 
+bt-agent -d --capability=NoInputNoOutput 
 /bin/su - \$USER -c /usr/bin/startx
 EOF
 chmod 755 /etc/luwrain/system-start
