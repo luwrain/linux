@@ -1,6 +1,6 @@
 
-UBUNTU_RELEASE=impish
-LWRISO_BOOT_VER=21.10
+UBUNTU_RELEASE=jammy
+LWRISO_BOOT_VER=22.04
 LWRISO_USER=luwrain
 LWRISO_ARCH=amd64
 LWRISO_DATE="$(date +%Y%m%d)"
@@ -27,7 +27,6 @@ rm-pkg()
 {
 chroot-run apt-get --yes remove --ignore-missing --no-download $@
 }
-
 
 remove-pkg-prefix()
 {
