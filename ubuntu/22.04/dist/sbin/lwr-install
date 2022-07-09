@@ -5,7 +5,7 @@
 THIS="${0##*/}"
 
 # The log location
-LOG=/tmp/homeros-install.log
+LOG=/tmp/luwrain-install.log
 
 # Where we expecting the live CD squashfs image to be
 SQUASH_SRC=/cdrom/casper/filesystem.squashfs
@@ -18,7 +18,7 @@ ESP_DEVICE=''
 print_help()
 {
 cat <<EOF
-$THIS: The Homeros installer
+$THIS: The LUWRAIN installer
 
 Usage:
     $THIS [--help] [--root DEVICE] [--boot DEVICE]
@@ -83,11 +83,7 @@ mkfs.ext4 "$TARGET_ROOT_DEV"  &>> $LOG
 tune2fs -c 0 "$TARGET_ROOT_DEV"  &>> $LOG
 tune2fs -i 0 "$TARGET_ROOT_DEV"  &>> $LOG
 mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
-echo The root filesystem is ready and mounted
-
 mount $SQUASH_SRC $SQUASH_MOUNT &>> $LOG
-echo Squashfs image is ready
-
 echo Copying files
 cp -afd $SQUASH_MOUNT/. $TARGET_MOUNT/ &>> $LOG
 echo Adding new fstab entries
@@ -112,11 +108,7 @@ fi
 for a in dev/pts dev sys proc; do umount $TARGET_MOUNT/$a >> $LOG; done
 
 echo '127.0.0.1 localhost.localdomain localhost' >> $TARGET_MOUNT/etc/hosts
-mkdir -p $TARGET_MOUNT/etc/homeros
-cat /etc/homeros/system-start > $TARGET_MOUNT/etc/homeros/system-start
-sed -i -e s/'Master 100'/'Master 80'/ $TARGET_MOUNT/etc/homeros/system-start
-chmod 755 $TARGET_MOUNT/etc/homeros/system-start
-rm -rf $TARGET_MOUNT/sbin/homeros-install
+rm -rf $TARGET_MOUNT/sbin/lwr-install
 
 #if [[ ! -z $TARGET_SWAP_DEV ]]; then
 #	echo $TARGET_SWAP_DEV none swap defaults 0 0 >> $TARGET_MOUNT/etc/fstab
@@ -125,4 +117,4 @@ rm -rf $TARGET_MOUNT/sbin/homeros-install
 umount $TARGET_MOUNT $SQUASH_MOUNT &>> $LOG
 sync
 
-echo Homeros installed
+echo LUWRAIN has been successfully installed on your computer
