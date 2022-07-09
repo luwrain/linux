@@ -1,5 +1,5 @@
 #!/bin/bash -e
-# Copyright 2021 Michael Pozhidaev <msp@luwrain.org>
+# Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
 # Copyright 2015 Roman Volovodov <gr.rPman@gmail.com>
 
 THIS="${0##*/}"

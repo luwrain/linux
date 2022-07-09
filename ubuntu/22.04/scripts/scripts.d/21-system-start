@@ -7,15 +7,18 @@ cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 #!/bin/bash
 # Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
 
-export VOICEMAN_LIBAO_DRIVER=alsa
+bt-agent-d --capability=NoInputNoOutput
 
-pulseaudio --system -D ||:
-pactl set-sink-volume 0 80%
-if ! [ -e /tmp/voiceman.socket ]; then
-    /usr/bin/voicemand -d
+if [ -r /etc/luwrain/system-start/default-user ]; then
+    USER=\$(cat /etc/luwrain/system-start/default-user)
 fi
 
-/bin/su - $LWRISO_USER -c /usr/bin/startx
+if [ -z "\$USER" ]; then
+USER=$LWRISO_USER
+fi
+
+/bin/su - \$USER -c /usr/bin/startx
 EOF
 
 chmod 755 $LWRISO_ROOT/etc/luwrain/system-start
+echo luwrain > $LWRISO_ROOT/etc/luwrain/default-user

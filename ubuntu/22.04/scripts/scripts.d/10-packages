@@ -1,13 +1,13 @@
 
 install-pkg acpi ntfs-3g smartmontools udisks2 cpufrequtils
 install-pkg unrar zip p7zip-full
-install-pkg curl wget net-tools openssh-server fetchmail procmail  unattended-upgrades 
+install-pkg curl wget net-tools openssh-server fetchmail procmail  unattended-upgrades bluez-tools
 #install-pkg dvd+rw-tools growisofs
-install-pkg openjdk-11-jre openjfx
+install-pkg openjdk-18-jre openjfx
 install-pkg gcc gdb make git
 install-pkg yasr xterm
 install-pkg lame sox mpg123 mplayer xbindkeys vorbis-tools geeqie
 install-pkg language-pack-en language-pack-en-base
 install-pkg texlive-latex-recommended texlive-latex-extra texlive-metapost texlive-lang-cyrillic texlive-fonts-recommended
-install-pkg cm-super poppler-utils
+install-pkg cm-super poppler-utils tesseract-ocr-rus
 install-pkg lilypond timidity
