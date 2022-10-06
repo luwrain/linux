@@ -1,0 +1,428 @@
+Module #0
+	Name: module-device-restore
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Automatically restore the volume/mute state of devices"
+		module.version = "14.2"
+
+Module #1
+	Name: module-stream-restore
+	Argument: restore_device=false
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Automatically restore the volume/mute/device state of streams"
+		module.version = "14.2"
+
+Module #2
+	Name: module-card-restore
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Automatically restore profile of cards"
+		module.version = "14.2"
+
+Module #3
+	Name: module-augment-properties
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Augment the property sets of streams with additional static information"
+		module.version = "14.2"
+
+Module #4
+	Name: module-switch-on-port-available
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "David Henningsson"
+		module.description = "Switches ports and profiles when devices are plugged/unplugged"
+		module.version = "14.2"
+
+Module #5
+	Name: module-udev-detect
+	Argument: tsched=0
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Detect available audio hardware and load matching drivers"
+		module.version = "14.2"
+
+Module #6
+	Name: module-alsa-card
+	Argument: device_id="0" name="platform-bcm2835_audio" card_name="alsa_card.platform-bcm2835_audio" namereg_fail=false tsched=no fixed_latency_range=no ignore_dB=no deferred_volume=yes use_ucm=yes avoid_resampling=no card_properties="module-udev-detect.discovered=1"
+	Usage counter: 0
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "ALSA Card"
+		module.version = "14.2"
+
+Module #9
+	Name: module-bluetooth-policy
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Frédéric Dalleau, Pali Rohár"
+		module.description = "Policy module to make using bluetooth devices out-of-the-box easier"
+		module.version = "14.2"
+
+Module #10
+	Name: module-bluetooth-discover
+	Argument: autodetect_mtu=yes
+	Usage counter: n/a
+	Properties:
+		module.author = "João Paulo Rechi Vita"
+		module.description = "Detect available Bluetooth daemon and load the corresponding discovery module"
+		module.version = "14.2"
+
+Module #11
+	Name: module-bluez5-discover
+	Argument: autodetect_mtu=yes
+	Usage counter: n/a
+	Properties:
+		module.author = "João Paulo Rechi Vita"
+		module.description = "Detect available BlueZ 5 Bluetooth audio devices and load BlueZ 5 Bluetooth audio drivers"
+		module.version = "14.2"
+
+Module #12
+	Name: module-native-protocol-unix
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Native protocol (UNIX sockets)"
+		module.version = "14.2"
+
+Module #13
+	Name: module-default-device-restore
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Automatically restore the default sink and source"
+		module.version = "14.2"
+
+Module #14
+	Name: module-always-sink
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Colin Guthrie"
+		module.description = "Always keeps at least one sink loaded even if it's a null one"
+		module.version = "14.2"
+
+Module #15
+	Name: module-intended-roles
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Automatically set device of streams based on intended roles of devices"
+		module.version = "14.2"
+
+Module #16
+	Name: module-suspend-on-idle
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "When a sink/source is idle for too long, suspend it"
+		module.version = "14.2"
+
+Module #17
+	Name: module-systemd-login
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Create a client for each login session of this user"
+		module.version = "14.2"
+
+Module #18
+	Name: module-position-event-sounds
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Position event sounds between L and R depending on the position on screen of the widget triggering them."
+		module.version = "14.2"
+
+Module #19
+	Name: module-role-cork
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Lennart Poettering"
+		module.description = "Mute & cork streams with certain roles while others exist"
+		module.version = "14.2"
+
+Module #20
+	Name: module-filter-heuristics
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Colin Guthrie"
+		module.description = "Detect when various filters are desirable"
+		module.version = "14.2"
+
+Module #21
+	Name: module-filter-apply
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Colin Guthrie"
+		module.description = "Load filter sinks automatically when needed"
+		module.version = "14.2"
+
+Module #22
+	Name: module-switch-on-connect
+	Argument: 
+	Usage counter: n/a
+	Properties:
+		module.author = "Michael Terry"
+		module.description = "When a sink/source is added, switch to it or conditionally switch to it"
+		module.version = "14.2"
+
+Module #24
+	Name: module-bluez5-device
+	Argument: path=/org/bluez/hci0/dev_F4_4E_FD_98_2C_0A autodetect_mtu=1
+	Usage counter: 0
+	Properties:
+		module.author = "João Paulo Rechi Vita"
+		module.description = "BlueZ 5 Bluetooth audio sink and source"
+		module.version = "14.2"
+
+Sink #0
+	State: SUSPENDED
+	Name: alsa_output.platform-bcm2835_audio.analog-stereo
+	Description: Built-in Audio Analog Stereo
+	Driver: module-alsa-card.c
+	Sample Specification: s16le 2ch 44100Hz
+	Channel Map: front-left,front-right
+	Owner Module: 6
+	Mute: no
+	Volume: front-left: 19647 /  30% / -31.39 dB,   front-right: 19647 /  30% / -31.39 dB
+	        balance 0.00
+	Base Volume: 65536 / 100% / 0.00 dB
+	Monitor Source: alsa_output.platform-bcm2835_audio.analog-stereo.monitor
+	Latency: 0 usec, configured 0 usec
+	Flags: HARDWARE DECIBEL_VOLUME LATENCY 
+	Properties:
+		alsa.resolution_bits = "16"
+		device.api = "alsa"
+		device.class = "sound"
+		alsa.class = "generic"
+		alsa.subclass = "generic-mix"
+		alsa.name = "bcm2835 Headphones"
+		alsa.id = "bcm2835 Headphones"
+		alsa.subdevice = "0"
+		alsa.subdevice_name = "subdevice #0"
+		alsa.device = "0"
+		alsa.card = "0"
+		alsa.card_name = "bcm2835 Headphones"
+		alsa.long_card_name = "bcm2835 Headphones"
+		alsa.driver_name = "snd_bcm2835"
+		device.bus_path = "platform-bcm2835_audio"
+		sysfs.path = "/devices/platform/soc/fe00b840.mailbox/bcm2835_audio/sound/card0"
+		device.form_factor = "internal"
+		device.string = "hw:0"
+		device.buffering.buffer_size = "10576"
+		device.buffering.fragment_size = "2640"
+		device.access_mode = "mmap"
+		device.profile.name = "analog-stereo"
+		device.profile.description = "Analog Stereo"
+		device.description = "Built-in Audio Analog Stereo"
+		module-udev-detect.discovered = "1"
+		device.icon_name = "audio-card"
+	Ports:
+		analog-output: Analog Output (type: Analog, priority: 9900, availability unknown)
+	Active Port: analog-output
+	Formats:
+		pcm
+
+Sink #2
+	State: SUSPENDED
+	Name: bluez_sink.F4_4E_FD_98_2C_0A.a2dp_sink
+	Description: AWEI Y116
+	Driver: module-bluez5-device.c
+	Sample Specification: s16le 2ch 44100Hz
+	Channel Map: front-left,front-right
+	Owner Module: 24
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0.00 dB,   front-right: 65536 / 100% / 0.00 dB
+	        balance 0.00
+	Base Volume: 65536 / 100% / 0.00 dB
+	Monitor Source: bluez_sink.F4_4E_FD_98_2C_0A.a2dp_sink.monitor
+	Latency: 0 usec, configured 0 usec
+	Flags: HARDWARE DECIBEL_VOLUME LATENCY 
+	Properties:
+		bluetooth.protocol = "a2dp_sink"
+		device.description = "AWEI Y116"
+		device.string = "F4:4E:FD:98:2C:0A"
+		device.api = "bluez"
+		device.class = "sound"
+		device.bus = "bluetooth"
+		device.form_factor = "headset"
+		bluez.path = "/org/bluez/hci0/dev_F4_4E_FD_98_2C_0A"
+		bluez.class = "0x240404"
+		bluez.alias = "AWEI Y116"
+		device.icon_name = "audio-headset-bluetooth"
+		device.intended_roles = "phone"
+	Ports:
+		headset-output: Headset (type: Headset, priority: 0, availability unknown)
+	Active Port: headset-output
+	Formats:
+		pcm
+
+Source #0
+	State: SUSPENDED
+	Name: alsa_output.platform-bcm2835_audio.analog-stereo.monitor
+	Description: Monitor of Built-in Audio Analog Stereo
+	Driver: module-alsa-card.c
+	Sample Specification: s16le 2ch 44100Hz
+	Channel Map: front-left,front-right
+	Owner Module: 6
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0.00 dB,   front-right: 65536 / 100% / 0.00 dB
+	        balance 0.00
+	Base Volume: 65536 / 100% / 0.00 dB
+	Monitor of Sink: alsa_output.platform-bcm2835_audio.analog-stereo
+	Latency: 0 usec, configured 0 usec
+	Flags: DECIBEL_VOLUME LATENCY 
+	Properties:
+		device.description = "Monitor of Built-in Audio Analog Stereo"
+		device.class = "monitor"
+		alsa.card = "0"
+		alsa.card_name = "bcm2835 Headphones"
+		alsa.long_card_name = "bcm2835 Headphones"
+		alsa.driver_name = "snd_bcm2835"
+		device.bus_path = "platform-bcm2835_audio"
+		sysfs.path = "/devices/platform/soc/fe00b840.mailbox/bcm2835_audio/sound/card0"
+		device.form_factor = "internal"
+		device.string = "0"
+		module-udev-detect.discovered = "1"
+		device.icon_name = "audio-card"
+	Formats:
+		pcm
+
+Source #2
+	State: SUSPENDED
+	Name: bluez_sink.F4_4E_FD_98_2C_0A.a2dp_sink.monitor
+	Description: Monitor of AWEI Y116
+	Driver: module-bluez5-device.c
+	Sample Specification: s16le 2ch 44100Hz
+	Channel Map: front-left,front-right
+	Owner Module: 24
+	Mute: no
+	Volume: front-left: 65536 / 100% / 0.00 dB,   front-right: 65536 / 100% / 0.00 dB
+	        balance 0.00
+	Base Volume: 65536 / 100% / 0.00 dB
+	Monitor of Sink: bluez_sink.F4_4E_FD_98_2C_0A.a2dp_sink
+	Latency: 0 usec, configured 0 usec
+	Flags: DECIBEL_VOLUME LATENCY 
+	Properties:
+		device.description = "Monitor of AWEI Y116"
+		device.class = "monitor"
+		device.string = "F4:4E:FD:98:2C:0A"
+		device.api = "bluez"
+		device.bus = "bluetooth"
+		device.form_factor = "headset"
+		bluez.path = "/org/bluez/hci0/dev_F4_4E_FD_98_2C_0A"
+		bluez.class = "0x240404"
+		bluez.alias = "AWEI Y116"
+		device.icon_name = "audio-headset-bluetooth"
+		device.intended_roles = "phone"
+	Formats:
+		pcm
+
+Client #0
+	Driver: module-systemd-login.c
+	Owner Module: 17
+	Properties:
+		application.name = "Login Session c1"
+		systemd-login.session = "c1"
+
+Client #10
+	Driver: module-systemd-login.c
+	Owner Module: 17
+	Properties:
+		application.name = "Login Session 2"
+		systemd-login.session = "2"
+
+Client #19
+	Driver: module-systemd-login.c
+	Owner Module: 17
+	Properties:
+		application.name = "Login Session 3"
+		systemd-login.session = "3"
+
+Client #2069
+	Driver: protocol-native.c
+	Owner Module: 12
+	Properties:
+		application.name = "pactl"
+		native-protocol.peer = "UNIX socket client"
+		native-protocol.version = "34"
+		application.process.id = "7616"
+		application.process.user = "luwrain"
+		application.process.host = "raspberrypi"
+		application.process.binary = "pactl"
+		application.language = "en_GB.UTF-8"
+		application.process.machine_id = "34668285db5f4c48910f979f41519901"
+		application.process.session_id = "3"
+
+Card #0
+	Name: alsa_card.platform-bcm2835_audio
+	Driver: module-alsa-card.c
+	Owner Module: 6
+	Properties:
+		alsa.card = "0"
+		alsa.card_name = "bcm2835 Headphones"
+		alsa.long_card_name = "bcm2835 Headphones"
+		alsa.driver_name = "snd_bcm2835"
+		device.bus_path = "platform-bcm2835_audio"
+		sysfs.path = "/devices/platform/soc/fe00b840.mailbox/bcm2835_audio/sound/card0"
+		device.form_factor = "internal"
+		device.string = "0"
+		device.description = "Built-in Audio"
+		module-udev-detect.discovered = "1"
+		device.icon_name = "audio-card"
+	Profiles:
+		output:analog-stereo: Analog Stereo Output (sinks: 1, sources: 0, priority: 5100, available: yes)
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+	Active Profile: output:analog-stereo
+	Ports:
+		analog-output: Analog Output (type: Analog, priority: 9900, latency offset: 0 usec, availability unknown)
+			Part of profile(s): output:analog-stereo
+
+Card #2
+	Name: bluez_card.F4_4E_FD_98_2C_0A
+	Driver: module-bluez5-device.c
+	Owner Module: 24
+	Properties:
+		device.description = "AWEI Y116"
+		device.string = "F4:4E:FD:98:2C:0A"
+		device.api = "bluez"
+		device.class = "sound"
+		device.bus = "bluetooth"
+		device.form_factor = "headset"
+		bluez.path = "/org/bluez/hci0/dev_F4_4E_FD_98_2C_0A"
+		bluez.class = "0x240404"
+		bluez.alias = "AWEI Y116"
+		device.icon_name = "audio-headset-bluetooth"
+		device.intended_roles = "phone"
+	Profiles:
+		a2dp_source: High Fidelity Capture (A2DP Source) (sinks: 0, sources: 1, priority: 20, available: no)
+		a2dp_sink: High Fidelity Playback (A2DP Sink) (sinks: 1, sources: 0, priority: 40, available: yes)
+		headset_head_unit: Headset Head Unit (HSP/HFP) (sinks: 1, sources: 1, priority: 30, available: no)
+		off: Off (sinks: 0, sources: 0, priority: 0, available: yes)
+	Active Profile: a2dp_sink
+	Ports:
+		headset-output: Headset (type: Headset, priority: 0, latency offset: 0 usec, availability unknown)
+			Part of profile(s): a2dp_sink, headset_head_unit
+		headset-input: Headset (type: Headset, priority: 0, latency offset: 0 usec, not available)
+			Part of profile(s): a2dp_source, headset_head_unit
