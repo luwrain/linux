@@ -9,15 +9,15 @@ cat <<EOF > $LWRISO_ROOT/etc/luwrain/system-start
 
 bt-agent-d --capability=NoInputNoOutput
 
-if [ -r /etc/luwrain/system-start/default-user ]; then
-    USER=\$(cat /etc/luwrain/system-start/default-user)
+if [ -r /etc/luwrain/default-user ]; then
+    USER="\$(cat /etc/luwrain/default-user)"
 fi
 
 if [ -z "\$USER" ]; then
 USER=$LWRISO_USER
 fi
 
-/bin/su - \$USER -c /usr/bin/startx
+/bin/su - "\$USER" -c /usr/bin/startx
 EOF
 
 chmod 755 $LWRISO_ROOT/etc/luwrain/system-start

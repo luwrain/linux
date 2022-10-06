@@ -5,7 +5,7 @@ mkdir -p $LWRISO_ROOT/home/$LWRISO_USER/.local/bin
 cat <<EOF > $LWRISO_ROOT/home/$LWRISO_USER/.local/bin/dwm-autolaunch
 #!/bin/bash -e
 
-exec lwr
+exec lwr --speech=voiceman
 EOF
 chmod 755 $LWRISO_ROOT/home/$LWRISO_USER/.local/bin/dwm-autolaunch
 
@@ -33,7 +33,6 @@ export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
 export VOICEMAN_LIBAO_DRIVER=alsa
 
 pulseaudio -D ||:
-#pactl set-sink-volume 0 80%
 
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d
@@ -41,6 +40,7 @@ fi
 
 setxkbmap -layout "us,ru"
 setxkbmap -option "grp:caps_toggle,grp_led:scroll"
+xbindkeys
 
 exec dwm-luwrain
 EOF

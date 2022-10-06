@@ -3,7 +3,7 @@ install-pkg acpi ntfs-3g smartmontools udisks2 cpufrequtils
 install-pkg unrar zip p7zip-full
 install-pkg curl wget net-tools openssh-server fetchmail procmail  unattended-upgrades bluez-tools
 #install-pkg dvd+rw-tools growisofs
-install-pkg openjdk-18-jre openjfx
+install-pkg openjfx #openjdk-18-jre 
 install-pkg gcc gdb make git
 install-pkg yasr xterm
 install-pkg lame sox mpg123 mplayer xbindkeys vorbis-tools geeqie
