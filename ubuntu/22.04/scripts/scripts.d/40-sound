@@ -16,3 +16,5 @@ javax.sound.sampled.Port=com.sun.media.sound.PortMixerProvider
 javax.sound.sampled.SourceDataLine=com.sun.media.sound.DirectAudioDeviceProvider
 javax.sound.sampled.TargetDataLine=com.sun.media.sound.DirectAudioDeviceProvider
 EOF
+
+echo 'load-module module-switch-on-connect' >> $LWRISO_ROOT/etc/pulse/default.pa

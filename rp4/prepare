@@ -11,7 +11,7 @@ deb https://download.luwrain.org/repo/ luwrain bullseye
 EOF
 
 apt-get update
-apt-get install --yes  voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer openjdk-17-jre openjfx network-manager
+apt-get install --yes  voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer network-manager bluez-tools
 apt-get remove --yes  openresolv dhcpcd5
 
 mkdir /etc/luwrain
@@ -56,12 +56,11 @@ cat <<EOF > /etc/asound.conf
 pcm.!default {
     type pulse
 }
- 
+
 ctl.!default {
     type pulse
 }
 EOF
-
 
 cd /etc/java-*-openjdk
 cat <<EOF >> sound.properties
@@ -74,3 +73,9 @@ EOF
 
 cd /etc/pulse
 echo 'load-module module-switch-on-connect' >> default.pa
+
+cp aliases /home/luwrain/.bash_aliases
+chown luwrain:luwrain /home/luwrain/.bash_aliases
+
+# removing vlc-bin vlc-data
+
