@@ -1,3 +1,0 @@
-
-echo 'GOVERNOR="performance"' > $LWRISO_ROOT/etc/default/cpufrequtils
-install-pkg cpufrequtils

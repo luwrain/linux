@@ -1,3 +1,0 @@
-
-
-echo "nameserver $LWRISO_NAMESERVER" > "$LWRISO_ROOT/etc/resolv.conf"

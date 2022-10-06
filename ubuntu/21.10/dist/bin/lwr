@@ -1,4 +1,0 @@
-#!/bin/bash -e
-# Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
-
-exec luwrain "$@" &> /dev/null
