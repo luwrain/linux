@@ -1,0 +1,6 @@
+#!/bin/bash -e
+# Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
+
+cd /opt/luwrain
+
+exec java -jar jar/luwrain-base.jar --speech=voiceman "$@"
