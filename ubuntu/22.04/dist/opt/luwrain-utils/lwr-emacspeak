@@ -1,0 +1,6 @@
+
+
+
+cd /usr/share/emacs/site-lisp/lisp
+rm -f *.elc
+/usr/lib/emacsen-common/packages/install/emacspeak  emacs
