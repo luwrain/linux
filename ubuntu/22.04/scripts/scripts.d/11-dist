@@ -6,4 +6,4 @@ find ./dist -name .gitignore -delete
 [ -d ./dist/sbin ] && cp -r ./dist/sbin/. $LWRISO_ROOT/sbin/ ||:
 
 install-pkg luwrain
-ln -s luwrain-base-1.9.3.jar $LWRISO_ROOT/usr/share/luwrain/jar/luwrain-base.jar
+#ln -s luwrain-base-1.9.3.jar $LWRISO_ROOT/usr/share/luwrain/jar/luwrain-base.jar
