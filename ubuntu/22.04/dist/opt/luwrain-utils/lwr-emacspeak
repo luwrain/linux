@@ -1,6 +1,8 @@
+#!/bin/bash -e
+# Copyright 2022 Michael Pozhidaev <msp@luwrain.org>
 
-
-
-cd /usr/share/emacs/site-lisp/lisp
-rm -f *.elc
+TERM=dumb apt-get -y install emacspeak w3m-el
+cd /usr/share/emacs/site-lisp/emacspeak/lisp
+rm -f *.elc ../debian_compiled_version
+patch -p1 < /opt/luwrain-utils/emacspeak-cyril.diff
 /usr/lib/emacsen-common/packages/install/emacspeak  emacs
