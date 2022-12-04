@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-usermod -a -G pulse-access root
-systemctl --global disable pulseaudio.service pulseaudio.socket
-

@@ -4,10 +4,10 @@ export PATH=~/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin
 export LANG=ru_RU.UTF-8
 export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
 #export PULSE_SERVER=/run/pulse/native
-export VOICEMAN_LIBAO_DRIVER=alsa
+#export VOICEMAN_LIBAO_DRIVER=alsa
 
 #pulseaudio -D ||:
-#pactl set-sink-volume 0 80%
+pactl set-sink-volume 0 80%
 
 if ! [ -e /tmp/voiceman.socket ]; then
     /usr/bin/voicemand -d

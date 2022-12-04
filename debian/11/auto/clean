@@ -8,3 +8,6 @@ rm -f config/binary config/bootstrap config/chroot config/common config/source
 rm -f config/control
 
 rm -f build.log
+
+rm -R config
+mv configa config
