@@ -22,6 +22,7 @@ trap exit_handler EXIT HUP INT QUIT PIPE TERM
 
 mount $PART /mnt
 chroot /mnt usermod -l "$NEW_USER" luwrain
+chroot /mnt groupmod -n "$NEW_USER" luwrain
 chroot /mnt usermod -d "/home/$NEW_USER" "$NEW_USER"
 mv /mnt/home/luwrain "/mnt/home/$NEW_USER"
 echo "$NEW_USER" > /mnt/etc/luwrain/default-user
