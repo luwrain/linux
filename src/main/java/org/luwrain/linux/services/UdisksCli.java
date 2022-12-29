@@ -75,6 +75,12 @@ public final class UdisksCli
 	caller.call(new String[]{"unmount", "-b", device});
     }
 
+public void poweroff(String device) throws IOException
+    {
+	caller.call(new String[]{"power-off", "-b", device});
+    }
+
+
     static public Caller createDefaultCaller()
     {
 	return (args)->{

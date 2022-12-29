@@ -98,6 +98,21 @@ public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 		throw new RuntimeException(e);
 	    }
 	}
+
+@Override public boolean poweroff(Set<DisksPopup.Flags> flags)
+	{
+	    final UdisksCli u = new UdisksCli();
+	    try {
+		u.poweroff(device);
+		return true;
+	    }
+	    catch(Throwable e)
+	    {
+		throw new RuntimeException(e);
+	    }
+	}
+	
+
 	@Override public String toString()
 	{
 	    return title;
