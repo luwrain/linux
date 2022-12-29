@@ -1,5 +1,6 @@
 /*
    Copyright 2012-2022 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+Copyright 2022 ilya paschuk <ilusha.paschuk@gmail.com>
 
    This file is part of LUWRAIN.
 
