@@ -112,7 +112,6 @@ public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 		throw new RuntimeException(e);
 	    }
 	}
-	
 
 	@Override public String toString()
 	{

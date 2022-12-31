@@ -11,7 +11,7 @@ deb https://download.luwrain.org/repo/ luwrain bullseye
 EOF
 
 apt-get update
-apt-get install --yes  voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer network-manager bluez-tools
+apt-get install --yes  voiceman mbrola-suite rhvoice-legacy dwm-luwrain locales-all xserver-xorg-video-dummy mplayer network-manager bluez-tools cryptsetup
 apt-get remove --yes  openresolv dhcpcd5
 
 mkdir /etc/luwrain

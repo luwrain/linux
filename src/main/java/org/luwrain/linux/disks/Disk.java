@@ -27,11 +27,16 @@ public final class Disk implements DisksPopup.Disk
 	return true;
     }
 
-
     @Override public boolean isActivated()
     {
 	return false;
     }
+
+        @Override public boolean poweroff(Set<DisksPopup.Flags> flags)
+    {
+	return false;
+    }
+
 
     @Override public String toString()
     {
