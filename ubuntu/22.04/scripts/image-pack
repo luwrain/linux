@@ -7,7 +7,7 @@ apt-get --yes install squashfs-tools xorriso
 mksquashfs chroot disk/casper/filesystem.squashfs -comp xz > /dev/null
 
 rm -rf disk/casper/filesystem.squashfs.gpg disk/md5sum.txt disk/pool disk/ubuntu 
-echo "LUWRAIN - Release $LWRISO_ARCH ($LWRISO_DATE)" > disk/.disk/info
+echo "LUWRAIN $LWRISO_VERSION Release $LWRISO_ARCH ($LWRISO_DATE)" > disk/.disk/info
 #sed -i -e s/'Ubuntu.*$'/'Homeros '$LWRISO_DATE' - Release '$LWRISO_ARCH/ disk/README.diskdefines
 
 cat <<EOF > disk/README.ru.txt
@@ -15,7 +15,8 @@ LUWRAIN
 EOF
 
 pushd disk > /dev/null
-find -type f '!' -name isolinux.bin '!' -name boot.cat | while read l; do
+#find -type f '!' -name isolinux.bin '!' -name boot.cat | while read l; do
+find -type f '!' -name boot.catalog '!' -name eltorito.img | while read l; do
 md5sum "$l"
 done > ../md5sum.txt
 popd  > /dev/null

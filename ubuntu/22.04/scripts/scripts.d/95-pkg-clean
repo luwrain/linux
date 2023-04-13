@@ -2,7 +2,7 @@
 remove-pkg-prefix ubiquity
 remove-pkg-prefix ubuntu-wallpaper
 remove-pkg aspell dictionaries-common
-remove-pkg transmission-common shotwell                                   seahorse                                   rhythmbox remmina reiserfsprogs                            language-selector-common ibus
+remove-pkg transmission-common shotwell                                   seahorse                                   rhythmbox remmina reiserfsprogs                            language-selector-common ibus  pipewire
 remove-pkg gvfs-common gedit-common yelp
 remove-pkg-prefix gnome
 remove-pkg libreoffice-style-breeze                   libreoffice-style-colibre
