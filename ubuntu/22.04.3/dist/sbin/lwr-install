@@ -86,12 +86,10 @@ mount $TARGET_ROOT_DEV $TARGET_MOUNT &>> $LOG
 mount $SQUASH_SRC $SQUASH_MOUNT &>> $LOG
 echo Copying files
 cp -afd $SQUASH_MOUNT/. $TARGET_MOUNT/ &>> $LOG
-echo Adding new fstab entries
 TARGET_ROOT_UUID="UUID=$(blkid "$TARGET_ROOT_DEV"  | sed s/'^.*UUID="\([^"]*\)".*$'/'\1'/)"
-echo $TARGET_ROOT_DEV / ext4 noatime,errors=remount-ro 0 1 >> $TARGET_MOUNT/etc/fstab
+echo "$(blkid "$TARGET_ROOT_DEV" | sed -e s/'^.*\(UUID=[^ ]*\) .*$'/'\1'/ | sed -e s/'"'//g)" / ext4 noatime,errors=remount-ro 0 1 >> $TARGET_MOUNT/etc/fstab
 if [ -n "$ESP_DEVICE" ]; then
-    echo "Adding ESP entry at $ESP_DEVICE"
-echo $ESP_DEVICE /boot/efi vfat defaults,noatime,discard 0 1 >> $TARGET_MOUNT/etc/fstab
+echo "$(blkid "$ESP_DEVICE" | sed -e s/'^.*\(UUID=[^ ]*\) .*$'/'\1'/ | sed -e s/'"'//g)" /boot/efi vfat defaults,noatime,discard 0 1 >> $TARGET_MOUNT/etc/fstab
 fi
 
 echo Installing grub

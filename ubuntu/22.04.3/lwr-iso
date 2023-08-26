@@ -14,7 +14,6 @@ unsquashfs -d "$WORK" "$SQUASHFSSRC" > /dev/null
 mkdir -p "$WORK/iso/disk"
 cp -r "$DISK/." "$WORK/iso/disk"
 unsquashfs -d "$CHROOT" "$SQUASHFSSRC" > /dev/null
-df "$CHROOT"
 
 echo Preparing the image
 (

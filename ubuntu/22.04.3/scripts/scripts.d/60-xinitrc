@@ -13,7 +13,7 @@ if [ "$LWRISO_LANG" == en ]; then
 cat <<EOF > $LWRISO_ROOT/home/$LWRISO_ROOT/.xinitrc
 # Copyright $(date +%Y) Michael Pozhidaev <msp@luwrain.org>
 
-export PATH=~/.local/bin:$PATH
+export PATH=~/.local/bin:\$PATH
 export LANG=en_US.UTF-8
 export VOICEMAN_EMACSPEAK_RATE_FRACTION=2
 export PULSE_SERVER=/run/pulse/native
@@ -26,7 +26,7 @@ if [ "$LWRISO_LANG" == ru ]; then
 cat <<EOF > $LWRISO_ROOT/home/$LWRISO_USER/.xinitrc
 # Copyright $(date +%Y) Michael Pozhidaev <msp@luwrain.org>
 
-export PATH=~/.local/bin:$PATH
+export PATH=~/.local/bin:\$PATH
 export LANG=ru_RU.UTF-8
 
 setxkbmap -layout "us,ru"
