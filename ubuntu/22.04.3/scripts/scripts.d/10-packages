@@ -10,5 +10,5 @@ install-pkg ffmpeg lame sox mpg123 mplayer xbindkeys vorbis-tools geeqie
 install-pkg language-pack-en language-pack-en-base
 install-pkg texlive-latex-recommended texlive-latex-extra texlive-metapost texlive-lang-cyrillic texlive-fonts-recommended
 install-pkg cm-super poppler-utils tesseract-ocr-rus
-install-pkg lilypond timidity
+install-pkg timidity
 install-pkg python3-pip yt-dlp

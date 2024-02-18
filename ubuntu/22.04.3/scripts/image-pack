@@ -8,10 +8,14 @@ mksquashfs chroot disk/casper/filesystem.squashfs -comp xz > /dev/null
 
 rm -rf disk/casper/filesystem.squashfs.gpg disk/md5sum.txt disk/pool disk/ubuntu 
 echo "LUWRAIN $LWRISO_VERSION Release $LWRISO_ARCH ($LWRISO_DATE)" > disk/.disk/info
-#sed -i -e s/'Ubuntu.*$'/'Homeros '$LWRISO_DATE' - Release '$LWRISO_ARCH/ disk/README.diskdefines
 
 cat <<EOF > disk/README.ru.txt
-LUWRAIN
+Платформа невизуальных приложений LUWRAIN
+Версия: $LWRISO_VERSION
+Дата релиза: $(date '+%d.%m.%Y')
+Основано на: Ubuntu $LWRISO_BOOT_VER ($LWRISO_ARCH)
+
+Описание установки на компьютер смотрите в документации по адресу https://luwrain.org/doc/user/installation/iso/
 EOF
 
 pushd disk > /dev/null

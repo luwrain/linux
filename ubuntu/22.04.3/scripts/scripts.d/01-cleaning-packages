@@ -2,9 +2,7 @@
 remove-pkg zsys
 remove-pkg libreoffice-core libreoffice-common thunderbird firefox
 remove-pkg-prefix firefox-locale
-#remove-pkg libmysqlclient21 nautilus update-manager
-#remove-pkg 'fonts-(tlwg)*'
-#tibetan|takao|sil|nanum|lohit|lao|khmeros|guru
+#sil|nanum|lohit|khmeros
 #remove-pkg 'fonts-(arphic)*'
 #tlwg|tibetan|takao|sil|nanum|lohit|lao|khmeros|guru|
 remove-pkg 'mythes*'
