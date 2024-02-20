@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,11 +19,12 @@ package org.luwrain.linux;
 import java.io.*;
 import java.net.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.core.*;
 
-public class PartedTest extends Assert
+public class PartedTest
 {
     private Parted parted = null;
 
@@ -35,7 +36,7 @@ public class PartedTest extends Assert
 	assertEquals(Parted.GPT, parted.getPartTableType());
     }
 
-    @Before public void create()
+    @BeforeEach public void create()
     {
 	this.parted = new Parted("/dev/nvme0n1", caller());
     }

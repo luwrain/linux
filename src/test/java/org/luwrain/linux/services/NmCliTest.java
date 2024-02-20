@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,11 +19,12 @@ package org.luwrain.linux.services;
 import java.io.*;
 import java.net.*;
 
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.luwrain.linux.*;
 
-public class NmCliTest extends Assert
+public class NmCliTest
 {
     private NmCli nmCli = null;
 
@@ -42,7 +43,7 @@ public class NmCliTest extends Assert
 	assertNotNull("DIRECT-Pp-BRAVIA", i.getName());
     }
 
-    @Before public void create()
+    @BeforeEach public void create()
     {
 	this.nmCli = new NmCli(caller());
     }
