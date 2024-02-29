@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -22,15 +22,17 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 
+import static org.luwrain.core.NullCheck.*;
+
 public final class SysJob implements Job
 {
 
     @Override public Instance launch(Listener listener, String[] args, String dir)
     {
-	NullCheck.notNull(listener, "listener");
-	NullCheck.notNullItems(args, "args");
+	notNull(listener, "listener");
+	notNullItems(args, "args");
 	if (args.length == 0 || args[0].isEmpty())
-	    return new ErrorJob("sys", "No command");
+	    return new ErrorJobInstance("sys", "No command");
 	final Data data = new Data();
 	final Instance ins = new Instance(){
 		@Override public void stop() { if (data.stopProc != null) data.stopProc.run(); }
@@ -38,20 +40,30 @@ public final class SysJob implements Job
 		@Override public Status getStatus() { return data.finished?Status.FINISHED:Status.RUNNING; }
 		@Override public int getExitCode() { return data.exitCode; }
 		@Override public boolean isFinishedSuccessfully() { return data.finished && data.exitCode == 0; }
-		@Override public String getSingleLineState() { return data.state; }
-		@Override public String[] getMultilineState() { return data.mlState.toArray(new String[data.mlState.size()]); }
-		@Override public String[] getNativeState() { return data.mlState.toArray(new String[data.mlState.size()]); }
-	    };
+		@Override public List<String> getInfo(String type)
+		{
+		    notEmpty(type, "type");
+		    switch(type)
+		    {
+		    case "brief":
+			return Arrays.asList(data.state);
+		    case "main":
+			return data.mlState;
+		    default:
+			return Arrays.asList();
+		    }
+		}
+			    };
 	final BashProcess p = new BashProcess(buildCmd(args), dir, EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
 		@Override public void onOutputLine(String line)
 		{
 		    data.mlState.add(line);
-		    listener.onMultilineStateChange(ins);
+		    listener.onInfoChange(ins, "main", data.mlState);
 		}
 		@Override public void onErrorLine(String line)
 		{
 		    data.mlState.add(line);
-		    listener.onMultilineStateChange(ins);
+		    listener.onInfoChange(ins, "main", data.mlState);
 		}
 		@Override public void onFinishing(int exitCode)
 		{
@@ -65,7 +77,7 @@ public final class SysJob implements Job
 	}
 	catch(IOException e)
 	{
-	    return new ErrorJob(args[0], e.getMessage());
+	    return new ErrorJobInstance(args[0], e.getMessage());
 	}
 	data.stopProc = ()->p.stop();
 	return ins;
