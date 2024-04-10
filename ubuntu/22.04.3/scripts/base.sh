@@ -13,7 +13,7 @@ fi
 
 chroot-run()
 {
-    chroot ./chroot "$@"
+    chroot $LWRISO_ROOT "$@"
 }
 
 install-pkg()

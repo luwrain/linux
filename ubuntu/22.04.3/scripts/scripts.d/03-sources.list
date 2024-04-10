@@ -6,7 +6,7 @@ deb http://ru.archive.ubuntu.com/ubuntu/ $UBUNTU_RELEASE main restricted univers
 EOF
 apt-get update
 
-cat <<EOF > ./chroot/etc/apt/sources.list
+cat <<EOF > $LWRISO_ROOT/etc/apt/sources.list
 deb https://download.luwrain.org/repo/ luwrain $UBUNTU_RELEASE
 deb http://security.ubuntu.com/ubuntu/ $UBUNTU_RELEASE-security main restricted universe multiverse
 deb http://ru.archive.ubuntu.com/ubuntu/ $UBUNTU_RELEASE-updates main restricted universe multiverse
