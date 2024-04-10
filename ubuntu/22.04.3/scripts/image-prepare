@@ -1,6 +1,6 @@
 #!/bin/bash -evx
 
-cd /iso
+cd /wrk
 . base.sh
 
 export DEBIAN_FRONTEND=noninteractive
