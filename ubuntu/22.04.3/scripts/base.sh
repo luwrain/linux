@@ -7,7 +7,9 @@ LWRISO_ARCH=amd64
 LWRISO_DATE="$(date +%Y%m%d)"
 LWRISO_NAMESERVER=8.8.8.8
 LWRISO_LANG=ru
-export LWRISO_ROOT=/iso/chroot
+if [ -z "$LWRISO_ROOT" ]; then
+    export LWRISO_ROOT=/iso/chroot
+fi
 
 chroot-run()
 {
