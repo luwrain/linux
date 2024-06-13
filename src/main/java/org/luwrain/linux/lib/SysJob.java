@@ -24,17 +24,17 @@ import org.luwrain.linux.*;
 
 import static org.luwrain.core.NullCheck.*;
 
-public final class SysJob implements Job
+public final class SysJob implements JobLauncher
 {
 
-    @Override public Instance launch(Listener listener, String[] args, String dir)
+    @Override public Job launch(Job.Listener listener, String[] args, String dir)
     {
 	notNull(listener, "listener");
 	notNullItems(args, "args");
 	if (args.length == 0 || args[0].isEmpty())
 	    return new ErrorJobInstance("sys", "No command");
 	final Data data = new Data();
-	final Instance ins = new Instance(){
+	final Job ins = new Job(){
 		@Override public void stop() { if (data.stopProc != null) data.stopProc.run(); }
 	    	@Override public String getInstanceName() { return args[0]; }
 		@Override public Status getStatus() { return data.finished?Status.FINISHED:Status.RUNNING; }
