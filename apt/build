@@ -4,6 +4,7 @@ for i in debian:10 debian:11 debian:12 ubuntu:jammy ubuntu:noble; do
     ./build-mbrola "$i"
     ./build-rhvoice "$i"
     ./build-voiceman "$i"
+    ./build-dwm "$i"
     rm -f out/*dbgsym*
     ./repo-data $i
     rm -f out/*.deb
