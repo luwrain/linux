@@ -1,0 +1,25 @@
+#!/bin/bash -e
+# Copyright 2024 Michael Pozhidaev <msp@luwrain.org>
+# The LUWRAIN Project, GPL v.3
+
+THIS="${0##*/}"
+
+[ -z "$1" ] && echo "ERROR: THIS: No destination distro" >&2 && exit 1
+DISTRO="$1"
+
+cat apt.config > out/apt.config
+docker run --rm -i -v "$(pwd)/out:/out" "$DISTRO" bash -c 'apt-get update && \
+apt-get install -y --no-install-recommends ca-certificates dpkg-dev apt-utils && \
+DIST=$(grep VERSION_CODENAME /etc/os-release | sed -e s/^.*=//) && \
+cd /out && \
+sed -i -e s/SUBST_CODENAME/$DIST/ apt.config && \
+rm -rf dists/$DIST && \
+mkdir -p dists/$DIST/luwrain/binary-amd64 && \
+cp *.deb dists/$DIST/luwrain/binary-amd64 && \
+dpkg-scanpackages dists/$DIST/luwrain/binary-amd64 /dev/null > dists/$DIST/luwrain/binary-amd64/Packages && \
+cd dists/$DIST && \
+apt-ftparchive release -c ../../apt.config . > Release'
+
+rm out/apt.config 
+
+#dpkg-scanpackages dists/luwrain/$REPO/binary-amd64 /dev/null > dists/luwrain/$REPO/binary-amd64/Packages
