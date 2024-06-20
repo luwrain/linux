@@ -35,6 +35,7 @@ cd base/sounds && \
 cp *.wav ../../luwrain/src/main/resources/org/luwrain/core/sound/ && \
 cd ../scripts && \
 ./lwr-build && \
+./lwr-dpkg-snapshot && \
 cd ../.. && \
 cp /luwrain-jni.jar release/jar/ && \
 dpkg-buildpackage --build=binary -us -uc && \
