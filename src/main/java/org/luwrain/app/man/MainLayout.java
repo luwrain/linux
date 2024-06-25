@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,9 +19,9 @@ package org.luwrain.app.man;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.linux.*;
 import org.luwrain.controls.ConsoleUtils.*;
@@ -31,7 +31,10 @@ import static org.luwrain.core.DefaultEventResponse.*;
 
 final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<String>, ConsoleArea.InputHandler
 {
-    static private final Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
+    static private final Logger log = LogManager.getLogger();
+    
+    static private final
+	Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
 
     private final App app;
     private final ConsoleArea<String> searchArea;
@@ -58,7 +61,6 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 
     @Override public boolean onConsoleClick(ConsoleArea area, int index, String item)
     {
-	NullCheck.notNull(item, "item");
 	final Matcher m = ENTRY_PATTERN.matcher(item.trim());
 	if (!m.find())
 	    return false;
@@ -68,7 +70,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 	}
 	catch(IOException e)
 	{
-	    app.getLuwrain().crash(e);
+	    app.crash(e);
 	    return true;
 	}
 	final int exitCode = p.waitFor();
@@ -76,7 +78,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 	{
 	    app.getLuwrain().playSound(Sounds.ERROR);
 	    for(String s: p.getErrors())
-		Log.error(App.LOG_COMPONENT, "man: " + s);
+		log.error("Man: " + s);
 	    return true;
 	}
 	pageArea.setLines(p.getOutput());
@@ -87,7 +89,6 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 
     @Override public ConsoleArea.InputHandler.Result onConsoleInput(ConsoleArea area, String text)
     {
-	NullCheck.notNull(text, "text");
 	if (text.trim().isEmpty())
 	    return ConsoleArea.InputHandler.Result.REJECTED;
 	if (!search(text.trim().toLowerCase()))
@@ -98,7 +99,6 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 
     boolean search(String query)
     {
-	NullCheck.notEmpty(query, "query");
 	final BashProcess p = new BashProcess("man -k " + BashProcess.escape(query.trim()));
 	try {
 	    p.run();
@@ -112,8 +112,6 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 	if (exitCode != 0)
 	{
 	    final String[] errors = p.getErrors();
-	    for(String s: errors)
-		Log.debug(App.LOG_COMPONENT, "man: " + s);
 	    if (errors.length > 0)
 		app.getLuwrain().message(errors[0], Luwrain.MessageType.ERROR); else
 		app.getLuwrain().playSound(Sounds.ERROR);
@@ -126,15 +124,7 @@ final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<St
 
     private final class SearchAreaAppearance implements ConsoleArea.Appearance<String>
     {
-	@Override public void announceItem(String item)
-	{
-	    NullCheck.notNull(item, "item");
-	    app.setEventResponse(text(app.getLuwrain().getSpeakableText(item, Luwrain.SpeakableTextType.PROGRAMMING)));
-	}
-	@Override public String getTextAppearance(String item)
-	{
-	    NullCheck.notNull(item, "item");
-	    return item;
-	}
+	@Override public void announceItem(String item) { app.setEventResponse(listItem(app.getLuwrain().getSpeakableText(item, Luwrain.SpeakableTextType.PROGRAMMING), Suggestions.CLICKABLE_LIST_ITEM)); }
+	@Override public String getTextAppearance(String item) { return item; }
     }
 }

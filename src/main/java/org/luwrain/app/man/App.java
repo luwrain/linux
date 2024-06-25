@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -17,13 +17,10 @@
 package org.luwrain.app.man;
 
 import org.luwrain.core.*;
-import org.luwrain.core.events.*;
 import org.luwrain.app.base.*;
 
 public final class App extends AppBase<Strings> implements MonoApp
 {
-    static final String LOG_COMPONENT = "man";
-
     private MainLayout mainLayout = null;
 
     public App() { super(Strings.NAME, Strings.class, "luwrain.linux.man"); }
@@ -43,7 +40,6 @@ public final class App extends AppBase<Strings> implements MonoApp
 
     @Override public MonoApp.Result onMonoAppSecondInstance(Application app)
     {
-	NullCheck.notNull(app, "app");
 	return MonoApp.Result.BRING_FOREGROUND;
     }
 }

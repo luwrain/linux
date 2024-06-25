@@ -8,7 +8,7 @@
   </parent>
   <artifactId>luwrain-linux</artifactId>
   <name>LUWRAIN Linux utilities</name>
-  <description>LUWRAIN utilities and apps for GNU/Linux</description>
+  <description>GNU/Linux utilities and apps for LUWRAIN</description>
   <url>https://github.com/luwrain/linux/</url>
   <packaging>jar</packaging>
   <dependencies>
@@ -28,28 +28,4 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.0.2</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-            </manifest>
-      	    <manifestSections>
-              <manifestSection>
-                <name>org/luwrain</name>
-                <manifestEntries>
-                  <Extensions>org.luwrain.linux.Extension</Extensions>
-                </manifestEntries>
-              </manifestSection>
-            </manifestSections>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

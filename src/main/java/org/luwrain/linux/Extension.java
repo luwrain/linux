@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,11 +19,14 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 
+import com.google.auto.service.*;
+
 import org.luwrain.core.*;
 import org.luwrain.script.core.*;
 import org.luwrain .script.*;
 import org.luwrain.linux.services.*;
 
+@AutoService(org.luwrain.core.Extension.class)
 public final class Extension extends EmptyExtension
 {
     static private final String
