@@ -6,6 +6,7 @@ THIS="${0##*/}"
 [ -z "$GPG_KEYS" ] && echo "ERROR: $THIS: No the GPG_KEYS variable" >&2 && exit 1
 
 for i in debian:11 debian:12 ubuntu:jammy ubuntu:noble; do
+    echo "Building the repo for $i"
     ./build-mbrola "$i" &
     ./build-rhvoice "$i" &
     ./build-voiceman "$i" &

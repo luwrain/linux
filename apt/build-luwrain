@@ -9,7 +9,7 @@ DISTRO="$1"
 
 mkdir -p out
 docker run --rm -i -v "$(pwd)/out:/out" "$DISTRO" bash -c 'apt-get update && \
-apt-get install -y --no-install-recommends git g++ build-essential debhelper ca-certificates  openjdk-17-jdk openjfx ant maven wget timidity fluid-soundfont-gm sox midicsv locales locales-all g++ zlib1g-dev libssl-dev gperf cmake && \
+apt-get install -y --no-install-recommends git g++ build-essential debhelper ca-certificates  openjdk-17-jdk openjfx gradle ant maven wget timidity fluid-soundfont-gm sox midicsv locales locales-all g++ zlib1g-dev libssl-dev gperf cmake && \
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && \
 export JAVA_INCLUDE_PATH=$JAVA_HOME/include && \
 export LANG=ru_RU.UTF-8 && \
