@@ -67,7 +67,7 @@ public final class App extends AppBase<Strings>
 				    .setDirectory((this.startingDir != null && !startingDir.isEmpty())?startingDir:getLuwrain().getProperty("luwrain.dir.userhome"))
 				    .setConsole(false)
 				    .start());
-	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
+	//	Log.debug(LOG_COMPONENT, "pty created, pid=" + pty.getPid() + ", running=" + pty.isRunning());
 	getLuwrain().executeBkg(new FutureTask<>(()->readOutput(), null));
 		getLuwrain().executeBkg(new FutureTask<>(()->listening(), null));
 	setAppName(getStrings().appName());
