@@ -1,4 +1,0 @@
-
-chroot-run usermod -a -G pulse-access root
-chroot-run systemctl --global disable pulseaudio.service pulseaudio.socket
-

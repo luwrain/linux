@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-exec luwrain &> /tmp/.luwrain.out

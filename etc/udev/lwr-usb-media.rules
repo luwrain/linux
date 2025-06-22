@@ -1,2 +1,0 @@
-ACTION=="add", SUBSYSTEM=="block", RUN+="/usr/local/bin/lwr-new-media"
-ACTION=="change", SUBSYSTEM=="block", RUN+="/usr/local/bin/lwr-new-media"

@@ -1,5 +1,0 @@
-
-"pactl set-sink-volume @DEFAULT_SINK@ -10%" 
-  XF86AudioLowerVolume
-"pactl set-sink-volume @DEFAULT_SINK@ +10%" 
-  XF86AudioRaiseVolume
