@@ -46,7 +46,7 @@ public final class Extension extends EmptyExtension
     @Override public String init(Luwrain luwrain)
     {
 	loadScriptCore(luwrain);
-	final CmdLine cmdLine = luwrain.getCmdLine();
+	final CmdLine cmdLine = null;//FIXME:luwrain.getCmdLine();
 	try {
 	    this.termInfo = new TermInfo();
 	    this.termInfo.read();
