@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2025 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -19,10 +19,12 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 import java.nio.file.*;
+import com.google.auto.service.*;
 
 import org.luwrain.core.*;
 import org.luwrain.core.events.*;
 
+@AutoService(org.luwrain.core.OperatingSystem.class)
 public final class Linux implements OperatingSystem
 {
     static public final String
