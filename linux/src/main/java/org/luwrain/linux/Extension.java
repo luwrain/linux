@@ -46,7 +46,6 @@ public final class Extension extends EmptyExtension
     @Override public String init(Luwrain luwrain)
     {
 	loadScriptCore(luwrain);
-	final CmdLine cmdLine = null;//FIXME:luwrain.getCmdLine();
 	try {
 	    this.termInfo = new TermInfo();
 	    this.termInfo.read();
@@ -66,10 +65,12 @@ public final class Extension extends EmptyExtension
 	}
 	final List<PointerInputListening> inputs = new ArrayList<>();
 	final List<FifoInputListening> fifos = new ArrayList<>();
+	/*
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_POINTER))
 	    inputs.add(new PointerInputListening(luwrain, s));
 	for(String s: cmdLine.getArgs(PREFIX_INPUT_FIFO))
 	    fifos.add(new FifoInputListening(luwrain, linux, s));
+	*/
 	for(PointerInputListening l: inputs)
 	    l.run();
 	for(FifoInputListening l: fifos)
@@ -90,6 +91,8 @@ public final class Extension extends EmptyExtension
 	NullCheck.notNull(luwrain, "luwrain");
 	this.scriptCore = new ScriptCore(luwrain, new org.luwrain.linux.script.Bindings(luwrain));
 	final File scriptsDir = luwrain.getFileProperty(Luwrain.PROP_DIR_JS);
+	if (scriptsDir == null || !scriptsDir.exists() || !scriptsDir.isDirectory())
+	    return;
 	final File[] scripts = scriptsDir.listFiles();
 	if (scripts == null)
 	    return;
