@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -32,7 +32,7 @@ import static org.luwrain.core.DefaultEventResponse.*;
 final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<String>, ConsoleArea.InputHandler
 {
     static private final Logger log = LogManager.getLogger();
-    
+
     static private final
 	Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
 
