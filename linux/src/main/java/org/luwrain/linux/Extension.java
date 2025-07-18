@@ -117,7 +117,6 @@ public final class Extension extends EmptyExtension
 	res.addAll(Arrays.asList(scriptCore.getCommands()));
 	res.addAll(Arrays.asList(
 				 new SimpleShortcutCommand("term"),
-				 new SimpleShortcutCommand("man"),
 				 new SimpleShortcutCommand("parted"),
 				 new SimpleShortcutCommand("wifi"),
 				 new SimpleShortcutCommand("install")
@@ -129,8 +128,6 @@ public final class Extension extends EmptyExtension
     {
 	final List<ExtensionObject> res = new ArrayList<>();
 	res.add(new SimpleObjFactory("disks-popup-factory", "org.luwrain.linux.DefaultDisksPopupFactory", ()->new DefaultDisksPopupFactory(udisksMonitor)));
-	res.add(new org.luwrain.linux.lib.SysJob());
-	res.add(new SimpleShortcut("man", org.luwrain.app.man.App.class));
 		res.add(new SimpleShortcut("parted", org.luwrain.app.parted.App.class));
 	res.add(new SimpleShortcut("install", org.luwrain.app.install.App.class));
 

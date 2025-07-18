@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2025 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -21,15 +21,18 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
 
-import org.luwrain.core.*;
+import org.apache.logging.log4j.*;
 
-class PciIds
+import static java.util.Objects.*;
+
+final class PciIds
 {
-    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final Logger log = LogManager.getLogger();
 
-    static private final Pattern VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$");
-    static private final Pattern CLASS_PATTERN = Pattern.compile("^C\\s*([^\\s]+)\\s+([^\\s].*)$");
-    static private final Pattern DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
+    static private final Pattern
+	VENDOR_PATTERN = Pattern.compile("^([^\\s]+)\\s+([^\\s].*)$"),
+	CLASS_PATTERN = Pattern.compile("^C\\s*([^\\s]+)\\s+([^\\s].*)$"),
+	DEVICE_PATTERN = Pattern.compile("^\t([^\\s]+)\\s+([^\\s].*)$");
 
     private final Map<String, Vendor> vendors = new TreeMap<String, Vendor>();
     private final Map<String, Class> classes = new TreeMap<String, Class>();
@@ -38,7 +41,9 @@ class PciIds
 
     String findVendor(String code)
     {
-	NullCheck.notEmpty(code, "code");
+	requireNonNull(code, "code can't be null");
+	if (code.isEmpty())
+	    throw new IllegalArgumentException("code can't be empty");
 	if (!vendors.containsKey(code))
 	    return null;
 	return vendors.get(code).name;
@@ -46,8 +51,8 @@ class PciIds
 
     String findDevice(String vendorCode, String deviceCode)
     {
-	NullCheck.notNull(vendorCode, "vendorCode");
-	NullCheck.notNull(deviceCode, "deviceCode");
+	requireNonNull(vendorCode, "vendorCode can't be null");
+	requireNonNull(deviceCode, "deviceCode can't be null");
 	if (!vendors.containsKey(vendorCode))
 	    return null;
 	final Vendor v = vendors.get(vendorCode);
@@ -58,7 +63,7 @@ class PciIds
 
     String findClass(String classCode)
     {
-	NullCheck.notNull(classCode, "classCode");
+	requireNonNull(classCode, "classCode can't be null");
 	if (classCode.length() < 2)
 	    return null;
 	if (!classes.containsKey(classCode.substring(0, 2)))
@@ -69,8 +74,6 @@ class PciIds
 	//	    return null;
 	//	return v.devices.get(deviceCode).name;
     }
-
-
 
     void load(File file)
     {
@@ -88,13 +91,13 @@ class PciIds
 	}
 	catch(Exception e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to read PCIIDs from :" + e.getClass().getName() + ":" + e.getMessage());
+	    log.error("Unable to read PCIIDs from", e);
 	}
     }
 
     private void onVendor(String line)
     {
-	NullCheck.notNull(line, "line");
+	requireNonNull(line, "line can't be null");
 	final Matcher matcher = VENDOR_PATTERN.matcher(line);
 	if (!matcher.find())
 	    return;
@@ -106,25 +109,24 @@ class PciIds
 
     private void onClass(String line)
     {
-	NullCheck.notNull(line, "line");
+	requireNonNull(line, "line can't be null");
 	final Matcher matcher = CLASS_PATTERN.matcher(line);
 	if (!matcher.find())
 	    return;
-final Class c = new Class(matcher.group(2));
-classes.put(matcher.group(1).trim(), c);
+	final Class c = new Class(matcher.group(2));
+	classes.put(matcher.group(1).trim(), c);
 	lastVendor = null;
 	lastClass = c;
     }
 
-
     private void onDevice(String line)
     {
-	NullCheck.notNull(line, "line");
+	requireNonNull(line, "line can't be null");
 	final Matcher matcher = DEVICE_PATTERN.matcher(line);
 	if (!matcher.find())
 	    return;
 	final Device d = new Device(matcher.group(2));
-	NullCheck.notNull(lastVendor, "lastVendor");
+	requireNonNull(lastVendor, "lastVendor can't be null");
 	lastVendor.devices.put(matcher.group(1).trim(), d);
     }
 
@@ -132,61 +134,53 @@ classes.put(matcher.group(1).trim(), c);
     {
 	if (line.length() < 2 || line.charAt(0) == '#')
 	    return;
-
-	    if (Character.toLowerCase(line.charAt(0)) == 'c')
+	if (Character.toLowerCase(line.charAt(0)) == 'c')
 	    onClass(line); else
-
-
-	if (line.charAt(0) != '\t')
-	    onVendor(line); else
-	    if (lastVendor != null && line.charAt(1) != '\t')
-		onDevice(line);
+	    if (line.charAt(0) != '\t')
+		onVendor(line); else
+		if (lastVendor != null && line.charAt(1) != '\t')
+		    onDevice(line);
     }
 
-    static private class Device
+    static private final class Device
     {
 	final String name;
-
 	Device(String name)
 	{
-	    NullCheck.notNull(name, "name");
+	    requireNonNull(name, "name can't be null");
 	    this.name = name;
 	}
     }
 
-    static private class Subclass
+    static private final class Subclass
     {
 	final String name;
-
-Subclass(String name)
+	Subclass(String name)
 	{
-	    NullCheck.notNull(name, "name");
+	    requireNonNull(name, "name can't be null");
 	    this.name = name;
 	}
     }
 
-    static private class Vendor
+    static private final class Vendor
     {
 	final String name;
 	final TreeMap<String, Device> devices = new TreeMap<String, Device>();
-
 	Vendor(String name)
 	{
-	    NullCheck.notNull(name, "name");
+	    requireNonNull(name, "name can't be null");
 	    this.name = name;
 	}
     }
 
-    static private class Class
+    static private final class Class
     {
 	final String name;
 	final TreeMap<String, Subclass> subclasses = new TreeMap<String, Subclass>();
-
-Class(String name)
+	Class(String name)
 	{
-	    NullCheck.notNull(name, "name");
+	    requireNonNull(name, "name can't be null");
 	    this.name = name;
 	}
     }
-
 }

@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2025 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 Copyright 2022 ilya paschuk <ilusha.paschuk@gmail.com>
 
    This file is part of LUWRAIN.
@@ -20,25 +20,30 @@ package org.luwrain.linux;
 import java.util.*;
 import java.io.*;
 
+import org.apache.logging.log4j.*;
+
 import org.luwrain.core.*;
 import org.luwrain.linux.services.*;
 import org.luwrain.popups.*;
 
+import static java.util.Objects.*;
+
 public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 {
-    static private final String
-	LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final Logger log = LogManager.getLogger();
 
-    private UdisksCliMonitor monitor;
+    private final UdisksCliMonitor monitor;
     DefaultDisksPopupFactory(UdisksCliMonitor monitor) { this.monitor = monitor; }
 
     @Override public DisksPopup.Disks newDisks(Luwrain luwrain)
     {
-	return new DisksImpl();
+	return new DisksImpl(monitor);
     }
 
-    private final class DisksImpl implements DisksPopup.Disks
+    static final class DisksImpl implements DisksPopup.Disks
     {
+	final UdisksCliMonitor monitor;
+	DisksImpl(UdisksCliMonitor monitor) { this.monitor = requireNonNull(monitor, "monitor can't be null"); }
 	@Override public DisksPopup.Disk[] getDisks(Set<DisksPopup.Flags> flags)
 	{
 	    final List<DiskImpl> res = new ArrayList<>();
@@ -58,7 +63,7 @@ public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 	}
     }
 
-    private final class DiskImpl implements DisksPopup.Disk
+    static final class DiskImpl implements DisksPopup.Disk
     {
 	final String
 	    title, device;
@@ -96,6 +101,7 @@ public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 	    }
 	    catch(Throwable e)
 	    {
+		log.error(e);
 		throw new RuntimeException(e);
 	    }
 	}
@@ -109,6 +115,7 @@ public final class DefaultDisksPopupFactory implements DisksPopup.Factory
 	    }
 	    catch(Throwable e)
 	    {
+		log.error(e);
 		throw new RuntimeException(e);
 	    }
 	}

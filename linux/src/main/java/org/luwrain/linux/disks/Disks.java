@@ -10,7 +10,7 @@ import org.luwrain.popups.*;
 import org.luwrain.linux.*;
 import org.luwrain.util.*;
 
-public final class Disks implements DisksPopup.Disks
+final class Disks implements DisksPopup.Disks
 {
     static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
     static private final File FILE_MOUNTS = new File("/proc/mounts");

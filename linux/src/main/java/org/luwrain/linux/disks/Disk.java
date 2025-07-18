@@ -7,7 +7,7 @@ import java.io.*;
 import org.luwrain.core.*;
 import org.luwrain.popups.*;
 
-public final class Disk implements DisksPopup.Disk
+final class Disk implements DisksPopup.Disk
 {
     final String name;
 

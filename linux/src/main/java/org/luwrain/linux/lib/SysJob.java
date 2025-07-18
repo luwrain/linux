@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2024 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -19,11 +19,14 @@ package org.luwrain.linux.lib;
 import java.util.*;
 import java.io.*;
 
+import com.google.auto.service.*;
+
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 
 import static org.luwrain.core.NullCheck.*;
 
+@AutoService(JobLauncher.class)
 public final class SysJob implements JobLauncher
 {
 
