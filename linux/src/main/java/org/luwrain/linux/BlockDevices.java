@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2019 Michael Pozhidaev <michael.pozhidaev@gmail.com>
+   Copyright 2012-2025 Michael Pozhidaev <michael.pozhidaev@gmail.com>
 
    This file is part of LUWRAIN.
 
@@ -18,14 +18,16 @@ package org.luwrain.linux;
 
 import java.io.*;
 import java.util.*;
+import org.apache.logging.log4j.*;
 
-import org.luwrain.core.*;
+//import org.luwrain.core.*;
 
+import static java.util.Objects.*;
 import static org.luwrain.util.FileUtils.*;
 
 public final class BlockDevices
 {
-    static private final String LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final Logger log = LogManager.getLogger();
     static public final File
 	SYS_BLOCK = new File("/sys/block"),
 	DEV = new File("/dev");
@@ -58,8 +60,7 @@ public final class BlockDevices
 	    }
 	    catch(Exception e)
 	    {
-		Log.debug(LOG_COMPONENT, "exploring " + f.getAbsolutePath() + ": " + e.getClass().getName() + ": " + e.getMessage());
-		e.printStackTrace();
+		log.trace("Exploring " + f.getAbsolutePath(), e);
 		continue;
 	    }
 	    res.add(f.getName());
@@ -71,21 +72,20 @@ public final class BlockDevices
 
     public String getDeviceName(String dev)
     {
-	NullCheck.notNull(dev, "dev");
+	requireNonNull(dev, "dev can't be null");
 	try {
 	    return readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "device/model"), "UTF-8").trim();
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to get the name of the device " + dev + ": " + e.getClass().getName() + ": " + e.getMessage());
-	    e.printStackTrace();
+	    log.error("Unable to get the name of the device " + dev, e);
 	    return "";
 	}
     }
 
     public long getDeviceSize(String dev)
     {
-	NullCheck.notNull(dev, "dev");
+	requireNonNull(dev, "dev can't be null");
 	try {
 	    final String sizeStr = readTextFileSingleString(new File(new File(SYS_BLOCK, dev), "size"), UTF_8).trim();
 	    final Long l = Long.parseLong(sizeStr);
@@ -93,10 +93,8 @@ public final class BlockDevices
 	}
 	catch(IOException e)
 	{
-	    Log.error(LOG_COMPONENT, "unable to get the name of the device " + dev + ": " + e.getClass().getName() + ": " + e.getMessage());
-	    e.printStackTrace();
+	    log.error("Unable to get the name of the device " + dev, e);
 	    return -1;
 	}
     }
-
 }

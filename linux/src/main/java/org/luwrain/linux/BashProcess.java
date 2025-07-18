@@ -19,13 +19,13 @@ package org.luwrain.linux;
 import java.util.*;
 import java.util.concurrent.atomic.*;
 import java.io.*;
+import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
 
 public final class BashProcess
 {
-    static private final String
-	LOG_COMPONENT = Linux.LOG_COMPONENT;
+    static private final Logger log = LogManager.getLogger();
 
     public enum Flags {ROOT, LOG_OUTPUT, LOG_ERRORS};
 
@@ -78,7 +78,7 @@ public final class BashProcess
     public void run() throws IOException
     {
 	final String[] cmd = prepareCmd();
-	Log.debug(LOG_COMPONENT, "Running bash process: " + Arrays.toString(cmd));
+	log.debug("Running bash process: " + Arrays.toString(cmd));
 	this.p = new ProcessBuilder(cmd).start();
 	p.getOutputStream().close();
 	final BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -90,6 +90,7 @@ public final class BashProcess
 	}
 	catch(NumberFormatException e)
 	{
+	    log.error(e);
 	    throw new IOException("'" + pidStr + "' is not a valid pid");
 	}
 	readOutput(r);
@@ -120,6 +121,7 @@ public final class BashProcess
 	}
 	catch(IOException e)
 	{
+	    log.error(e);
 	    throw new RuntimeException(e);
 	}
     }
@@ -191,8 +193,7 @@ public final class BashProcess
 		}
 		catch(IOException e)
 		{
-		    Log.error(Linux.LOG_COMPONENT, "unable to read the output of the bash process '" + command + "': " + e.getClass().getName() + ": " + e.getMessage());
-		    e.printStackTrace();
+		    log.error("Unable to read the output of the bash process '" + command, e);
 		}
 	}).start();
     }
@@ -222,8 +223,7 @@ public final class BashProcess
 		}
 		catch(IOException e)
 		{
-		    Log.error(Linux.LOG_COMPONENT, "unable to read the errors of the bash process '" + command + "': " + e.getClass().getName() + ": " + e.getMessage());
-		    e.printStackTrace();
+		    log.error("Unable to read the errors of the bash process '" + command + "': ");
 		}
 	}).start();
     }
