@@ -24,6 +24,8 @@ import com.google.auto.service.*;
 import org.luwrain.core.*;
 import org.luwrain.linux.*;
 
+import static java.util.Objects.*;
+import static java.util.stream.Collectors.*;
 import static org.luwrain.core.NullCheck.*;
 
 @AutoService(JobLauncher.class)
@@ -32,20 +34,20 @@ public final class SysJob implements JobLauncher
 
     @Override public Job launch(Job.Listener listener, String[] args, String dir)
     {
-	notNull(listener, "listener");
+	requireNonNull(listener, "listener can't be null");
 	notNullItems(args, "args");
 	if (args.length == 0 || args[0].isEmpty())
 	    return new ErrorJobInstance("sys", "No command");
 	final Data data = new Data();
 	final Job ins = new Job(){
 		@Override public void stop() { if (data.stopProc != null) data.stopProc.run(); }
-	    	@Override public String getInstanceName() { return args[0]; }
+	    	@Override public String getInstanceName() { return data.cmd; }
 		@Override public Status getStatus() { return data.finished?Status.FINISHED:Status.RUNNING; }
 		@Override public int getExitCode() { return data.exitCode; }
 		@Override public boolean isFinishedSuccessfully() { return data.finished && data.exitCode == 0; }
 		@Override public List<String> getInfo(String type)
 		{
-		    notEmpty(type, "type");
+		    requireNonNull(type, "type can't be null");
 		    switch(type)
 		    {
 		    case "brief":
@@ -57,7 +59,8 @@ public final class SysJob implements JobLauncher
 		    }
 		}
 			    };
-	final BashProcess p = new BashProcess(buildCmd(args), dir, EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
+	data.cmd = buildCmd(args);
+	final var p = new BashProcess(data.cmd, dir, EnumSet.noneOf(BashProcess.Flags.class), new BashProcess.Listener(){
 		@Override public void onOutputLine(String line)
 		{
 		    data.mlState.add(line);
@@ -103,15 +106,12 @@ public final class SysJob implements JobLauncher
 	    throw new IllegalArgumentException("args can't be empty");
 	if (args[0].isEmpty())
 	    throw new IllegalArgumentException("args[0] can't be empty");
-	final StringBuilder b = new StringBuilder();
-	b.append(args[0]);
-	for(int i = 1;i < args.length;i++)
-	    b.append(" ").append(args[i]);
-	return new String(b);
+	return Arrays.asList(args).stream().collect(joining(" "));
     }
 
     static private final class Data
     {
+	String cmd;
 	boolean finished = false;
 	int exitCode = -1;
 	String state = "";
