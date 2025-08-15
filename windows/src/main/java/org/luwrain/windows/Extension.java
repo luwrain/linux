@@ -1,5 +1,5 @@
 /*
-   Copyright 2012-2022 Michael Pozhidaev <msp@luwrain.org>
+   Copyright 2012-2025 Michael Pozhidaev <msp@luwrain.org>
 
    This file is part of LUWRAIN.
 
@@ -16,8 +16,10 @@
 
 package org.luwrain.windows;
 
+import com.google.auto.service.*;
 import org.luwrain.core.*;
 
+@AutoService(org.luwrain.core.Extension.class)
 public final class Extension extends EmptyExtension
 {
     @Override public ExtensionObject[] getExtObjects(Luwrain luwrain)

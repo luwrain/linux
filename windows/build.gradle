@@ -8,6 +8,7 @@ plugins {
 dependencies {
   implementation libraries.base
   implementation libraries.apacheBase
+  annotationProcessor libraries.autoService
   implementation (project(':luwrain-base'))
   implementation project(':luwrain')
   testImplementation libraries.junit
