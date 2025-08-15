@@ -41,7 +41,6 @@ public final class Windows implements OperatingSystem
 
     @Override public InitResult init(PropertiesBase props)
     {
-	NullCheck.notNull(props, "props");
     	return new InitResult();
     }
 
