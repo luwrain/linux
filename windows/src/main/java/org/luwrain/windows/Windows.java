@@ -21,10 +21,12 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import com.google.auto.service.*;
 
 import org.luwrain.core.*;
 import org.luwrain.interaction.KeyboardHandler;
 
+@AutoService(OperatingSystem.class)
 public final class Windows implements OperatingSystem
 {
     interface ChannelBasicData
