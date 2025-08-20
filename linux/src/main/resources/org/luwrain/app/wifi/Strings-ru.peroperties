@@ -1,0 +1,22 @@
+
+strings.wifi = org.luwrain.app.wifi.Strings
+command.wifi = Беспроводные подключения
+wifi.AppName = Беспроводные подключения
+wifi.NetworksAreaName = Беспроводные подключения
+wifi.StatusAreaName = Текущее подключение
+wifi.ActionDisconnect = Отключиться
+wifi.ConnectionPopupName = Подключение к сети
+wifi.EnterThePassword = Введите пароль для подключения:
+wifi.NoWifiNetworks = Беспроводные сети отсутствуют
+wifi.SaveThePassword = Сохранить пароль для будущих подключений?
+wifi.ScanningInProgress = Идёт  поиск беспроводных сетей. Пожалуйста, подождите...
+wifi.UseSavedPassword = Использовать сохранённый пароль для этой сети?
+wifi.WithPassword = Защищённая сеть
+wifi.NoConnectionLock = Сетевое устройство занято
+wifi.ConnectionEstablished = Подключение установлено
+wifi.ErrorConnecting = Подключиться не удалось (возможно, указан неверный пароль)
+wifi.ErrorDisconnecting = Произошла ошибка при отключении от беспроводной сети
+wifi.DisconnectCurrentConnection = Отключиться от сети "$1"
+wifi.SuccessfullyDisconnected = Отключение от беспроводной сети произведено
+
+

@@ -1,0 +1,7 @@
+
+strings.parted = org.luwrain.app.parted.Strings
+command.parted = Диспетчер дисков
+parted.AppName = Диспетчер дисков
+parted.DisksAreaName = Устройства
+parted.PartAreaName = Разделы
+
