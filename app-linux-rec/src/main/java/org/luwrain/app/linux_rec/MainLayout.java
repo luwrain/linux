@@ -22,109 +22,66 @@ import java.io.*;
 import org.apache.logging.log4j.*;
 
 import org.luwrain.core.*;
+import org.luwrain.core.events.*;
 import org.luwrain.controls.*;
 import org.luwrain.linux.*;
-import org.luwrain.controls.ConsoleUtils.*;
+import org.luwrain.controls.ListUtils.*;
 import org.luwrain.app.base.*;
+import org.luwrain.app.linux_rec.layouts.*;
 
 import static org.luwrain.core.DefaultEventResponse.*;
+import static org.luwrain.core.events.InputEvent.*;
 
-final class MainLayout extends LayoutBase implements ConsoleArea.ClickHandler<String>, ConsoleArea.InputHandler
+final class MainLayout extends LayoutBase
 {
     static private final Logger log = LogManager.getLogger();
 
-    static private final
-	Pattern ENTRY_PATTERN = Pattern.compile("^([a-zA-Z0-9_-]+)\\s+\\(([0-9a-zA-Z_-]+)\\)\\s.*$", Pattern.CASE_INSENSITIVE);
-
-    private final App app;
-    private final ConsoleArea<String> searchArea;
-    private final SimpleArea pageArea;
-
-    private String[] pages = new String[0];
+final App app;
+    final ListArea<Entry> entriesArea;
+    final List<Entry> entries = new ArrayList<>();
 
     MainLayout(App app)
     {
 	super(app);
 	this.app = app;
-	this.searchArea = new ConsoleArea<>(consoleParams((params)->{
-		    params.model = new ArrayModel<>(()->pages);
-		    params.appearance = new SearchAreaAppearance();
-		    params.name = app.getStrings().searchAreaName();
-		    params.inputPos = ConsoleArea.InputPos.TOP;
-		    params.inputPrefix = "man>";
-		    params.inputHandler = this;
-		    params.clickHandler = this;
+	final var s = app.getStrings();
+	this.entriesArea = new ListArea<>(listParams( p -> {
+		    p.model = new ListModel<>(entries);
+		    p.appearance = new MainListAppearance();
+		    p.name = s.entriesAreaName();
 		}));
-	this.pageArea = new SimpleArea(getControlContext(), app.getStrings().pageAreaName());
-	setAreaLayout(AreaLayout.TOP_BOTTOM, searchArea, null, pageArea, null);
+	setAreaLayout(entriesArea, actions(
+					   action("rec", s.actionRec(), new InputEvent(Special.F5), this::onStartRecording)
+));
     }
 
-    @Override public boolean onConsoleClick(ConsoleArea area, int index, String item)
+    boolean onStartRecording()
     {
-	final Matcher m = ENTRY_PATTERN.matcher(item.trim());
-	if (!m.find())
+	app.setAreaLayout(new RecordingProgressLayout(app, getReturnAction()));
+	getLuwrain().announceActiveArea();
+	return true;
+    }
+
+
+    final class MainListAppearance  extends DoubleLevelAppearance<Entry>
+    {
+	MainListAppearance()
+	{
+	    super(getControlContext());
+	}
+	
+	@Override public boolean isSectionItem(Entry entry)
+	{
 	    return false;
-	final var p = new BashProcess("man " + BashProcess.escape(m.group(2)) + " " + BashProcess.escape(m.group(1)));
-	try {
-	    p.run();
 	}
-	catch(IOException e)
+	
+	@Override public void announceNonSection(Entry entry)
 	{
-	    app.crash(e);
-	    return true;
 	}
-	final int exitCode = p.waitFor();
-	if (exitCode != 0)
-	{
-	    app.getLuwrain().playSound(Sounds.ERROR);
-	    for(String s: p.getErrors())
-		log.error("Man: " + s);
-	    return true;
-	}
-	pageArea.setLines(p.getOutput());
-	pageArea.setHotPoint(0, 0);
-	setActiveArea(pageArea);
-	return true;
-    }
 
-    @Override public ConsoleArea.InputHandler.Result onConsoleInput(ConsoleArea area, String text)
-    {
-	if (text.trim().isEmpty())
-	    return ConsoleArea.InputHandler.Result.REJECTED;
-	if (!search(text.trim().toLowerCase()))
-	    return ConsoleArea.InputHandler.Result.REJECTED;
-	area.refresh();
-	return ConsoleArea.InputHandler.Result.OK;
-    }
-
-    boolean search(String query)
-    {
-	final BashProcess p = new BashProcess("man -k " + BashProcess.escape(query.trim()));
-	try {
-	    p.run();
-	}
-	catch(IOException e)
+	@Override public String getNonSectionScreenAppearance(Entry entry)
 	{
-	    app.getLuwrain().crash(e);
-	    return true;
+	    return "";
 	}
-	final int exitCode = p.waitFor();
-	if (exitCode != 0)
-	{
-	    final String[] errors = p.getErrors();
-	    if (errors.length > 0)
-		app.getLuwrain().message(errors[0], Luwrain.MessageType.ERROR); else
-		app.getLuwrain().playSound(Sounds.ERROR);
-	    return true;
-	}
-	app.getLuwrain().playSound(Sounds.OK);
-	pages = p.getOutput();
-	return true;
-    }
-
-    private final class SearchAreaAppearance implements ConsoleArea.Appearance<String>
-    {
-	@Override public void announceItem(String item) { app.setEventResponse(listItem(app.getLuwrain().getSpeakableText(item, Luwrain.SpeakableTextType.PROGRAMMING), Suggestions.CLICKABLE_LIST_ITEM)); }
-	@Override public String getTextAppearance(String item) { return item; }
     }
 }

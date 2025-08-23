@@ -14,18 +14,9 @@
    General Public License for more details.
 */
 
-package org.luwrain.app.linux_rec
-       ;
+package org.luwrain.app.linux_rec;
 
-import org.luwrain.core.annotations.*;
-
-@ResourceStrings(langs = { "en", "ru" })
-public interface Strings
+public final class Entry
 {
-    String appName();
-    String entriesAreaName();
-    String recordingProgressAreaName();
-    String actionRec();
-    String recStarted();
-    String recFinished();
+    String id;
 }

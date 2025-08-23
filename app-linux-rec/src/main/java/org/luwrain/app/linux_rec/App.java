@@ -16,19 +16,28 @@
 
 package org.luwrain.app.linux_rec;
 
+import java.util.*;
+import java.io.*;
+import java.nio.file.*;
+
 import org.luwrain.core.*;
 import org.luwrain.core.annotations.*;
 import org.luwrain.app.base.*;
 
-@AppNoArgs(name = "man", title = { "en=Man", "ru=Man" })
+import static java.nio.file.Files.*;
+
+@AppNoArgs(name = "rec", title = { "en=Recorder", "ru=Диктофон" })
 public final class App extends AppBase<Strings> implements MonoApp
 {
+    static public final Path REC_DIR = Paths.get(System.getProperty("user.home")).resolve("Recordings");
+
     private MainLayout mainLayout = null;
 
     public App() { super(Strings.class, "luwrain.linux.man"); }
 
-    @Override protected AreaLayout onAppInit()
+    @Override protected AreaLayout onAppInit() throws IOException
     {
+	createDirectories(REC_DIR);
 	this.mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
