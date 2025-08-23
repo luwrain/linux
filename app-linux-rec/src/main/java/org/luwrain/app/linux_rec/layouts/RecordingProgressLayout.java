@@ -33,8 +33,10 @@ public final class RecordingProgressLayout extends LayoutBase
     final Strings s;
     final NavigationArea area;
     private Job recJob = null;
+    private String name = null;
+    private Date started = null;
 
-    public RecordingProgressLayout(App app, ActionHandler close)
+    public RecordingProgressLayout(App app, ActionHandler close, ListArea<Entry> entriesArea)
     {
 	super(app);
 	this.app = app;
@@ -56,26 +58,39 @@ public final class RecordingProgressLayout extends LayoutBase
 		{
 		    if (event.isSpecial())
 			switch(event.getSpecial())
-		    {
-		    case ENTER:
 			{
-			    if (recJob == null)
+			case ENTER:
 			    {
-				recJob = getLuwrain().newJob("sys", new String[]{ "parecord", "/x/proba.wav"}, App.REC_DIR.toString(), EnumSet.noneOf(Luwrain.JobFlags.class), null);
-				app.message(s.recStarted());
-			    } else
-			    {
-				recJob.stop();
-				recJob = null;
-				app.message(s.recFinished());
+				if (recJob == null)
+				{
+started = new Date();
+				    RecordingProgressLayout.this.name = App.TIME_FORMAT.format(started) + ".wav";
+				    recJob = getLuwrain().newJob("sys",
+								 new String[]{ "parecord", RecordingProgressLayout.this.name}, App.REC_DIR.toString(),
+								 EnumSet.noneOf(Luwrain.JobFlags.class),
+								 null);
+				    app.message(s.recStarted());
+				} else
+				{
+				    recJob.stop();
+				    recJob = null;
+				    final var e = new Entry();
+				    e.name = RecordingProgressLayout.this.name;
+				    e.startedTimestamp = started.getTime();
+				    e.finishedTimestamp = new Date().getTime();
+				    app.conf.entries.add(e);
+				    entriesArea.refresh();
+				    entriesArea.select(e, false);
+				    getLuwrain().saveConf(app.conf);
+				    app.message(s.recFinished());
+				}
+				return true;
 			    }
-			    			return true;
-		    }
-		    }
+			}
 		    return super.onInputEvent(event);
-		    }
-	};
+		}
+	    };
 	setCloseHandler(close);
 	setAreaLayout(area, null);
-	    }
+    }
 }

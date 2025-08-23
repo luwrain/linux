@@ -18,5 +18,7 @@ package org.luwrain.app.linux_rec;
 
 public final class Entry
 {
-    String id;
+    public int id;
+    public String name;
+    public long startedTimestamp, finishedTimestamp;
 }

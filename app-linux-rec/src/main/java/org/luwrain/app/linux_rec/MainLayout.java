@@ -29,6 +29,7 @@ import org.luwrain.controls.ListUtils.*;
 import org.luwrain.app.base.*;
 import org.luwrain.app.linux_rec.layouts.*;
 
+import static java.util.Objects.*;
 import static org.luwrain.core.DefaultEventResponse.*;
 import static org.luwrain.core.events.InputEvent.*;
 
@@ -38,7 +39,6 @@ final class MainLayout extends LayoutBase
 
 final App app;
     final ListArea<Entry> entriesArea;
-    final List<Entry> entries = new ArrayList<>();
 
     MainLayout(App app)
     {
@@ -46,7 +46,7 @@ final App app;
 	this.app = app;
 	final var s = app.getStrings();
 	this.entriesArea = new ListArea<>(listParams( p -> {
-		    p.model = new ListModel<>(entries);
+		    p.model = new ListModel<>(app.conf.entries);
 		    p.appearance = new MainListAppearance();
 		    p.name = s.entriesAreaName();
 		}));
@@ -57,7 +57,7 @@ final App app;
 
     boolean onStartRecording()
     {
-	app.setAreaLayout(new RecordingProgressLayout(app, getReturnAction()));
+	app.setAreaLayout(new RecordingProgressLayout(app, getReturnAction(), entriesArea));
 	getLuwrain().announceActiveArea();
 	return true;
     }
@@ -77,11 +77,12 @@ final App app;
 	
 	@Override public void announceNonSection(Entry entry)
 	{
+	    app.setEventResponse(listItem(requireNonNullElse(entry.name, "")));
 	}
 
 	@Override public String getNonSectionScreenAppearance(Entry entry)
 	{
-	    return "";
+	    return requireNonNullElse(entry.name, "");
 	}
     }
 }

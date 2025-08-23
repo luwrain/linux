@@ -20,5 +20,6 @@ import java.util.*;
 
 public final class Config
 {
-    List<Entry> entries;
+    public int nextEntryId;
+    public List<Entry> entries;
 }

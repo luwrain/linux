@@ -17,6 +17,7 @@
 package org.luwrain.app.linux_rec;
 
 import java.util.*;
+import java.text.*;
 import java.io.*;
 import java.nio.file.*;
 
@@ -30,15 +31,23 @@ import static java.nio.file.Files.*;
 public final class App extends AppBase<Strings> implements MonoApp
 {
     static public final Path REC_DIR = Paths.get(System.getProperty("user.home")).resolve("Recordings");
+    static public final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
 
+    public Config conf;
     private MainLayout mainLayout = null;
 
-    public App() { super(Strings.class, "luwrain.linux.man"); }
+    public App() { super(Strings.class); }
 
     @Override protected AreaLayout onAppInit() throws IOException
     {
 	createDirectories(REC_DIR);
-	this.mainLayout = new MainLayout(this);
+	conf = getLuwrain().loadConf(Config.class);
+	if (conf == null)
+	    conf = new Config();
+	if (conf.entries != null)
+	    conf.entries = new ArrayList<>(conf.entries); else
+	    conf.entries = new ArrayList<>();
+	mainLayout = new MainLayout(this);
 	setAppName(getStrings().appName());
 	return mainLayout.getAreaLayout();
     }
